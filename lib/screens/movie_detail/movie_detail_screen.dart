@@ -21,9 +21,16 @@ class MovieDetailScreen extends StatelessWidget {
           SizedBox(
               width: double.infinity,
               height: mediaQuery.height * 0.4,
-              child: Image.network(
-                  Constants.IMAGE_BASE_URL + movie.posterPath.toString(),
-                  fit: BoxFit.cover)),
+              child: Hero(
+                tag: movie,
+                transitionOnUserGestures: true,
+                child: AspectRatio(
+                  aspectRatio: 1 / 1,
+                  child: Image.network(
+                      Constants.IMAGE_BASE_URL + movie.posterPath.toString(),
+                      fit: BoxFit.cover),
+                ),
+              )),
           const SizedBox(height: 5.0),
           RatingBarIndicator(
               rating: (movie.voteAverage / 2).toDouble(),
