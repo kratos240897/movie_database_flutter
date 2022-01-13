@@ -20,16 +20,18 @@ class MovieDetailScreen extends StatelessWidget {
         child: Column(children: [
           SizedBox(
               width: double.infinity,
-              height: mediaQuery.height * 0.4,
+              height: mediaQuery.height * 0.5,
               child: Hero(
                 tag: movie,
                 transitionOnUserGestures: true,
-                child: AspectRatio(
-                  aspectRatio: 1 / 1,
-                  child: Image.network(
-                      Constants.IMAGE_BASE_URL + movie.posterPath.toString(),
-                      fit: BoxFit.cover),
-                ),
+                child: Image.network(
+                    movie.backdropPath != null
+                        ? Constants.IMAGE_BASE_URL +
+                            movie.backdropPath.toString()
+                        : Constants.IMAGE_BASE_URL +
+                            movie.posterPath.toString(),
+                    filterQuality: FilterQuality.high,
+                    fit: BoxFit.cover),
               )),
           const SizedBox(height: 5.0),
           RatingBarIndicator(
