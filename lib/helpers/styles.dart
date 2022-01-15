@@ -7,6 +7,7 @@ class Styles {
 }
 
 class _Colors {
+  final themeColor = const Color(0XFF1d2438);
   final primaryColor = const MaterialColor(0XFF1d2438, {
     50: Color(0XFF1d2438),
     100: Color(0XFF1d2438),
