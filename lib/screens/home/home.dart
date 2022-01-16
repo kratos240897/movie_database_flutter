@@ -25,14 +25,35 @@ class Home extends GetView<HomeController> {
                 fontSize: 25.0,
                 fontFamily: GoogleFonts.caveat().copyWith().fontFamily)),
       ),
-      body: SafeArea(
-          child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          CategoriesWidget(controller: controller),
-          MoviesListWidget(controller: controller, mediaQuery: mediaQuery)
-        ],
-      )),
+      body: SafeArea(child: Obx(() {
+        return Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            CategoriesWidget(controller: controller),
+            controller.isInternetAvailable.value
+                ? MoviesListWidget(
+                    controller: controller, mediaQuery: mediaQuery)
+                : Expanded(
+                    child: Center(
+                        child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        SizedBox(
+                            height: 90.0,
+                            width: 70.0,
+                            child: Image.asset('assets/images/wifi.png')),
+                        Text('No Internet',
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: Colors.deepOrangeAccent,
+                                fontFamily: GoogleFonts.comicNeue().fontFamily,
+                                fontSize: 20))
+                      ],
+                    )),
+                  )
+          ],
+        );
+      })),
     );
   }
 }
@@ -224,7 +245,9 @@ class CategoriesWidget extends StatelessWidget {
           var _category = controller.categories[index].toString();
           return Obx(
             () {
-              return Container(
+              return AnimatedContainer(
+                  duration: const Duration(seconds: 1),
+                  curve: Curves.bounceInOut,
                   alignment: Alignment.center,
                   margin: const EdgeInsets.all(5.0),
                   child: _category.toString ==

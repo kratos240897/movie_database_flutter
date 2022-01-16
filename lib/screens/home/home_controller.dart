@@ -1,13 +1,15 @@
-// ignore_for_file: avoid_print
-
+import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:flutter/material.dart';
+import 'package:movie_database/helpers/utils.dart';
 import 'package:movie_database/repo/app_repo.dart';
 import 'package:get/get.dart';
 
-class HomeController extends SuperController {
+class HomeController extends GetxController {
   var movies = RxList.empty();
   final error = ''.obs;
   final _appRepo = Get.put(AppRepository());
   var selectedCategory = 'Top rated'.obs;
+  var isInternetAvailable = false.obs;
   final List<String> categories = [
     'Top rated',
     'Popular',
@@ -18,9 +20,20 @@ class HomeController extends SuperController {
 
   @override
   void onInit() {
-    getMovies({
-      'primary_release_date.gte': '2021-12-15',
-      'primary_release_date.lte': '2022-01-10'
+    Utils().getConnectivity.connectivityStream.stream.listen((event) {
+      if (event == ConnectivityResult.none) {
+        isInternetAvailable.value = false;
+        Utils().showSnackBar('Internet Connection', 'No Connection', false);
+      } else {
+        isInternetAvailable.value = true;
+        Utils().showSnackBar('Internet Connection', 'Back Online', true);
+        if (movies.isEmpty) {
+          getMovies({
+            'primary_release_date.gte': '2021-12-15',
+            'primary_release_date.lte': '2022-01-10'
+          });
+        }
+      }
     });
     super.onInit();
   }
@@ -61,26 +74,5 @@ class HomeController extends SuperController {
       this.error.value = error.toString();
       return Future.error(error!);
     });
-  }
-
-  @override
-  void onDetached() {
-    print('onDetached');
-  }
-
-  @override
-  void onInactive() {
-    print('onInactive');
-  }
-
-  @override
-  void onPaused() {
-    print('onPaused');
-  }
-
-  @override
-  void onResumed() async {
-    //getMovies();
-    print('onResumed');
   }
 }

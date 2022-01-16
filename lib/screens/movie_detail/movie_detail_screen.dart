@@ -1,14 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:get/get_navigation/src/extension_navigation.dart';
+import 'package:get/get_state_manager/get_state_manager.dart';
 import 'package:get/utils.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:movie_database/helpers/styles.dart';
 import 'package:movie_database/models/movies_response.dart';
 import 'package:movie_database/helpers/constants.dart';
+import 'package:movie_database/screens/movie_detail/movie_detail_controller.dart';
 
-class MovieDetailScreen extends StatelessWidget {
+class MovieDetailScreen extends GetView<MovieDetailController> {
   final Results movie;
   const MovieDetailScreen({Key? key, required this.movie}) : super(key: key);
 
