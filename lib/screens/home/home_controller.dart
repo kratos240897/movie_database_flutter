@@ -1,13 +1,12 @@
-import 'package:connectivity_plus/connectivity_plus.dart';
-import 'package:flutter/material.dart';
-import 'package:movie_database/helpers/utils.dart';
 import 'package:movie_database/repo/app_repo.dart';
 import 'package:get/get.dart';
+import 'package:movie_database/screens/internet_controller.dart';
 
 class HomeController extends GetxController {
   var movies = RxList.empty();
   final error = ''.obs;
-  final _appRepo = Get.put(AppRepository());
+  final AppRepository _appRepo = Get.find<AppRepository>();
+  final InternetController _internetController = Get.find<InternetController>();
   var selectedCategory = 'Top rated'.obs;
   var isInternetAvailable = false.obs;
   final List<String> categories = [
@@ -20,19 +19,17 @@ class HomeController extends GetxController {
 
   @override
   void onInit() {
-    Utils().getConnectivity.connectivityStream.stream.listen((event) {
-      if (event == ConnectivityResult.none) {
-        isInternetAvailable.value = false;
-        Utils().showSnackBar('Internet Connection', 'No Connection', false);
-      } else {
+    _internetController.isInternetAvailable.listen((data) {
+      if (data) {
         isInternetAvailable.value = true;
-        Utils().showSnackBar('Internet Connection', 'Back Online', true);
         if (movies.isEmpty) {
           getMovies({
             'primary_release_date.gte': '2021-12-15',
             'primary_release_date.lte': '2022-01-10'
           });
         }
+      } else {
+        isInternetAvailable.value = false;
       }
     });
     super.onInit();
@@ -61,10 +58,10 @@ class HomeController extends GetxController {
   }
 
   // It is called just before the controller is deleted from memory.
-  @override
-  onClose() {
-    super.onClose();
-  }
+  // @override
+  // onClose() {
+  //   super.onClose();
+  // }
 
   getMovies(Map<String, dynamic> query) {
     _appRepo
