@@ -36,24 +36,7 @@ class Home extends GetView<HomeController> {
               child: Icon(Icons.search, color: Colors.white),
             ),
           ),
-          Container(
-            margin: const EdgeInsets.only(
-                left: 5.0, bottom: 5.0, top: 10.0, right: 12.0),
-            child: Badge(
-              animationType: BadgeAnimationType.slide,
-              badgeContent: const Text('24',
-                  style: TextStyle(fontSize: 10, color: Colors.white)),
-              child: Container(
-                decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: Colors.grey[400]!.withOpacity(0.5)),
-                child: const Padding(
-                  padding: EdgeInsets.all(4.0),
-                  child: Icon(Icons.favorite),
-                ),
-              ),
-            ),
-          )
+          FavoriteActionButton(controller: controller)
         ],
       ),
       body: SafeArea(child: Obx(() {
@@ -86,6 +69,50 @@ class Home extends GetView<HomeController> {
         );
       })),
     );
+  }
+}
+
+class FavoriteActionButton extends StatelessWidget {
+  final HomeController controller;
+  const FavoriteActionButton({Key? key, required this.controller})
+      : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Obx(() {
+      return controller.favoritesCount.value > 0
+          ? Container(
+              margin: const EdgeInsets.only(
+                  left: 5.0, bottom: 5.0, top: 10.0, right: 12.0),
+              child: Badge(
+                animationType: BadgeAnimationType.slide,
+                badgeContent: Text(controller.favoritesCount.value.toString(),
+                    style: const TextStyle(fontSize: 10, color: Colors.white)),
+                child: Container(
+                  decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: Colors.grey[400]!.withOpacity(0.5)),
+                  child: const Padding(
+                    padding: EdgeInsets.all(4.0),
+                    child: Icon(Icons.favorite),
+                  ),
+                ),
+              ),
+            )
+          : Container(
+              margin: const EdgeInsets.only(
+                  left: 5.0, bottom: 5.0, top: 10.0, right: 12.0),
+              child: Container(
+                decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: Colors.grey[400]!.withOpacity(0.5)),
+                child: const Padding(
+                  padding: EdgeInsets.all(4.0),
+                  child: Icon(Icons.favorite),
+                ),
+              ),
+            );
+    });
   }
 }
 
@@ -128,7 +155,9 @@ class MoviesListWidget extends StatelessWidget {
                                 style: Styles.textStyles.f14Regular),
                             trailingIcon:
                                 const Icon(Icons.favorite, color: Colors.red),
-                            onPressed: () {}),
+                            onPressed: () async {
+                              controller.addFavorite();
+                            }),
                         FocusedMenuItem(
                             title: Text('Share',
                                 style: Styles.textStyles.f14Regular),

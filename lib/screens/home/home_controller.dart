@@ -7,6 +7,7 @@ class HomeController extends GetxController {
   final error = ''.obs;
   final AppRepository _appRepo = Get.find<AppRepository>();
   final InternetController _internetController = Get.find<InternetController>();
+  var favoritesCount = 0.obs;
   var selectedCategory = 'Top rated'.obs;
   var isInternetAvailable = false.obs;
   final List<String> categories = [
@@ -33,6 +34,10 @@ class HomeController extends GetxController {
       }
     });
     super.onInit();
+  }
+
+  addFavorite() {
+    favoritesCount.value++;
   }
 
   setSelectedCategory(String category) {
