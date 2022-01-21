@@ -1,5 +1,6 @@
 // ignore_for_file: unnecessary_import
 
+import 'package:badges/badges.dart';
 import 'package:flutter/material.dart';
 import 'package:focused_menu/focused_menu.dart';
 import 'package:focused_menu/modals.dart';
@@ -24,6 +25,36 @@ class Home extends GetView<HomeController> {
             style: TextStyle(
                 fontSize: 25.0,
                 fontFamily: GoogleFonts.caveat().copyWith().fontFamily)),
+        actions: [
+          Container(
+            margin: const EdgeInsets.only(top: 10.0, bottom: 5.0),
+            decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: Colors.grey[400]!.withOpacity(0.5)),
+            child: const Padding(
+              padding: EdgeInsets.all(4.0),
+              child: Icon(Icons.search, color: Colors.white),
+            ),
+          ),
+          Container(
+            margin: const EdgeInsets.only(
+                left: 5.0, bottom: 5.0, top: 10.0, right: 12.0),
+            child: Badge(
+              animationType: BadgeAnimationType.slide,
+              badgeContent: const Text('24',
+                  style: TextStyle(fontSize: 10, color: Colors.white)),
+              child: Container(
+                decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: Colors.grey[400]!.withOpacity(0.5)),
+                child: const Padding(
+                  padding: EdgeInsets.all(4.0),
+                  child: Icon(Icons.favorite),
+                ),
+              ),
+            ),
+          )
+        ],
       ),
       body: SafeArea(child: Obx(() {
         return Column(

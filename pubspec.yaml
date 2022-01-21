@@ -41,6 +41,7 @@ dependencies:
   cached_network_image: ^3.2.0
   intl: ^0.17.0
   connectivity_plus: ^2.2.0
+  badges: ^2.0.2
 
 dev_dependencies:
   flutter_test:

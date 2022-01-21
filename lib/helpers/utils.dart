@@ -18,5 +18,7 @@ class Utils {
     ));
   }
 
+  void closeConnectivity() => _connectivityService.closeConnectivityStream();
+
   ConnectivityService get getConnectivity => _connectivityService;
 }

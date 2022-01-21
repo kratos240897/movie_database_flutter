@@ -5,13 +5,14 @@ import 'package:get/get.dart';
 import 'package:movie_database/helpers/utils.dart';
 
 class InternetController extends SuperController {
+  final _utils = Utils();
   var isInternetAvailable = false.obs;
-  StreamSubscription<ConnectivityResult> streamSubscription =
+  final StreamSubscription<ConnectivityResult> _streamSubscription =
       Utils().getConnectivity.connectivityStream.stream.listen((event) {});
   @override
   void onInit() {
     super.onInit();
-    streamSubscription.onData((data) {
+    _streamSubscription.onData((data) {
       setInternetStatus(data);
     });
   }
@@ -27,24 +28,26 @@ class InternetController extends SuperController {
   }
 
   @override
-  void onDetached() {}
+  void onDetached() {
+    _utils.closeConnectivity();
+  }
 
   @override
   void onInactive() {}
 
   @override
   void onPaused() {
-    streamSubscription.pause();
+    _streamSubscription.pause();
   }
 
   @override
   void onClose() {
-    streamSubscription.cancel();
+    _streamSubscription.cancel();
     super.onClose();
   }
 
   @override
   void onResumed() {
-    streamSubscription.resume();
+    _streamSubscription.resume();
   }
 }
