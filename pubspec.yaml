@@ -42,6 +42,11 @@ dependencies:
   intl: ^0.17.0
   connectivity_plus: ^2.2.0
   badges: ^2.0.2
+  logger: ^1.1.0
+  dio: ^4.0.4
+  flutter_loggy_dio: ^2.0.0+3
+  loggy: ^2.0.1+1
+  flutter_loggy: ^2.0.1
 
 dev_dependencies:
   flutter_test:

@@ -20,6 +20,7 @@ class HomeController extends GetxController {
 
   @override
   void onInit() {
+    _appRepo.init();
     _internetController.isInternetAvailable.listen((data) {
       if (data) {
         isInternetAvailable.value = true;

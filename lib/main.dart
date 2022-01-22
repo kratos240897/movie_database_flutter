@@ -1,9 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_loggy/flutter_loggy.dart';
 import 'package:get/get.dart';
+import 'package:loggy/loggy.dart';
 import 'package:movie_database/helpers/styles.dart';
 import 'package:movie_database/routes/router.dart';
 
 void main() {
+  Loggy.initLoggy(
+    logPrinter: const PrettyDeveloperPrinter(),
+  );
   runApp(const MyApp());
 }
 
