@@ -11,6 +11,7 @@ import 'package:movie_database/helpers/styles.dart';
 import 'package:movie_database/screens/home/home_controller.dart';
 import 'package:get/get.dart';
 import 'package:movie_database/screens/movie_detail/movie_detail_screen.dart';
+import 'package:movie_database/screens/screens.dart';
 
 class Home extends GetView<HomeController> {
   Home({Key? key}) : super(key: key);
@@ -26,16 +27,7 @@ class Home extends GetView<HomeController> {
                 fontSize: 25.0,
                 fontFamily: GoogleFonts.caveat().copyWith().fontFamily)),
         actions: [
-          Container(
-            margin: const EdgeInsets.only(top: 10.0, bottom: 5.0),
-            decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: Colors.grey[400]!.withOpacity(0.5)),
-            child: const Padding(
-              padding: EdgeInsets.all(4.0),
-              child: Icon(Icons.search, color: Colors.white),
-            ),
-          ),
+          const SearchActionButton(),
           FavoriteActionButton(controller: controller)
         ],
       ),
@@ -47,27 +39,58 @@ class Home extends GetView<HomeController> {
             controller.isInternetAvailable.value
                 ? MoviesListWidget(
                     controller: controller, mediaQuery: mediaQuery)
-                : Expanded(
-                    child: Center(
-                        child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        SizedBox(
-                            height: 90.0,
-                            width: 70.0,
-                            child: Image.asset('assets/images/wifi.png')),
-                        Text('No Internet',
-                            style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                color: Colors.deepOrangeAccent,
-                                fontFamily: GoogleFonts.comicNeue().fontFamily,
-                                fontSize: 20))
-                      ],
-                    )),
-                  )
+                : const NoInternetWidget()
           ],
         );
       })),
+    );
+  }
+}
+
+class NoInternetWidget extends StatelessWidget {
+  const NoInternetWidget({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Expanded(
+      child: Center(
+          child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          SizedBox(
+              height: 90.0,
+              width: 70.0,
+              child: Image.asset('assets/images/wifi.png')),
+          Text('No Internet',
+              style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: Colors.deepOrangeAccent,
+                  fontFamily: GoogleFonts.comicNeue().fontFamily,
+                  fontSize: 20))
+        ],
+      )),
+    );
+  }
+}
+
+class SearchActionButton extends StatelessWidget {
+  const SearchActionButton({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      splashFactory: NoSplash.splashFactory,
+      onTap: () => Get.to(() => const SearchScreen(),
+          transition: Transition.cupertinoDialog),
+      child: Container(
+        margin: const EdgeInsets.only(top: 10.0, bottom: 5.0),
+        decoration: BoxDecoration(
+            shape: BoxShape.circle, color: Colors.grey[400]!.withOpacity(0.5)),
+        child: const Padding(
+          padding: EdgeInsets.all(4.0),
+          child: Icon(Icons.search, color: Colors.white),
+        ),
+      ),
     );
   }
 }
