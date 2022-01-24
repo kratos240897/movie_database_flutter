@@ -12,7 +12,7 @@ class InternetController extends SuperController {
   @override
   void onInit() {
     super.onInit();
-    _streamSubscription.onData((data) {
+    _streamSubscription.onData((data) async {
       setInternetStatus(data);
     });
   }

@@ -24,12 +24,10 @@ class HomeController extends GetxController {
     _internetController.isInternetAvailable.listen((data) {
       if (data) {
         isInternetAvailable.value = true;
-        if (movies.isEmpty) {
-          getMovies({
-            'primary_release_date.gte': '2021-12-15',
-            'primary_release_date.lte': '2022-01-10'
-          });
-        }
+        getMovies({
+          'primary_release_date.gte': '2021-12-15',
+          'primary_release_date.lte': '2022-01-10'
+        });
       } else {
         isInternetAvailable.value = false;
       }
