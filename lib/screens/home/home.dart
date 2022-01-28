@@ -1,4 +1,4 @@
-// ignore_for_file: unnecessary_import
+// ignore_for_file: unnecessary_import, invalid_use_of_protected_member
 
 import 'package:badges/badges.dart';
 import 'package:flutter/material.dart';
@@ -8,6 +8,7 @@ import 'package:get/state_manager.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:movie_database/helpers/constants.dart';
 import 'package:movie_database/helpers/styles.dart';
+import 'package:movie_database/models/movies_response.dart';
 import 'package:movie_database/screens/home/home_controller.dart';
 import 'package:get/get.dart';
 import 'package:movie_database/screens/movie_detail/movie_detail_screen.dart';
@@ -27,7 +28,7 @@ class Home extends GetView<HomeController> {
                 fontSize: 25.0,
                 fontFamily: GoogleFonts.caveat().copyWith().fontFamily)),
         actions: [
-          const SearchActionButton(),
+          SearchActionButton(controller: controller),
           FavoriteActionButton(controller: controller)
         ],
       ),
@@ -74,14 +75,20 @@ class NoInternetWidget extends StatelessWidget {
 }
 
 class SearchActionButton extends StatelessWidget {
-  const SearchActionButton({Key? key}) : super(key: key);
+  final HomeController controller;
+  const SearchActionButton({Key? key, required this.controller})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return InkWell(
       splashFactory: NoSplash.splashFactory,
-      onTap: () => Get.to(() => const SearchScreen(),
-          transition: Transition.cupertinoDialog),
+      splashColor: Colors.transparent,
+      highlightColor: Colors.transparent,
+      onTap: () => Get.to(
+        () => SearchScreen(controller.movies.value as List<Results>),
+        transition: Transition.circularReveal,
+      ),
       child: Container(
         margin: const EdgeInsets.only(top: 10.0, bottom: 5.0),
         decoration: BoxDecoration(

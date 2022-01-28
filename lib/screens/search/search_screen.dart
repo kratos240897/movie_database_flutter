@@ -1,9 +1,33 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:movie_database/helpers/constants.dart';
+import 'package:movie_database/helpers/styles.dart';
+import 'package:movie_database/models/movies_response.dart';
+import 'package:get/get.dart';
+import 'dart:math' as math;
 
-class SearchScreen extends StatelessWidget {
-  const SearchScreen({Key? key}) : super(key: key);
+class SearchScreen extends StatefulWidget {
+  const SearchScreen(this.movies, {Key? key}) : super(key: key);
+  final List<Results> movies;
+
+  @override
+  State<SearchScreen> createState() => _SearchScreenState();
+}
+
+class _SearchScreenState extends State<SearchScreen> {
+  int _initalPage = 1;
+  PageController? _pageController;
+
+  final mediaQuery = Get.mediaQuery;
+
+  @override
+  void initState() {
+    _pageController =
+        PageController(viewportFraction: 0.8, initialPage: _initalPage);
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -16,10 +40,87 @@ class SearchScreen extends StatelessWidget {
       ),
       body: SafeArea(
         child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: const [SearchBarWidget()],
+          children: [
+            const SearchBarWidget(),
+            Padding(
+                padding: const EdgeInsets.all(15.0),
+                child: AspectRatio(
+                    aspectRatio: 0.85,
+                    child: PageView.builder(
+                        controller: _pageController,
+                        onPageChanged: (value) => setState(() {
+                              _initalPage = value;
+                            }),
+                        physics: const ClampingScrollPhysics(),
+                        itemCount: widget.movies.length,
+                        itemBuilder: (context, index) {
+                          return AnimatedBuilder(
+                            animation: _pageController!,
+                            builder: (context, child) {
+                              double value = 0;
+                              if (_pageController!.position.haveDimensions) {
+                                value =
+                                    index - _pageController!.page!.toDouble();
+                                value = (value * 0.038).clamp(-1, 1);
+                              }
+                              return AnimatedOpacity(
+                                duration: const Duration(milliseconds: 350),
+                                opacity: _initalPage == index ? 1 : 0.4,
+                                child: Transform.rotate(
+                                    angle: math.pi * value,
+                                    child:
+                                        MovieCard(movie: widget.movies[index])),
+                              );
+                            },
+                          );
+                        }))),
+          ],
         ),
       ),
+    );
+  }
+}
+
+class MovieCard extends StatelessWidget {
+  const MovieCard({Key? key, required this.movie}) : super(key: key);
+  final Results movie;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        Expanded(
+            child: Container(
+          margin: const EdgeInsets.all(10.0),
+          decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(50.0),
+              image: DecorationImage(
+                  fit: BoxFit.fill,
+                  image: NetworkImage(
+                      Constants.IMAGE_BASE_URL + movie.posterPath.toString()))),
+        )),
+        Container(
+          margin: const EdgeInsets.symmetric(vertical: 15.0),
+          child: Text(movie.title,
+              textAlign: TextAlign.start,
+              style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 18,
+                  color: Styles.colors.themeColor,
+                  overflow: TextOverflow.ellipsis,
+                  fontFamily: GoogleFonts.actor().fontFamily)),
+        ),
+        RatingBarIndicator(
+            rating: (movie.voteAverage / 2).toDouble(),
+            direction: Axis.horizontal,
+            itemCount: 5,
+            itemSize: 30.0,
+            itemPadding: const EdgeInsets.symmetric(horizontal: 2.0),
+            itemBuilder: (ctx, index) => const Icon(
+                  Icons.star,
+                  color: Colors.amber,
+                ))
+      ],
     );
   }
 }
