@@ -23,6 +23,11 @@ class HomeController extends GetxController {
   @override
   void onInit() {
     _appRepo.init();
+    super.onInit();
+  }
+
+  @override
+  void onReady() {
     _internetController.isInternetAvailable.listen((data) {
       if (data) {
         isInternetAvailable.value = true;
@@ -34,7 +39,6 @@ class HomeController extends GetxController {
         isInternetAvailable.value = false;
       }
     });
-    super.onInit();
   }
 
   addFavorite() {

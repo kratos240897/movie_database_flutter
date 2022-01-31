@@ -33,6 +33,8 @@ class Utils {
     Navigator.pop(Get.context!);
   }
 
+  void startConnectivity() => _connectivityService.startConnectivityStream();
+
   void closeConnectivity() => _connectivityService.closeConnectivityStream();
 
   ConnectivityService get getConnectivity => _connectivityService;

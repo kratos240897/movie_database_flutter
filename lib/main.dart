@@ -23,7 +23,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Styles.colors.primaryColor,
       ),
-      initialRoute: AppRouter.HOME,
+      initialRoute: AppRouter.LOGIN,
       getPages: AppRouter().getPages,
     );
   }

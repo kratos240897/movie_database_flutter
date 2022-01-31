@@ -13,6 +13,7 @@ import 'package:movie_database/screens/home/home_controller.dart';
 import 'package:get/get.dart';
 import 'package:movie_database/screens/movie_detail/movie_detail_screen.dart';
 import 'package:movie_database/screens/screens.dart';
+import 'package:share_plus/share_plus.dart';
 
 class Home extends GetView<HomeController> {
   Home({Key? key}) : super(key: key);
@@ -193,7 +194,13 @@ class MoviesListWidget extends StatelessWidget {
                                 style: Styles.textStyles.f14Regular),
                             trailingIcon:
                                 const Icon(Icons.share, color: Colors.blue),
-                            onPressed: () {}),
+                            onPressed: () {
+                              Results movie = controller.movies[index];
+                              Share.share(
+                                  'Check out my website https://hardcore-meninsky-e3f55f.netlify.app/#/',
+                                  subject:
+                                      'Check out this movie ${movie.title}');
+                            }),
                         FocusedMenuItem(
                             title: Text('Vote',
                                 style: Styles.textStyles.f14Regular),
