@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:get/get_navigation/src/extension_navigation.dart';
@@ -5,6 +6,7 @@ import 'package:get/get_state_manager/get_state_manager.dart';
 import 'package:get/utils.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
+import 'package:movie_database/helpers/helpers.dart';
 import 'package:movie_database/helpers/styles.dart';
 import 'package:movie_database/models/movies_response.dart';
 import 'package:movie_database/helpers/constants.dart';
@@ -72,8 +74,8 @@ class BackDropWidget extends StatelessWidget {
               bottom: 0,
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(10.0),
-                child: Image.network(
-                    movie.backdropPath != null
+                child: CachedNetworkImage(
+                    imageUrl: movie.backdropPath != null
                         ? Constants.IMAGE_BASE_URL +
                             movie.backdropPath.toString()
                         : Constants.IMAGE_BASE_URL +

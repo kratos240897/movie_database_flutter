@@ -44,6 +44,7 @@ class _LoginState extends State<Login> {
                   ),
                   const SizedBox(height: 8.0),
                   TextFormField(
+                    keyboardType: TextInputType.emailAddress,
                     decoration: const InputDecoration(
                         prefixIcon: Icon(Icons.verified_user),
                         labelText: 'Email',

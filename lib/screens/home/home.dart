@@ -1,6 +1,8 @@
 // ignore_for_file: unnecessary_import, invalid_use_of_protected_member
 
 import 'package:badges/badges.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:focused_menu/focused_menu.dart';
 import 'package:focused_menu/modals.dart';
@@ -161,60 +163,91 @@ class MoviesListWidget extends StatelessWidget {
         child: Container(
           margin: const EdgeInsets.all(8.0),
           child: SingleChildScrollView(
-            child: GridView.builder(
-                itemCount: controller.movies.length,
-                physics: const NeverScrollableScrollPhysics(),
-                shrinkWrap: true,
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                    mainAxisExtent:
-                        mediaQuery.orientation == Orientation.portrait
-                            ? mediaQuery.size.height * 0.3
-                            : mediaQuery.size.height * 0.7,
-                    crossAxisCount:
-                        mediaQuery.orientation == Orientation.portrait ? 2 : 3,
-                    crossAxisSpacing: 4.0,
-                    mainAxisSpacing: 4.0),
-                itemBuilder: (ctx, index) {
-                  return FocusedMenuHolder(
-                      blurBackgroundColor: Colors.blueGrey[900],
-                      menuOffset: 8.0,
-                      animateMenuItems: true,
-                      menuWidth: mediaQuery.size.width * 0.5,
-                      menuItems: [
-                        FocusedMenuItem(
-                            title: Text('Favorite',
-                                style: Styles.textStyles.f14Regular),
-                            trailingIcon:
-                                const Icon(Icons.favorite, color: Colors.red),
-                            onPressed: () async {
-                              controller.addFavorite();
-                            }),
-                        FocusedMenuItem(
-                            title: Text('Share',
-                                style: Styles.textStyles.f14Regular),
-                            trailingIcon:
-                                const Icon(Icons.share, color: Colors.blue),
-                            onPressed: () {
-                              Results movie = controller.movies[index];
-                              Share.share(
-                                  'Check out my website https://hardcore-meninsky-e3f55f.netlify.app/#/',
-                                  subject:
-                                      'Check out this movie ${movie.title}');
-                            }),
-                        FocusedMenuItem(
-                            title: Text('Vote',
-                                style: Styles.textStyles.f14Regular),
-                            trailingIcon: const Icon(Icons.volunteer_activism,
-                                color: Colors.green),
-                            onPressed: () {})
-                      ],
-                      onPressed: () {},
-                      child: MovieListItem(
-                        controller: controller,
-                        index: index,
-                        mediaQuery: mediaQuery,
-                      ));
-                }),
+            child: Visibility(
+                visible: controller.isLoading.value == true ? false : true,
+                child: GridView.builder(
+                    itemCount: controller.movies.length,
+                    physics: const NeverScrollableScrollPhysics(),
+                    shrinkWrap: true,
+                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                        mainAxisExtent:
+                            mediaQuery.orientation == Orientation.portrait
+                                ? mediaQuery.size.height * 0.3
+                                : mediaQuery.size.height * 0.7,
+                        crossAxisCount:
+                            mediaQuery.orientation == Orientation.portrait
+                                ? 2
+                                : 3,
+                        crossAxisSpacing: 4.0,
+                        mainAxisSpacing: 4.0),
+                    itemBuilder: (ctx, index) {
+                      return FocusedMenuHolder(
+                          blurBackgroundColor: Colors.blueGrey[900],
+                          menuOffset: 8.0,
+                          animateMenuItems: true,
+                          menuWidth: mediaQuery.size.width * 0.5,
+                          menuItems: [
+                            FocusedMenuItem(
+                                title: Text('Favorite',
+                                    style: Styles.textStyles.f14Regular),
+                                trailingIcon: const Icon(Icons.favorite,
+                                    color: Colors.red),
+                                onPressed: () async {
+                                  controller.addFavorite();
+                                }),
+                            FocusedMenuItem(
+                                title: Text('Share',
+                                    style: Styles.textStyles.f14Regular),
+                                trailingIcon:
+                                    const Icon(Icons.share, color: Colors.blue),
+                                onPressed: () {
+                                  Results movie = controller.movies[index];
+                                  Share.share(
+                                      'Check out my website https://hardcore-meninsky-e3f55f.netlify.app/#/',
+                                      subject:
+                                          'Check out this movie ${movie.title}');
+                                }),
+                            FocusedMenuItem(
+                                title: Text('Vote',
+                                    style: Styles.textStyles.f14Regular),
+                                trailingIcon: const Icon(
+                                    Icons.volunteer_activism,
+                                    color: Colors.green),
+                                onPressed: () {})
+                          ],
+                          onPressed: () {},
+                          child: MovieListItem(
+                            controller: controller,
+                            index: index,
+                            mediaQuery: mediaQuery,
+                          ));
+                    }),
+                replacement: GridView.builder(
+                    itemCount: 10,
+                    physics: const NeverScrollableScrollPhysics(),
+                    shrinkWrap: true,
+                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                        mainAxisExtent:
+                            mediaQuery.orientation == Orientation.portrait
+                                ? mediaQuery.size.height * 0.3
+                                : mediaQuery.size.height * 0.7,
+                        crossAxisCount:
+                            mediaQuery.orientation == Orientation.portrait
+                                ? 2
+                                : 3,
+                        crossAxisSpacing: 4.0,
+                        mainAxisSpacing: 4.0),
+                    itemBuilder: (ctx, index) {
+                      return Card(
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(15)),
+                        elevation: 4,
+                        child: const Center(
+                          child: CupertinoActivityIndicator(
+                              animating: true, radius: 12.0),
+                        ),
+                      );
+                    })),
           ),
         ),
       );
@@ -242,83 +275,89 @@ class MovieListItem extends StatelessWidget {
       child: Hero(
         tag: controller.movies[index],
         child: LayoutBuilder(builder: (context, constraints) {
-          return Card(
-            shape:
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-            elevation: 4,
-            child: Column(
-              children: [
-                SizedBox(
-                  height: constraints.maxHeight * 0.6,
-                  child: Stack(
-                    children: [
-                      Positioned(
-                        top: 0,
-                        left: 0,
-                        right: 0,
-                        child: ClipRRect(
-                          borderRadius: const BorderRadius.only(
-                              topLeft: Radius.circular(15),
-                              topRight: Radius.circular(15)),
-                          child: Image.network(controller
-                                      .movies[index].posterPath !=
-                                  null
-                              ? Constants.IMAGE_BASE_URL +
-                                  controller.movies[index].posterPath
-                              : 'https://globalnews.ca/wp-content/uploads/2020/06/jfj50169012-2.jpg?quality=85&strip=all'),
+          return Obx(() {
+            return Card(
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(15)),
+              elevation: 4,
+              child: Column(
+                children: [
+                  SizedBox(
+                    height: constraints.maxHeight * 0.6,
+                    child: Stack(
+                      children: [
+                        Positioned(
+                          top: 0,
+                          left: 0,
+                          right: 0,
+                          child: ClipRRect(
+                            borderRadius: const BorderRadius.only(
+                                topLeft: Radius.circular(15),
+                                topRight: Radius.circular(15)),
+                            child: CachedNetworkImage(
+                                imageUrl: controller.movies[index].posterPath !=
+                                        null
+                                    ? Constants.IMAGE_BASE_URL +
+                                        controller.movies[index].posterPath
+                                    : 'https://globalnews.ca/wp-content/uploads/2020/06/jfj50169012-2.jpg?quality=85&strip=all'),
+                          ),
                         ),
-                      ),
-                      Positioned(
-                        bottom: 0,
-                        right: 0,
-                        child: ElevatedButton(
-                          onPressed: () {},
-                          style: ElevatedButton.styleFrom(
-                              splashFactory: NoSplash.splashFactory,
-                              shape: const RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.only(
-                                      topLeft: Radius.circular(10.0),
-                                      bottomLeft: Radius.circular(10.0)))),
-                          child: Text(
-                              controller.movies[index].voteAverage.toString() +
-                                  ' ⭐',
-                              textAlign: TextAlign.end),
-                        ),
-                      )
-                    ],
+                        Positioned(
+                          bottom: 0,
+                          right: 0,
+                          child: ElevatedButton(
+                            onPressed: () {},
+                            style: ElevatedButton.styleFrom(
+                                splashFactory: NoSplash.splashFactory,
+                                shape: const RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.only(
+                                        topLeft: Radius.circular(10.0),
+                                        bottomLeft: Radius.circular(10.0)))),
+                            child: Text(
+                                controller.movies[index].voteAverage
+                                        .toString() +
+                                    ' ⭐',
+                                textAlign: TextAlign.end),
+                          ),
+                        )
+                      ],
+                    ),
                   ),
-                ),
-                SizedBox(height: constraints.maxHeight * 0.01),
-                Padding(
-                  padding: EdgeInsets.symmetric(
-                      horizontal: constraints.maxWidth * 0.02,
-                      vertical: constraints.maxHeight * 0.01),
-                  child: Text(controller.movies[index].originalTitle,
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                          fontSize: 16,
-                          fontFamily:
-                              GoogleFonts.staatliches().copyWith().fontFamily)),
-                ),
-                SizedBox(height: constraints.maxHeight * 0.01),
-                Expanded(
-                  child: Padding(
+                  SizedBox(height: constraints.maxHeight * 0.01),
+                  Padding(
                     padding: EdgeInsets.symmetric(
-                        horizontal: constraints.maxWidth * 0.05,
+                        horizontal: constraints.maxWidth * 0.02,
                         vertical: constraints.maxHeight * 0.01),
-                    child: Text(controller.movies[index].overview,
+                    child: Text(controller.movies[index].originalTitle,
+                        textAlign: TextAlign.center,
                         style: TextStyle(
-                            fontFamily:
-                                GoogleFonts.quicksand().copyWith().fontFamily),
-                        maxLines: mediaQuery.orientation == Orientation.portrait
-                            ? 2
-                            : 4,
-                        overflow: TextOverflow.ellipsis),
+                            fontSize: 16,
+                            fontFamily: GoogleFonts.staatliches()
+                                .copyWith()
+                                .fontFamily)),
                   ),
-                ),
-              ],
-            ),
-          );
+                  SizedBox(height: constraints.maxHeight * 0.01),
+                  Expanded(
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(
+                          horizontal: constraints.maxWidth * 0.05,
+                          vertical: constraints.maxHeight * 0.01),
+                      child: Text(controller.movies[index].overview,
+                          style: TextStyle(
+                              fontFamily: GoogleFonts.quicksand()
+                                  .copyWith()
+                                  .fontFamily),
+                          maxLines:
+                              mediaQuery.orientation == Orientation.portrait
+                                  ? 2
+                                  : 4,
+                          overflow: TextOverflow.ellipsis),
+                    ),
+                  ),
+                ],
+              ),
+            );
+          });
         }),
       ),
     );

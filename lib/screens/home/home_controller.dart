@@ -1,17 +1,17 @@
-import 'package:movie_database/helpers/utils.dart';
 import 'package:movie_database/repo/app_repo.dart';
 import 'package:get/get.dart';
-import 'package:movie_database/screens/internet_controller.dart';
+import 'package:movie_database/service/internet_controller.dart';
 
 class HomeController extends GetxController {
   var movies = RxList.empty();
   final error = ''.obs;
   final AppRepository _appRepo = Get.find<AppRepository>();
   final InternetController _internetController = Get.find<InternetController>();
-  final _utils = Utils();
+  //final _utils = Utils();
   var favoritesCount = 0.obs;
   var selectedCategory = 'Top rated'.obs;
   var isInternetAvailable = false.obs;
+  var isLoading = false.obs;
   final List<String> categories = [
     'Top rated',
     'Popular',
@@ -74,12 +74,12 @@ class HomeController extends GetxController {
   // }
 
   getMovies(Map<String, dynamic> query) {
-    _utils.showLoading();
+    isLoading.value = true;
     _appRepo.getMovies(query).then((value) {
-      _utils.hideLoading();
+      isLoading.value = false;
       movies.value = value;
     }).onError((error, stackTrace) {
-      _utils.hideLoading();
+      isLoading.value = false;
       this.error.value = error.toString();
       return Future.error(error!);
     });
