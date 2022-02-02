@@ -72,12 +72,15 @@ class SearchedMovies extends StatelessWidget {
                   margin: const EdgeInsets.all(8.0),
                   child: Row(
                     children: [
-                      CircleAvatar(
-                        radius: constraints.maxWidth * 0.2 / 2,
-                        backgroundImage: CachedNetworkImageProvider(
-                            Constants.IMAGE_BASE_URL +
-                                controller.searchResults[index].posterPath
-                                    .toString()),
+                      Hero(
+                        tag: controller.searchResults[index],
+                        child: CircleAvatar(
+                          radius: constraints.maxWidth * 0.2 / 2,
+                          backgroundImage: CachedNetworkImageProvider(
+                              Constants.IMAGE_BASE_URL +
+                                  controller.searchResults[index].posterPath
+                                      .toString()),
+                        ),
                       ),
                       const SizedBox(width: 10.0),
                       SizedBox(
