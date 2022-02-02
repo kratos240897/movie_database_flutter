@@ -5,30 +5,18 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:movie_database/helpers/constants.dart';
 import 'package:movie_database/helpers/styles.dart';
+import 'package:movie_database/helpers/utils.dart';
 import 'package:movie_database/models/movies_response.dart';
 import 'package:get/get.dart';
+import 'package:movie_database/screens/screens.dart';
 import 'dart:math' as math;
 
-class SearchScreen extends StatefulWidget {
-  const SearchScreen(this.movies, {Key? key}) : super(key: key);
+import 'package:movie_database/screens/search/search_controller.dart';
+
+class SearchScreen extends GetView<SearchController> {
+  SearchScreen(this.movies, {Key? key}) : super(key: key);
   final List<Results> movies;
-
-  @override
-  State<SearchScreen> createState() => _SearchScreenState();
-}
-
-class _SearchScreenState extends State<SearchScreen> {
-  int _initalPage = 1;
-  PageController? _pageController;
-
   final mediaQuery = Get.mediaQuery;
-
-  @override
-  void initState() {
-    _pageController =
-        PageController(viewportFraction: 0.8, initialPage: _initalPage);
-    super.initState();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -40,46 +28,153 @@ class _SearchScreenState extends State<SearchScreen> {
                 fontFamily: GoogleFonts.caveat().copyWith().fontFamily)),
       ),
       body: SafeArea(
-        child: Column(
-          children: [
-            const SearchBarWidget(),
-            Expanded(
-              child: Padding(
-                  padding: const EdgeInsets.all(15.0),
-                  child: AspectRatio(
-                      aspectRatio: 0.85,
-                      child: PageView.builder(
-                          controller: _pageController,
-                          onPageChanged: (value) => setState(() {
-                                _initalPage = value;
-                              }),
-                          physics: const ClampingScrollPhysics(),
-                          itemCount: widget.movies.length,
-                          itemBuilder: (context, index) {
-                            return AnimatedBuilder(
-                              animation: _pageController!,
-                              builder: (context, child) {
-                                double value = 0;
-                                if (_pageController!.position.haveDimensions) {
-                                  value =
-                                      index - _pageController!.page!.toDouble();
-                                  value = (value * 0.038).clamp(-1, 1);
-                                }
-                                return AnimatedOpacity(
-                                  duration: const Duration(milliseconds: 350),
-                                  opacity: _initalPage == index ? 1 : 0.4,
-                                  child: Transform.rotate(
-                                      angle: math.pi * value,
-                                      child: MovieCard(
-                                          movie: widget.movies[index])),
-                                );
-                              },
-                            );
-                          }))),
-            ),
-          ],
+        child: Obx(() {
+          return Column(
+            children: [
+              SearchBarWidget(
+                controller: controller,
+              ),
+              controller.searchResults.isEmpty
+                  ? Visibility(
+                      visible: !controller.isSearchHasFocus.value,
+                      child: CarouselMovieSlider(movies: movies),
+                      replacement: Container())
+                  : SearchedMovies(controller: controller)
+            ],
+          );
+        }),
+      ),
+    );
+  }
+}
+
+class SearchedMovies extends StatelessWidget {
+  final SearchController controller;
+  const SearchedMovies({Key? key, required this.controller}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Expanded(
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: ListView.builder(
+          itemCount: controller.searchResults.length,
+          shrinkWrap: true,
+          itemBuilder: (context, index) {
+            return InkWell(
+              onTap: () => Get.to(
+                  MovieDetailScreen(movie: controller.searchResults[index])),
+              child: LayoutBuilder(builder: (context, constraints) {
+                double vote = (controller.searchResults[index].voteAverage /
+                    2.0) as double;
+                String rating = vote.toStringAsFixed(1);
+                return Container(
+                  margin: const EdgeInsets.all(8.0),
+                  child: Row(
+                    children: [
+                      CircleAvatar(
+                        radius: constraints.maxWidth * 0.2 / 2,
+                        backgroundImage: CachedNetworkImageProvider(
+                            Constants.IMAGE_BASE_URL +
+                                controller.searchResults[index].posterPath
+                                    .toString()),
+                      ),
+                      const SizedBox(width: 10.0),
+                      SizedBox(
+                        width: constraints.maxWidth * 0.53,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(controller.searchResults[index].title,
+                                style: TextStyle(
+                                    fontSize: 16.0,
+                                    fontFamily:
+                                        GoogleFonts.quicksand().fontFamily,
+                                    fontWeight: FontWeight.bold)),
+                            Text(controller.searchResults[index].overview,
+                                style: TextStyle(
+                                  fontFamily:
+                                      GoogleFonts.quicksand().fontFamily,
+                                ),
+                                maxLines: 4,
+                                overflow: TextOverflow.ellipsis),
+                          ],
+                        ),
+                      ),
+                      const Spacer(),
+                      Expanded(
+                        flex: 3,
+                        child: Text(
+                          '⭐ ' + rating,
+                          textAlign: TextAlign.start,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              }),
+            );
+          },
         ),
       ),
+    );
+  }
+}
+
+class CarouselMovieSlider extends StatefulWidget {
+  final List<Results> movies;
+  const CarouselMovieSlider({Key? key, required this.movies}) : super(key: key);
+
+  @override
+  State<CarouselMovieSlider> createState() => _CarouselMovieSliderState();
+}
+
+class _CarouselMovieSliderState extends State<CarouselMovieSlider> {
+  int _initalPage = 1;
+  PageController? _pageController;
+
+  @override
+  void initState() {
+    _pageController =
+        PageController(viewportFraction: 0.8, initialPage: _initalPage);
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Expanded(
+      child: Padding(
+          padding: const EdgeInsets.all(15.0),
+          child: AspectRatio(
+              aspectRatio: 0.85,
+              child: PageView.builder(
+                  controller: _pageController,
+                  onPageChanged: (value) => setState(() {
+                        _initalPage = value;
+                      }),
+                  physics: const ClampingScrollPhysics(),
+                  itemCount: widget.movies.length,
+                  itemBuilder: (context, index) {
+                    return AnimatedBuilder(
+                      animation: _pageController!,
+                      builder: (context, child) {
+                        double value = 0;
+                        if (_pageController!.position.haveDimensions) {
+                          value = index - _pageController!.page!.toDouble();
+                          value = (value * 0.038).clamp(-1, 1);
+                        }
+                        return AnimatedOpacity(
+                          duration: const Duration(milliseconds: 350),
+                          opacity: _initalPage == index ? 1 : 0.4,
+                          child: Transform.rotate(
+                              angle: math.pi * value,
+                              child: MovieCard(movie: widget.movies[index])),
+                        );
+                      },
+                    );
+                  }))),
     );
   }
 }
@@ -94,7 +189,7 @@ class MovieCard extends StatelessWidget {
       return Column(
         children: [
           Container(
-            height: constraints.maxHeight * 0.7,
+            height: constraints.maxHeight * 0.6,
             margin: const EdgeInsets.all(10.0),
             decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(50.0),
@@ -130,10 +225,45 @@ class MovieCard extends StatelessWidget {
   }
 }
 
-class SearchBarWidget extends StatelessWidget {
+class SearchBarWidget extends StatefulWidget {
+  final SearchController controller;
+
   const SearchBarWidget({
     Key? key,
+    required this.controller,
   }) : super(key: key);
+
+  @override
+  State<SearchBarWidget> createState() => _SearchBarWidgetState();
+}
+
+class _SearchBarWidgetState extends State<SearchBarWidget> {
+  final FocusNode _focus = FocusNode();
+
+  final TextEditingController searchTextController = TextEditingController();
+
+  @override
+  void initState() {
+    _focus.addListener(_focusListener);
+    super.initState();
+  }
+
+  void _focusListener() {
+    if (_focus.hasFocus) {
+      widget.controller.isSearchHasFocus.value = true;
+    } else {
+      Future.delayed(const Duration(milliseconds: 300), () {
+        widget.controller.isSearchHasFocus.value = false;
+      });
+    }
+  }
+
+  @override
+  void dispose() {
+    _focus.removeListener(_focusListener);
+    _focus.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -149,17 +279,27 @@ class SearchBarWidget extends StatelessWidget {
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20.0),
                 child: TextField(
+                  focusNode: _focus,
                   decoration: InputDecoration(
                       border: InputBorder.none,
                       hintText: 'Start searching movies',
                       hintStyle: TextStyle(
                           fontFamily: GoogleFonts.raleway().fontFamily)),
+                  controller: searchTextController,
                 ),
               ),
             ),
           ),
           IconButton(
-              onPressed: () {},
+              onPressed: () {
+                if (searchTextController.text.isNotEmpty) {
+                  widget.controller.searchMovies(
+                      searchTextController.text.toString().trim());
+                } else {
+                  Utils().showSnackBar('Invalid query',
+                      'Please enter a valid search query', false);
+                }
+              },
               icon: const FaIcon(FontAwesomeIcons.arrowCircleRight))
         ],
       ),

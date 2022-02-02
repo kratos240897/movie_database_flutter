@@ -7,6 +7,7 @@ import 'package:get/get.dart';
 
 abstract class AppRepo {
   Future<List<Results>> getMovies(Map<String, dynamic> query);
+  Future<List<Results>> searchMovies(Map<String, dynamic> query);
   void init();
 }
 
@@ -21,6 +22,18 @@ class AppRepository extends AppRepo {
   Future<List<Results>> getMovies(Map<String, dynamic> query) async {
     try {
       final res = await _apiService.getRequest(EndPoints.discover, query);
+      final movies = MoviesResponse.fromJson(res.data).results;
+      return movies;
+    } catch (e) {
+      print(e);
+      return Future.error(e);
+    }
+  }
+
+  @override
+  Future<List<Results>> searchMovies(Map<String, dynamic> query) async {
+    try {
+      final res = await _apiService.getRequest(EndPoints.search, query);
       final movies = MoviesResponse.fromJson(res.data).results;
       return movies;
     } catch (e) {

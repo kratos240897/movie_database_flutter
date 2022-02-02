@@ -7,7 +7,6 @@ class HomeController extends GetxController {
   final error = ''.obs;
   final AppRepository _appRepo = Get.find<AppRepository>();
   final InternetController _internetController = Get.find<InternetController>();
-  //final _utils = Utils();
   var favoritesCount = 0.obs;
   var selectedCategory = 'Top rated'.obs;
   var isInternetAvailable = false.obs;
