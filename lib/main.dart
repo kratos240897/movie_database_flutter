@@ -1,11 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_loggy/flutter_loggy.dart';
 import 'package:get/get.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:loggy/loggy.dart';
+import 'package:movie_database/helpers/constants.dart';
 import 'package:movie_database/helpers/styles.dart';
 import 'package:movie_database/routes/router.dart';
+import './models/movie_model.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Hive.initFlutter();
+  Hive.registerAdapter(MovieAdapter());
+  Hive.openBox<Movie>(Constants.DB_NAME);
   Loggy.initLoggy(
     logPrinter: const PrettyDeveloperPrinter(),
   );

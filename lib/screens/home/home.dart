@@ -8,15 +8,19 @@ import 'package:focused_menu/focused_menu.dart';
 import 'package:focused_menu/modals.dart';
 import 'package:get/state_manager.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:hive_flutter/hive_flutter.dart';
+import 'package:movie_database/helpers/boxes.dart';
 import 'package:movie_database/helpers/constants.dart';
 import 'package:movie_database/helpers/styles.dart';
 import 'package:movie_database/models/movies_response.dart';
+import 'package:movie_database/screens/favorites/favorites.dart';
 import 'package:movie_database/screens/home/home_controller.dart';
 import 'package:get/get.dart';
 import 'package:movie_database/screens/movie_detail/movie_detail_screen.dart';
 import 'package:movie_database/screens/screens.dart';
 import 'package:movie_database/screens/search/search_binding.dart';
 import 'package:share_plus/share_plus.dart';
+import '../../models/movie_model.dart';
 
 class Home extends GetView<HomeController> {
   Home({Key? key}) : super(key: key);
@@ -115,13 +119,35 @@ class FavoriteActionButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return Obx(() {
       return controller.favoritesCount.value > 0
-          ? Container(
-              margin: const EdgeInsets.only(
-                  left: 5.0, bottom: 5.0, top: 10.0, right: 12.0),
-              child: Badge(
-                animationType: BadgeAnimationType.slide,
-                badgeContent: Text(controller.favoritesCount.value.toString(),
-                    style: const TextStyle(fontSize: 10, color: Colors.white)),
+          ? GestureDetector(
+              onTap: () => Get.to(() => const Favorties(),
+                  transition: Transition.leftToRightWithFade),
+              child: Container(
+                  margin: const EdgeInsets.only(
+                      left: 5.0, bottom: 5.0, top: 10.0, right: 12.0),
+                  child: Badge(
+                    animationType: BadgeAnimationType.slide,
+                    badgeContent: Text(
+                        controller.favoritesCount.value.toString(),
+                        style:
+                            const TextStyle(fontSize: 10, color: Colors.white)),
+                    child: Container(
+                      decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: Colors.grey[400]!.withOpacity(0.5)),
+                      child: const Padding(
+                        padding: EdgeInsets.all(4.0),
+                        child: Icon(Icons.favorite),
+                      ),
+                    ),
+                  )),
+            )
+          : GestureDetector(
+              onTap: () => Get.to(() => const Favorties(),
+                  transition: Transition.leftToRightWithFade),
+              child: Container(
+                margin: const EdgeInsets.only(
+                    left: 5.0, bottom: 5.0, top: 10.0, right: 12.0),
                 child: Container(
                   decoration: BoxDecoration(
                       shape: BoxShape.circle,
@@ -130,19 +156,6 @@ class FavoriteActionButton extends StatelessWidget {
                     padding: EdgeInsets.all(4.0),
                     child: Icon(Icons.favorite),
                   ),
-                ),
-              ),
-            )
-          : Container(
-              margin: const EdgeInsets.only(
-                  left: 5.0, bottom: 5.0, top: 10.0, right: 12.0),
-              child: Container(
-                decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: Colors.grey[400]!.withOpacity(0.5)),
-                child: const Padding(
-                  padding: EdgeInsets.all(4.0),
-                  child: Icon(Icons.favorite),
                 ),
               ),
             );
@@ -194,7 +207,8 @@ class MoviesListWidget extends StatelessWidget {
                                 trailingIcon: const Icon(Icons.favorite,
                                     color: Colors.red),
                                 onPressed: () async {
-                                  controller.addFavorite();
+                                  controller
+                                      .addFavorite(controller.movies[index]);
                                 }),
                             FocusedMenuItem(
                                 title: Text('Share',

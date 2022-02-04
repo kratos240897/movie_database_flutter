@@ -1,6 +1,9 @@
+import 'package:movie_database/helpers/boxes.dart';
+import 'package:movie_database/models/movies_response.dart';
 import 'package:movie_database/repo/app_repo.dart';
 import 'package:get/get.dart';
 import 'package:movie_database/service/internet_controller.dart';
+import 'package:movie_database/models/movie_model.dart';
 
 class HomeController extends GetxController {
   var movies = RxList.empty();
@@ -22,6 +25,7 @@ class HomeController extends GetxController {
   @override
   void onInit() {
     _appRepo.init();
+    favoritesCount.value = Boxes.getFavorites().length;
     super.onInit();
   }
 
@@ -40,8 +44,25 @@ class HomeController extends GetxController {
     });
   }
 
-  addFavorite() {
+  addFavorite(Results result) {
     favoritesCount.value++;
+    final movie = Movie()
+      ..adult = result.adult
+      ..backdropPath = result.backdropPath
+      ..genreIds = result.genreIds
+      ..id = result.id
+      ..originalLanguage = result.originalLanguage
+      ..overview = result.overview
+      ..popularity = result.popularity
+      ..posterPath = result.posterPath
+      ..releaseDate = result.releaseDate
+      ..title = result.title
+      ..video = result.video
+      ..voteAverage = result.voteAverage
+      ..voteCount = result.voteCount
+      ..originalTitle = result.originalTitle;
+    final box = Boxes.getFavorites();
+    box.add(movie);
   }
 
   setSelectedCategory(String category) {

@@ -61,67 +61,77 @@ class SearchedMovies extends StatelessWidget {
           itemCount: controller.searchResults.length,
           shrinkWrap: true,
           itemBuilder: (context, index) {
-            return InkWell(
-              onTap: () => Get.to(
-                  MovieDetailScreen(movie: controller.searchResults[index])),
-              child: LayoutBuilder(builder: (context, constraints) {
-                double vote = (controller.searchResults[index].voteAverage /
-                    2.0) as double;
-                String rating = vote.toStringAsFixed(1);
-                return Container(
-                  margin: const EdgeInsets.all(8.0),
-                  child: Row(
-                    children: [
-                      Hero(
-                        tag: controller.searchResults[index],
-                        child: CircleAvatar(
-                          radius: constraints.maxWidth * 0.2 / 2,
-                          backgroundImage: CachedNetworkImageProvider(
-                              Constants.IMAGE_BASE_URL +
-                                  controller.searchResults[index].posterPath
-                                      .toString()),
-                        ),
-                      ),
-                      const SizedBox(width: 10.0),
-                      SizedBox(
-                        width: constraints.maxWidth * 0.53,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(controller.searchResults[index].title,
-                                style: TextStyle(
-                                    fontSize: 16.0,
-                                    fontFamily:
-                                        GoogleFonts.quicksand().fontFamily,
-                                    fontWeight: FontWeight.bold)),
-                            Text(controller.searchResults[index].overview,
-                                style: TextStyle(
-                                  fontFamily:
-                                      GoogleFonts.quicksand().fontFamily,
-                                ),
-                                maxLines: 4,
-                                overflow: TextOverflow.ellipsis),
-                          ],
-                        ),
-                      ),
-                      const Spacer(),
-                      Expanded(
-                        flex: 3,
-                        child: Text(
-                          '⭐ ' + rating,
-                          textAlign: TextAlign.start,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                    ],
-                  ),
-                );
-              }),
-            );
+            return SearchedMovieItem(controller: controller, index: index);
           },
         ),
       ),
+    );
+  }
+}
+
+class SearchedMovieItem extends StatelessWidget {
+  final SearchController controller;
+  final int index;
+  const SearchedMovieItem(
+      {Key? key, required this.controller, required this.index})
+      : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: () =>
+          Get.to(MovieDetailScreen(movie: controller.searchResults[index])),
+      child: LayoutBuilder(builder: (context, constraints) {
+        double vote =
+            (controller.searchResults[index].voteAverage / 2.0) as double;
+        String rating = vote.toStringAsFixed(1);
+        return Container(
+          margin: const EdgeInsets.all(8.0),
+          child: Row(
+            children: [
+              Hero(
+                tag: controller.searchResults[index],
+                child: CircleAvatar(
+                  radius: constraints.maxWidth * 0.2 / 2,
+                  backgroundImage: CachedNetworkImageProvider(Constants
+                          .IMAGE_BASE_URL +
+                      controller.searchResults[index].posterPath.toString()),
+                ),
+              ),
+              const SizedBox(width: 10.0),
+              SizedBox(
+                width: constraints.maxWidth * 0.53,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(controller.searchResults[index].title,
+                        style: TextStyle(
+                            fontSize: 16.0,
+                            fontFamily: GoogleFonts.quicksand().fontFamily,
+                            fontWeight: FontWeight.bold)),
+                    Text(controller.searchResults[index].overview,
+                        style: TextStyle(
+                          fontFamily: GoogleFonts.quicksand().fontFamily,
+                        ),
+                        maxLines: 4,
+                        overflow: TextOverflow.ellipsis),
+                  ],
+                ),
+              ),
+              const Spacer(),
+              Expanded(
+                flex: 3,
+                child: Text(
+                  '⭐ ' + rating,
+                  textAlign: TextAlign.start,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+            ],
+          ),
+        );
+      }),
     );
   }
 }
