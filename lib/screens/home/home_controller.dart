@@ -1,4 +1,5 @@
 import 'package:movie_database/helpers/boxes.dart';
+import 'package:movie_database/helpers/utils.dart';
 import 'package:movie_database/models/movies_response.dart';
 import 'package:movie_database/repo/app_repo.dart';
 import 'package:get/get.dart';
@@ -63,6 +64,7 @@ class HomeController extends GetxController {
       ..originalTitle = result.originalTitle;
     final box = Boxes.getFavorites();
     box.add(movie);
+    Utils().showSnackBar('Added to Favorites', movie.title, true);
   }
 
   setSelectedCategory(String category) {

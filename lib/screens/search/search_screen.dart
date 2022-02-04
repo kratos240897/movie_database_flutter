@@ -1,6 +1,8 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
+import 'package:focused_menu/focused_menu.dart';
+import 'package:focused_menu/modals.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:movie_database/helpers/constants.dart';
@@ -12,6 +14,7 @@ import 'package:movie_database/screens/screens.dart';
 import 'dart:math' as math;
 
 import 'package:movie_database/screens/search/search_controller.dart';
+import 'package:share_plus/share_plus.dart';
 
 class SearchScreen extends GetView<SearchController> {
   SearchScreen(this.movies, {Key? key}) : super(key: key);
@@ -72,66 +75,95 @@ class SearchedMovies extends StatelessWidget {
 class SearchedMovieItem extends StatelessWidget {
   final SearchController controller;
   final int index;
-  const SearchedMovieItem(
-      {Key? key, required this.controller, required this.index})
+  final mediaQuery = Get.mediaQuery;
+  SearchedMovieItem({Key? key, required this.controller, required this.index})
       : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
-      onTap: () =>
-          Get.to(MovieDetailScreen(movie: controller.searchResults[index])),
-      child: LayoutBuilder(builder: (context, constraints) {
-        double vote =
-            (controller.searchResults[index].voteAverage / 2.0) as double;
-        String rating = vote.toStringAsFixed(1);
-        return Container(
-          margin: const EdgeInsets.all(8.0),
-          child: Row(
-            children: [
-              Hero(
-                tag: controller.searchResults[index],
-                child: CircleAvatar(
-                  radius: constraints.maxWidth * 0.2 / 2,
-                  backgroundImage: CachedNetworkImageProvider(Constants
-                          .IMAGE_BASE_URL +
-                      controller.searchResults[index].posterPath.toString()),
+    return FocusedMenuHolder(
+      blurBackgroundColor: Colors.white,
+      menuOffset: 8.0,
+      animateMenuItems: true,
+      menuWidth: mediaQuery.size.width * 0.5,
+      menuItems: [
+        FocusedMenuItem(
+            title: Text('Favorite', style: Styles.textStyles.f14Regular),
+            trailingIcon: const Icon(Icons.favorite, color: Colors.red),
+            onPressed: () async {
+              controller.addFavorite(controller.searchResults[index]);
+            }),
+        FocusedMenuItem(
+            title: Text('Share', style: Styles.textStyles.f14Regular),
+            trailingIcon: const Icon(Icons.share, color: Colors.blue),
+            onPressed: () {
+              Results movie = controller.searchResults[index];
+              Share.share(
+                  'Check out my website https://hardcore-meninsky-e3f55f.netlify.app/#/',
+                  subject: 'Check out this movie ${movie.title}');
+            }),
+        FocusedMenuItem(
+            title: Text('Vote', style: Styles.textStyles.f14Regular),
+            trailingIcon:
+                const Icon(Icons.volunteer_activism, color: Colors.green),
+            onPressed: () {})
+      ],
+      onPressed: () {},
+      child: InkWell(
+        onTap: () =>
+            Get.to(MovieDetailScreen(movie: controller.searchResults[index])),
+        child: LayoutBuilder(builder: (context, constraints) {
+          double vote =
+              (controller.searchResults[index].voteAverage / 2.0) as double;
+          String rating = vote.toStringAsFixed(1);
+          return Container(
+            margin: const EdgeInsets.all(8.0),
+            child: Row(
+              children: [
+                Hero(
+                  tag: controller.searchResults[index],
+                  child: CircleAvatar(
+                    radius: constraints.maxWidth * 0.2 / 2,
+                    backgroundImage: CachedNetworkImageProvider(Constants
+                            .IMAGE_BASE_URL +
+                        controller.searchResults[index].posterPath.toString()),
+                  ),
                 ),
-              ),
-              const SizedBox(width: 10.0),
-              SizedBox(
-                width: constraints.maxWidth * 0.53,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(controller.searchResults[index].title,
-                        style: TextStyle(
-                            fontSize: 16.0,
+                const SizedBox(width: 10.0),
+                SizedBox(
+                  width: constraints.maxWidth * 0.53,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(controller.searchResults[index].title,
+                          style: TextStyle(
+                              fontSize: 16.0,
+                              fontFamily: GoogleFonts.quicksand().fontFamily,
+                              fontWeight: FontWeight.bold)),
+                      Text(controller.searchResults[index].overview,
+                          style: TextStyle(
                             fontFamily: GoogleFonts.quicksand().fontFamily,
-                            fontWeight: FontWeight.bold)),
-                    Text(controller.searchResults[index].overview,
-                        style: TextStyle(
-                          fontFamily: GoogleFonts.quicksand().fontFamily,
-                        ),
-                        maxLines: 4,
-                        overflow: TextOverflow.ellipsis),
-                  ],
+                          ),
+                          maxLines: 4,
+                          overflow: TextOverflow.ellipsis),
+                    ],
+                  ),
                 ),
-              ),
-              const Spacer(),
-              Expanded(
-                flex: 3,
-                child: Text(
-                  '⭐ ' + rating,
-                  textAlign: TextAlign.start,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
+                const Spacer(),
+                Expanded(
+                  flex: 3,
+                  child: Text(
+                    '⭐ ' + rating,
+                    textAlign: TextAlign.start,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
                 ),
-              ),
-            ],
-          ),
-        );
-      }),
+              ],
+            ),
+          );
+        }),
+      ),
     );
   }
 }
@@ -202,7 +234,7 @@ class MovieCard extends StatelessWidget {
       return Column(
         children: [
           Container(
-            height: constraints.maxHeight * 0.6,
+            height: constraints.maxHeight * 0.65,
             margin: const EdgeInsets.all(10.0),
             decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(50.0),
@@ -299,12 +331,20 @@ class _SearchBarWidgetState extends State<SearchBarWidget> {
                       hintStyle: TextStyle(
                           fontFamily: GoogleFonts.raleway().fontFamily)),
                   controller: searchTextController,
+                  onSubmitted: (value) async {
+                    if (value.isNotEmpty) {
+                      widget.controller.searchMovies(value.trim());
+                    } else {
+                      Utils().showSnackBar('Invalid query',
+                          'Please enter a valid search query', false);
+                    }
+                  },
                 ),
               ),
             ),
           ),
           IconButton(
-              onPressed: () {
+              onPressed: () async {
                 if (searchTextController.text.isNotEmpty) {
                   widget.controller.searchMovies(
                       searchTextController.text.toString().trim());
