@@ -80,10 +80,13 @@ class HomeController extends GetxController {
           'vote_count.gte': '10'
         });
         break;
+      case 'Upcoming':
+        getUpcomingMovies({});
+        break;
       default:
         getMovies({
-          'primary_release_date.gte': '2021-12-15',
-          'primary_release_date.lte': '2022-01-10'
+          'primary_release_date.gte': '2022-01-10',
+          'primary_release_date.lte': '2022-02-10'
         });
         break;
     }
@@ -94,6 +97,18 @@ class HomeController extends GetxController {
   // onClose() {
   //   super.onClose();
   // }
+
+  getUpcomingMovies(Map<String, dynamic> query) {
+    isLoading.value = true;
+    _appRepo.getMovies(query).then((value) {
+      isLoading.value = false;
+      movies.value = value;
+    }).onError((error, stackTrace) {
+      isLoading.value = false;
+      this.error.value = error.toString();
+      return Future.error(error!);
+    });
+  }
 
   getMovies(Map<String, dynamic> query) {
     isLoading.value = true;
