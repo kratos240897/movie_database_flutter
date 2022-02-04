@@ -8,8 +8,6 @@ import 'package:focused_menu/focused_menu.dart';
 import 'package:focused_menu/modals.dart';
 import 'package:get/state_manager.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:hive_flutter/hive_flutter.dart';
-import 'package:movie_database/helpers/boxes.dart';
 import 'package:movie_database/helpers/constants.dart';
 import 'package:movie_database/helpers/styles.dart';
 import 'package:movie_database/models/movies_response.dart';
@@ -20,7 +18,6 @@ import 'package:movie_database/screens/movie_detail/movie_detail_screen.dart';
 import 'package:movie_database/screens/screens.dart';
 import 'package:movie_database/screens/search/search_binding.dart';
 import 'package:share_plus/share_plus.dart';
-import '../../models/movie_model.dart';
 
 class Home extends GetView<HomeController> {
   Home({Key? key}) : super(key: key);
