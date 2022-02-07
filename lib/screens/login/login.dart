@@ -79,7 +79,7 @@ class _LoginState extends State<Login> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       ElevatedButton.icon(
-                          onPressed: () {
+                          onPressed: () async {
                             final isFormValid =
                                 formKey.currentState!.validate();
                             if (isFormValid) {

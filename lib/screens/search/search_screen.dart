@@ -184,7 +184,25 @@ class _CarouselMovieSliderState extends State<CarouselMovieSlider> {
   void initState() {
     _pageController =
         PageController(viewportFraction: 0.8, initialPage: _initalPage);
+    WidgetsBinding.instance?.addPostFrameCallback((_) {
+      _animateSlider();
+    });
     super.initState();
+  }
+
+  void _animateSlider() {
+    Future.delayed(const Duration(seconds: 3)).then((_) {
+      int nextPage = _pageController!.page!.round() + 1;
+      if (nextPage == widget.movies.length) {
+        nextPage = 0;
+      }
+      _pageController!
+          .animateToPage(nextPage,
+              duration: const Duration(milliseconds: 400), curve: Curves.linear)
+          .then((_) {
+        _animateSlider();
+      });
+    });
   }
 
   @override
