@@ -25,7 +25,6 @@ class _LoginState extends State<Login> {
       body: SafeArea(
         child: Form(
           key: formKey,
-          autovalidateMode: AutovalidateMode.onUserInteraction,
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 12.0),
             child: Center(
@@ -45,10 +44,12 @@ class _LoginState extends State<Login> {
                   const SizedBox(height: 8.0),
                   TextFormField(
                     keyboardType: TextInputType.emailAddress,
-                    decoration: const InputDecoration(
-                        prefixIcon: Icon(Icons.verified_user),
+                    autovalidateMode: AutovalidateMode.onUserInteraction,
+                    decoration: InputDecoration(
+                        prefixIcon: const Icon(Icons.verified_user),
                         labelText: 'Email',
-                        border: OutlineInputBorder()),
+                        border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(15.0))),
                     validator: (value) {
                       if (!EmailValidator.validate(value!)) {
                         return 'Enter a valid email';
@@ -60,13 +61,15 @@ class _LoginState extends State<Login> {
                       email = value;
                     }),
                   ),
-                  const SizedBox(height: 12.0),
+                  const SizedBox(height: 8.0),
                   TextFormField(
                     obscureText: true,
-                    decoration: const InputDecoration(
-                        prefixIcon: Icon(Icons.lock),
+                    autovalidateMode: AutovalidateMode.onUserInteraction,
+                    decoration: InputDecoration(
+                        prefixIcon: const Icon(Icons.lock),
                         labelText: 'Password',
-                        border: OutlineInputBorder()),
+                        border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(15.0))),
                     validator: (value) => value != null && value.length < 8
                         ? 'password must be min 8 characters'
                         : null,
@@ -74,6 +77,23 @@ class _LoginState extends State<Login> {
                       password = value;
                     }),
                   ),
+                  const SizedBox(height: 12.0),
+                  Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+                    Text('new user? want to',
+                        style: TextStyle(
+                            fontSize: 15.0,
+                            fontFamily: GoogleFonts.raleway().fontFamily)),
+                    const SizedBox(width: 4.0),
+                    InkWell(
+                      onTap: () => Get.offNamed(AppRouter.REGISTER),
+                      child: Text('Register',
+                          style: TextStyle(
+                              fontWeight: FontWeight.w400,
+                              fontSize: 15.0,
+                              decoration: TextDecoration.underline,
+                              fontFamily: GoogleFonts.readexPro().fontFamily)),
+                    )
+                  ]),
                   const SizedBox(height: 20.0),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,

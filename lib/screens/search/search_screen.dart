@@ -206,6 +206,12 @@ class _CarouselMovieSliderState extends State<CarouselMovieSlider> {
   }
 
   @override
+  void dispose() {
+    _pageController?.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Expanded(
       child: Padding(
