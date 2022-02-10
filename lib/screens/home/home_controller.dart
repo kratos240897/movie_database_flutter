@@ -1,16 +1,21 @@
+// ignore: unused_import
+import 'dart:async';
+
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:movie_database/helpers/boxes.dart';
 import 'package:movie_database/helpers/utils.dart';
 import 'package:movie_database/models/movies_response.dart';
 import 'package:movie_database/repo/app_repo.dart';
 import 'package:get/get.dart';
-import 'package:movie_database/service/internet_controller.dart';
 import 'package:movie_database/models/movie_model.dart';
+import 'package:movie_database/service/connectivity_service.dart';
 
 class HomeController extends GetxController {
   var movies = RxList.empty();
   final error = ''.obs;
+  final StreamSubscription<ConnectivityResult> _streamSubscription =
+      ConnectivityService().connectivityStream.stream.listen((event) {});
   final AppRepository _appRepo = Get.find<AppRepository>();
-  final InternetController _internetController = Get.find<InternetController>();
   var favoritesCount = 0.obs;
   var selectedCategory = 'Top rated'.obs;
   var isInternetAvailable = false.obs;
@@ -32,17 +37,23 @@ class HomeController extends GetxController {
 
   @override
   void onReady() {
-    _internetController.isInternetAvailable.listen((data) {
-      if (data) {
+    _streamSubscription.onData((data) {
+      if (data != ConnectivityResult.none) {
         isInternetAvailable.value = true;
         getMovies({
           'primary_release_date.gte': '2021-12-15',
           'primary_release_date.lte': '2022-01-10'
         });
-      } else {
-        isInternetAvailable.value = false;
       }
     });
+    super.onReady();
+  }
+
+  @override
+  void dispose() {
+    ConnectivityService().closeConnectivityStream();
+    _streamSubscription.cancel();
+    super.dispose();
   }
 
   addFavorite(Results result) {

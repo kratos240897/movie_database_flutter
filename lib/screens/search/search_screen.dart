@@ -192,16 +192,19 @@ class _CarouselMovieSliderState extends State<CarouselMovieSlider> {
 
   void _animateSlider() {
     Future.delayed(const Duration(seconds: 3)).then((_) {
-      int nextPage = _pageController!.page!.round() + 1;
-      if (nextPage == widget.movies.length) {
-        nextPage = 0;
+      if (_pageController!.hasClients) {
+        int nextPage = _pageController!.page!.round() + 1;
+        if (nextPage == widget.movies.length) {
+          nextPage = 0;
+        }
+        _pageController!
+            .animateToPage(nextPage,
+                duration: const Duration(milliseconds: 400),
+                curve: Curves.linear)
+            .then((_) {
+          _animateSlider();
+        });
       }
-      _pageController!
-          .animateToPage(nextPage,
-              duration: const Duration(milliseconds: 400), curve: Curves.linear)
-          .then((_) {
-        _animateSlider();
-      });
     });
   }
 

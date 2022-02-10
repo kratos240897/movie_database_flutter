@@ -32,7 +32,7 @@ class MyApp extends StatelessWidget {
         primarySwatch: Styles.colors.primaryColor,
       ),
       initialRoute: AppRouter.LOGIN,
-      getPages: AppRouter().getPages,
+      onGenerateRoute: AppRouter().generateRoutes,
     );
   }
 }

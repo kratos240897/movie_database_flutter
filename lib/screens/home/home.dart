@@ -11,12 +11,12 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:movie_database/helpers/constants.dart';
 import 'package:movie_database/helpers/styles.dart';
 import 'package:movie_database/models/movies_response.dart';
+import 'package:movie_database/routes/router.dart';
 import 'package:movie_database/screens/favorites/favorites.dart';
 import 'package:movie_database/screens/home/home_controller.dart';
 import 'package:get/get.dart';
 import 'package:movie_database/screens/movie_detail/movie_detail_screen.dart';
 import 'package:movie_database/screens/screens.dart';
-import 'package:movie_database/screens/search/search_binding.dart';
 import 'package:share_plus/share_plus.dart';
 
 class Home extends GetView<HomeController> {
@@ -90,10 +90,10 @@ class SearchActionButton extends StatelessWidget {
       splashFactory: NoSplash.splashFactory,
       splashColor: Colors.transparent,
       highlightColor: Colors.transparent,
-      onTap: () => Get.to(
-          () => SearchScreen(controller.movies.value as List<Results>),
-          transition: Transition.circularReveal,
-          binding: SearchBinding()),
+      onTap: () => Get.toNamed(
+        AppRouter.SEARCH,
+        arguments: controller.movies.value as List<Results>,
+      ),
       child: Container(
         margin: const EdgeInsets.only(top: 10.0, bottom: 5.0),
         decoration: BoxDecoration(

@@ -103,7 +103,7 @@ class _LoginState extends State<Login> {
                             final isFormValid =
                                 formKey.currentState!.validate();
                             if (isFormValid) {
-                              Get.offAndToNamed(AppRouter.HOME);
+                              Get.offNamed(AppRouter.HOME);
                             }
                           },
                           style: ElevatedButton.styleFrom(

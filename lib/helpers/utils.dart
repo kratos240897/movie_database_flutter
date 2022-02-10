@@ -1,12 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get_instance/src/extension_instance.dart';
 import 'package:get/route_manager.dart';
-import 'package:movie_database/service/connectivity_service.dart';
 
 class Utils {
-  final ConnectivityService _connectivityService =
-      Get.find<ConnectivityService>();
 
   showSnackBar(String title, String message, bool isSuccess) {
     Get.showSnackbar(GetSnackBar(
@@ -32,10 +28,4 @@ class Utils {
   hideLoading() {
     Navigator.pop(Get.context!);
   }
-
-  void startConnectivity() => _connectivityService.startConnectivityStream();
-
-  void closeConnectivity() => _connectivityService.closeConnectivityStream();
-
-  ConnectivityService get getConnectivity => _connectivityService;
 }
