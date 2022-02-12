@@ -173,7 +173,7 @@ class _RegisterState extends State<Register> {
                               final isFormValid =
                                   formKey.currentState!.validate();
                               if (isFormValid) {
-                                //Get.offAndToNamed(AppRouter.HOME);
+                                _controller.register(email, password);
                               }
                             },
                             style: ElevatedButton.styleFrom(

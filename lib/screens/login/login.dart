@@ -2,10 +2,12 @@ import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get_core/src/get_main.dart';
+import 'package:get/get_instance/src/extension_instance.dart';
 import 'package:get/get_navigation/src/extension_navigation.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:movie_database/helpers/styles.dart';
 import 'package:movie_database/routes/router.dart';
+import 'package:movie_database/screens/login/login_controller.dart';
 
 class Login extends StatefulWidget {
   const Login({Key? key}) : super(key: key);
@@ -18,6 +20,7 @@ class _LoginState extends State<Login> {
   final formKey = GlobalKey<FormState>();
   String email = '';
   String password = '';
+  final LoginController _controller = Get.find<LoginController>();
 
   @override
   Widget build(BuildContext context) {
@@ -103,7 +106,7 @@ class _LoginState extends State<Login> {
                             final isFormValid =
                                 formKey.currentState!.validate();
                             if (isFormValid) {
-                              Get.offNamed(AppRouter.HOME);
+                              _controller.login(email, password);
                             }
                           },
                           style: ElevatedButton.styleFrom(

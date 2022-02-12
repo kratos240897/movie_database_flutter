@@ -3,19 +3,24 @@ import 'dart:async';
 
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:movie_database/helpers/boxes.dart';
+import 'package:movie_database/helpers/constants.dart';
 import 'package:movie_database/helpers/utils.dart';
 import 'package:movie_database/models/movies_response.dart';
 import 'package:movie_database/repo/app_repo.dart';
 import 'package:get/get.dart';
 import 'package:movie_database/models/movie_model.dart';
+import 'package:movie_database/routes/router.dart';
+import 'package:movie_database/service/auth_service.dart';
 import 'package:movie_database/service/connectivity_service.dart';
 
 class HomeController extends GetxController {
   var movies = RxList.empty();
   final error = ''.obs;
+  final _utils = Utils();
   final StreamSubscription<ConnectivityResult> _streamSubscription =
       ConnectivityService().connectivityStream.stream.listen((event) {});
   final AppRepository _appRepo = Get.find<AppRepository>();
+  final AuthService _authService = Get.find<AuthService>();
   var favoritesCount = 0.obs;
   var selectedCategory = 'Top rated'.obs;
   var isInternetAvailable = false.obs;
@@ -41,8 +46,8 @@ class HomeController extends GetxController {
       if (data != ConnectivityResult.none) {
         isInternetAvailable.value = true;
         getMovies({
-          'primary_release_date.gte': '2021-12-15',
-          'primary_release_date.lte': '2022-01-10'
+          'primary_release_date.gte': '2022-01-01',
+          'primary_release_date.lte': '2022-02-12'
         });
       }
     });
@@ -54,6 +59,15 @@ class HomeController extends GetxController {
     ConnectivityService().closeConnectivityStream();
     _streamSubscription.cancel();
     super.dispose();
+  }
+
+  void logout() async {
+    _authService.signOut().then((value) {
+      if (value == Constants.SIGNOUT_SUCCESS) {
+        Get.offAllNamed(AppRouter.LOGIN);
+        _utils.showSnackBar('Logout', 'success', true);
+      }
+    });
   }
 
   addFavorite(Results result) {

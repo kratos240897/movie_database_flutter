@@ -27,14 +27,15 @@ class Home extends GetView<HomeController> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        centerTitle: true,
+        centerTitle: false,
         title: Text('Flutter Movies',
             style: TextStyle(
                 fontSize: 25.0,
                 fontFamily: GoogleFonts.caveat().copyWith().fontFamily)),
         actions: [
           SearchActionButton(controller: controller),
-          FavoriteActionButton(controller: controller)
+          FavoriteActionButton(controller: controller),
+          LogoutActionButton(controller: controller)
         ],
       ),
       body: SafeArea(child: Obx(() {
@@ -107,6 +108,34 @@ class SearchActionButton extends StatelessWidget {
   }
 }
 
+class LogoutActionButton extends StatelessWidget {
+  final HomeController controller;
+  const LogoutActionButton({Key? key, required this.controller})
+      : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      splashFactory: NoSplash.splashFactory,
+      splashColor: Colors.transparent,
+      highlightColor: Colors.transparent,
+      onTap: () {
+        controller.logout();
+      },
+      child: Container(
+        margin: const EdgeInsets.only(
+            top: 10.0, bottom: 5.0, left: 5.0, right: 8.0),
+        decoration: BoxDecoration(
+            shape: BoxShape.circle, color: Colors.grey[400]!.withOpacity(0.5)),
+        child: const Padding(
+          padding: EdgeInsets.all(4.0),
+          child: Icon(Icons.logout_outlined, color: Colors.white),
+        ),
+      ),
+    );
+  }
+}
+
 class FavoriteActionButton extends StatelessWidget {
   final HomeController controller;
   const FavoriteActionButton({Key? key, required this.controller})
@@ -120,8 +149,7 @@ class FavoriteActionButton extends StatelessWidget {
               onTap: () => Get.to(() => const Favorties(),
                   transition: Transition.leftToRightWithFade),
               child: Container(
-                  margin: const EdgeInsets.only(
-                      left: 5.0, bottom: 5.0, top: 10.0, right: 12.0),
+                  margin: const EdgeInsets.only(bottom: 5.0, top: 10.0),
                   child: Badge(
                     animationType: BadgeAnimationType.slide,
                     badgeContent: Text(
@@ -143,8 +171,8 @@ class FavoriteActionButton extends StatelessWidget {
               onTap: () => Get.to(() => const Favorties(),
                   transition: Transition.leftToRightWithFade),
               child: Container(
-                margin: const EdgeInsets.only(
-                    left: 5.0, bottom: 5.0, top: 10.0, right: 12.0),
+                margin:
+                    const EdgeInsets.only(bottom: 5.0, top: 10.0, left: 5.0),
                 child: Container(
                   decoration: BoxDecoration(
                       shape: BoxShape.circle,
