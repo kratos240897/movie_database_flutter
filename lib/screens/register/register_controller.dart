@@ -27,7 +27,9 @@ class RegisterController extends GetxController {
   }
 
   void register(String email, String password) async {
+    _utils.showLoading();
     _authService.signUp(email: email, password: password).then((value) {
+      _utils.hideLoading();
       if (value == Constants.REGISTRATION_SUCCESS) {
         _utils.showSnackBar('Registration', 'success', true);
         Get.offAndToNamed(AppRouter.HOME);

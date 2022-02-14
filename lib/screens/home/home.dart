@@ -149,7 +149,8 @@ class FavoriteActionButton extends StatelessWidget {
               onTap: () => Get.to(() => const Favorties(),
                   transition: Transition.leftToRightWithFade),
               child: Container(
-                  margin: const EdgeInsets.only(bottom: 5.0, top: 10.0),
+                  margin:
+                      const EdgeInsets.only(left: 5.0, bottom: 5.0, top: 10.0),
                   child: Badge(
                     animationType: BadgeAnimationType.slide,
                     badgeContent: Text(

@@ -17,8 +17,9 @@ class HomeController extends GetxController {
   var movies = RxList.empty();
   final error = ''.obs;
   final _utils = Utils();
-  final StreamSubscription<ConnectivityResult> _streamSubscription =
-      ConnectivityService().connectivityStream.stream.listen((event) {});
+  final ConnectivityService _connectivityService =
+      Get.find<ConnectivityService>();
+  StreamSubscription<ConnectivityResult>? _streamSubscription;
   final AppRepository _appRepo = Get.find<AppRepository>();
   final AuthService _authService = Get.find<AuthService>();
   var favoritesCount = 0.obs;
@@ -35,6 +36,8 @@ class HomeController extends GetxController {
 
   @override
   void onInit() {
+    _streamSubscription =
+        _connectivityService.connectivityStream.stream.listen((event) {});
     _appRepo.init();
     favoritesCount.value = Boxes.getFavorites().length;
     super.onInit();
@@ -42,7 +45,7 @@ class HomeController extends GetxController {
 
   @override
   void onReady() {
-    _streamSubscription.onData((data) {
+    _streamSubscription?.onData((data) {
       if (data != ConnectivityResult.none) {
         isInternetAvailable.value = true;
         getMovies({
@@ -57,12 +60,14 @@ class HomeController extends GetxController {
   @override
   void dispose() {
     ConnectivityService().closeConnectivityStream();
-    _streamSubscription.cancel();
+    _streamSubscription?.cancel();
     super.dispose();
   }
 
   void logout() async {
+    _utils.showLoading();
     _authService.signOut().then((value) {
+      _utils.hideLoading();
       if (value == Constants.SIGNOUT_SUCCESS) {
         Get.offAllNamed(AppRouter.LOGIN);
         _utils.showSnackBar('Logout', 'success', true);

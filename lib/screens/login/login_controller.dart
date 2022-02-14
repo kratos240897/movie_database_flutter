@@ -9,7 +9,9 @@ class LoginController extends GetxController {
   final AuthService _authService = Get.find<AuthService>();
 
   void login(String email, String password) async {
+    _utils.showLoading();
     _authService.signIn(email: email, password: password).then((value) {
+      _utils.hideLoading();
       if (value == Constants.LOGIN_SUCCESS) {
         _utils.showSnackBar('Login', 'success', true);
         Get.offAndToNamed(AppRouter.HOME);

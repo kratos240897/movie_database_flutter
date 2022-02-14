@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:get/route_manager.dart';
 
 class Utils {
-
   showSnackBar(String title, String message, bool isSuccess) {
     Get.showSnackbar(GetSnackBar(
       margin: const EdgeInsets.all(8.0),
@@ -19,7 +18,7 @@ class Utils {
     Get.dialog(
         const Center(
           child: CupertinoActivityIndicator(
-            radius: 25.0,
+            radius: 18.0,
           ),
         ),
         barrierDismissible: false);
