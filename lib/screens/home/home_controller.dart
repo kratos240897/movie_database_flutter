@@ -1,9 +1,12 @@
 // ignore: unused_import
+// ignore_for_file: unnecessary_import
+
 import 'dart:async';
 
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:movie_database/helpers/boxes.dart';
 import 'package:movie_database/helpers/constants.dart';
+import 'package:movie_database/helpers/helpers.dart';
 import 'package:movie_database/helpers/utils.dart';
 import 'package:movie_database/models/movies_response.dart';
 import 'package:movie_database/repo/app_repo.dart';
@@ -23,19 +26,20 @@ class HomeController extends GetxController {
   final AppRepository _appRepo = Get.find<AppRepository>();
   final AuthService _authService = Get.find<AuthService>();
   var favoritesCount = 0.obs;
-  var selectedCategory = 'Top rated'.obs;
+  var selectedCategory = 'Now playing'.obs;
   var isInternetAvailable = false.obs;
   var isLoading = false.obs;
   final List<String> categories = [
-    'Top rated',
-    'Popular',
+    'Now playing',
     'New',
+    'Top rated',
     'Upcoming',
-    'GOAT'
+    'TV shows'
   ];
 
   @override
-  void onInit() {
+  void onInit() async {
+    await _connectivityService.init();
     _streamSubscription =
         _connectivityService.connectivityStream.stream.listen((event) {});
     _appRepo.init();
@@ -45,13 +49,10 @@ class HomeController extends GetxController {
 
   @override
   void onReady() {
-    _streamSubscription?.onData((data) {
+    _streamSubscription!.onData((data) {
       if (data != ConnectivityResult.none) {
         isInternetAvailable.value = true;
-        getMovies({
-          'primary_release_date.gte': '2022-01-01',
-          'primary_release_date.lte': '2022-02-12'
-        });
+        getMovies(EndPoints.trending, {});
       }
     });
     super.onReady();
@@ -100,24 +101,23 @@ class HomeController extends GetxController {
   setSelectedCategory(String category) {
     selectedCategory.value = category;
     switch (selectedCategory.value.toString()) {
-      case 'Popular':
-        getMovies({'sort_by': 'popularity.desc'});
+      case 'Now playing':
+        getMovies(EndPoints.trending, {});
         break;
-      case 'GOAT':
-        getMovies({
-          'with_genres': '18',
-          'sort_by': 'vote_average.desc',
-          'vote_count.gte': '10'
+      case 'New':
+        getMovies(EndPoints.discover, {
+          'primary_release_date.gte': '2022-01-01',
+          'primary_release_date.lte': '2022-02-15'
         });
+        break;
+      case 'Top rated':
+        getMovies(EndPoints.topRated, {});
         break;
       case 'Upcoming':
-        getUpcomingMovies({});
+        getMovies(EndPoints.upcoming, {});
         break;
-      default:
-        getMovies({
-          'primary_release_date.gte': '2022-01-10',
-          'primary_release_date.lte': '2022-02-10'
-        });
+      case 'TV shows':
+        getMovies(EndPoints.tvShows, {});
         break;
     }
   }
@@ -128,21 +128,9 @@ class HomeController extends GetxController {
   //   super.onClose();
   // }
 
-  getUpcomingMovies(Map<String, dynamic> query) {
+  getMovies(String url, Map<String, dynamic> query) {
     isLoading.value = true;
-    _appRepo.getMovies(query).then((value) {
-      isLoading.value = false;
-      movies.value = value;
-    }).onError((error, stackTrace) {
-      isLoading.value = false;
-      this.error.value = error.toString();
-      return Future.error(error!);
-    });
-  }
-
-  getMovies(Map<String, dynamic> query) {
-    isLoading.value = true;
-    _appRepo.getMovies(query).then((value) {
+    _appRepo.getMovies(url, query).then((value) {
       isLoading.value = false;
       movies.value = value;
     }).onError((error, stackTrace) {

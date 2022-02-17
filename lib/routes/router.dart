@@ -30,10 +30,9 @@ class AppRouter {
     switch (settings.name) {
       case LOGIN:
         return GetPageRoute(
-          routeName: LOGIN,
-          page: () => const Login(),
-          binding: LoginBinding()
-        );
+            routeName: LOGIN,
+            page: () => const Login(),
+            binding: LoginBinding());
       case REGISTER:
         return GetPageRoute(
             routeName: REGISTER,
@@ -49,5 +48,6 @@ class AppRouter {
             transition: Transition.circularReveal,
             binding: SearchBinding());
     }
+    return null;
   }
 }

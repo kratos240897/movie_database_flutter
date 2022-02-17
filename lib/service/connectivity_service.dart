@@ -7,9 +7,11 @@ class ConnectivityService {
   final _connectivity = Connectivity();
   final StreamController<ConnectivityResult> connectivityStream =
       StreamController<ConnectivityResult>.broadcast();
-  ConnectivityService() {
-    startConnectivityStream();
+ 
+  init() {
+     startConnectivityStream();
   }
+  
 
   void closeConnectivityStream() {
     connectivityStream.close();
