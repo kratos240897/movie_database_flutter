@@ -3,12 +3,15 @@
 import 'package:flutter/material.dart';
 import 'package:get/route_manager.dart';
 import 'package:movie_database/models/movies_response.dart';
+import 'package:movie_database/models/review_response.dart';
 import 'package:movie_database/screens/home/home_binding.dart';
 import 'package:movie_database/screens/login/login.dart';
 import 'package:movie_database/screens/login/login_binding.dart';
 import 'package:movie_database/screens/movie_detail/movie_detail_binding.dart';
 import 'package:movie_database/screens/register/register.dart';
 import 'package:movie_database/screens/register/register_binding.dart';
+import 'package:movie_database/screens/reviews/reviews.dart';
+import 'package:movie_database/screens/reviews/reviews_binding.dart';
 import 'package:movie_database/screens/search/search_binding.dart';
 import '../screens/screens.dart';
 
@@ -18,6 +21,7 @@ class AppRouter {
   static const HOME = '/home';
   static const SEARCH = '/search';
   static const MOVIE_DETAIL = '/movie-detail';
+  static const REVIEWS = '/reviews';
   // get getPages => [
   //       GetPage(
   //           name: REGISTER,
@@ -49,12 +53,18 @@ class AppRouter {
             page: () => SearchScreen(args as List<Results>),
             transition: Transition.circularReveal,
             binding: SearchBinding());
-             case MOVIE_DETAIL:
+      case MOVIE_DETAIL:
         return GetPageRoute(
             routeName: MOVIE_DETAIL,
             page: () => MovieDetailScreen(movie: args as Results),
             transition: Transition.cupertino,
             binding: MovieDetailBinding());
+      case REVIEWS:
+        return GetPageRoute(
+            routeName: REVIEWS,
+            page: () => Review(reviews: args as List<ReviewResults>),
+            transition: Transition.downToUp,
+            binding: ReviewsBinding());
     }
     return null;
   }

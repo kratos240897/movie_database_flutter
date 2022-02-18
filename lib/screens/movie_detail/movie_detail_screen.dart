@@ -10,6 +10,7 @@ import 'package:movie_database/helpers/helpers.dart';
 import 'package:movie_database/helpers/styles.dart';
 import 'package:movie_database/models/movies_response.dart';
 import 'package:movie_database/helpers/constants.dart';
+import 'package:movie_database/routes/router.dart';
 import 'package:movie_database/screens/movie_detail/movie_detail_controller.dart';
 
 class MovieDetailScreen extends StatefulWidget {
@@ -52,7 +53,10 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
                 Padding(
                     padding: const EdgeInsets.only(right: 12.0),
                     child: ElevatedButton.icon(
-                      onPressed: () {},
+                      onPressed: () {
+                        Get.toNamed(AppRouter.REVIEWS,
+                            arguments: widget.controller.reviews);
+                      },
                       icon: const Icon(Icons.reviews),
                       label: const Text('Reviews'),
                     ))
