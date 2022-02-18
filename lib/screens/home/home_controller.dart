@@ -26,16 +26,9 @@ class HomeController extends GetxController {
   final AppRepository _appRepo = Get.find<AppRepository>();
   final AuthService _authService = Get.find<AuthService>();
   var favoritesCount = 0.obs;
-  var selectedCategory = 'Now playing'.obs;
   var isInternetAvailable = false.obs;
   var isLoading = false.obs;
-  final List<String> categories = [
-    'Now playing',
-    'New',
-    'Top rated',
-    'Upcoming',
-    'TV shows'
-  ];
+  var selectedIndex = 0.obs;
 
   @override
   void onInit() async {
@@ -98,25 +91,25 @@ class HomeController extends GetxController {
     Utils().showSnackBar('Added to Favorites', movie.title, true);
   }
 
-  setSelectedCategory(String category) {
-    selectedCategory.value = category;
-    switch (selectedCategory.value.toString()) {
-      case 'Now playing':
+  setSelectedCategory(int index) {
+    selectedIndex.value = index;
+    switch (selectedIndex.value) {
+      case 0:
         getMovies(EndPoints.trending, {});
         break;
-      case 'New':
+      case 1:
         getMovies(EndPoints.discover, {
           'primary_release_date.gte': '2022-01-01',
           'primary_release_date.lte': '2022-02-15'
         });
         break;
-      case 'Top rated':
+      case 2:
         getMovies(EndPoints.topRated, {});
         break;
-      case 'Upcoming':
+      case 3:
         getMovies(EndPoints.upcoming, {});
         break;
-      case 'TV shows':
+      case 4:
         getMovies(EndPoints.tvShows, {});
         break;
     }

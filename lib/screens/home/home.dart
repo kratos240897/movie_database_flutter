@@ -8,6 +8,7 @@ import 'package:focused_menu/focused_menu.dart';
 import 'package:focused_menu/modals.dart';
 import 'package:get/state_manager.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:group_button/group_button.dart';
 import 'package:movie_database/helpers/constants.dart';
 import 'package:movie_database/helpers/styles.dart';
 import 'package:movie_database/models/movies_response.dart';
@@ -407,57 +408,39 @@ class MovieListItem extends StatelessWidget {
 
 class CategoriesWidget extends StatelessWidget {
   final HomeController controller;
-  const CategoriesWidget({Key? key, required this.controller})
-      : super(key: key);
+  final categoryController = GroupButtonController(selectedIndex: 0);
+  CategoriesWidget({Key? key, required this.controller}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.only(top: 5, left: 5),
-      height: 40.0,
-      child: ListView.builder(
-        scrollDirection: Axis.horizontal,
-        itemCount: controller.categories.length,
-        itemBuilder: (ctx, index) {
-          var _category = controller.categories[index].toString();
-          return Obx(
-            () {
-              return AnimatedContainer(
-                  duration: const Duration(seconds: 1),
-                  curve: Curves.bounceInOut,
-                  alignment: Alignment.center,
-                  margin: const EdgeInsets.all(5.0),
-                  child: _category.toString ==
-                          controller.selectedCategory.value.toString
-                      ? ElevatedButton(
-                          onPressed: () {
-                            controller.setSelectedCategory(_category);
-                          },
-                          style: ElevatedButton.styleFrom(
-                              primary: Styles.colors.primaryColor,
-                              shape: const StadiumBorder()),
-                          child: Text(_category,
-                              style: TextStyle(
-                                  fontSize: 14.0,
-                                  fontFamily: GoogleFonts.raleway()
-                                      .copyWith()
-                                      .fontFamily)))
-                      : InkWell(
-                          onTap: () =>
-                              controller.setSelectedCategory(_category),
-                          child: Text(
-                            _category,
-                            style: TextStyle(
-                                fontSize: 14.0,
-                                fontFamily: GoogleFonts.raleway()
-                                    .copyWith()
-                                    .fontFamily),
-                          ),
-                        ));
+    return AnimatedContainer(
+        margin: const EdgeInsets.only(top: 5, left: 5),
+        height: 40.0,
+        color: Colors.white,
+        duration: const Duration(milliseconds: 400),
+        curve: Curves.bounceInOut,
+        child: SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: GroupButton(
+            controller: categoryController,
+            isRadio: true,
+            options: GroupButtonOptions(
+                spacing: 3.0,
+                groupingType: GroupingType.row,
+                direction: Axis.horizontal,
+                unselectedColor: Colors.grey[300],
+                borderRadius: BorderRadius.circular(15.0)),
+            onSelected: (index, _) async {
+              controller.setSelectedCategory(index);
             },
-          );
-        },
-      ),
-    );
+            buttons: const [
+              'Now playing',
+              'New',
+              'Top rated',
+              'Upcoming',
+              'TV shows'
+            ],
+          ),
+        ));
   }
 }
