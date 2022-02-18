@@ -6,6 +6,7 @@ import 'package:movie_database/models/movies_response.dart';
 import 'package:movie_database/screens/home/home_binding.dart';
 import 'package:movie_database/screens/login/login.dart';
 import 'package:movie_database/screens/login/login_binding.dart';
+import 'package:movie_database/screens/movie_detail/movie_detail_binding.dart';
 import 'package:movie_database/screens/register/register.dart';
 import 'package:movie_database/screens/register/register_binding.dart';
 import 'package:movie_database/screens/search/search_binding.dart';
@@ -16,6 +17,7 @@ class AppRouter {
   static const REGISTER = '/register';
   static const HOME = '/home';
   static const SEARCH = '/search';
+  static const MOVIE_DETAIL = '/movie-detail';
   // get getPages => [
   //       GetPage(
   //           name: REGISTER,
@@ -47,6 +49,12 @@ class AppRouter {
             page: () => SearchScreen(args as List<Results>),
             transition: Transition.circularReveal,
             binding: SearchBinding());
+             case MOVIE_DETAIL:
+        return GetPageRoute(
+            routeName: MOVIE_DETAIL,
+            page: () => MovieDetailScreen(movie: args as Results),
+            transition: Transition.cupertino,
+            binding: MovieDetailBinding());
     }
     return null;
   }

@@ -1,8 +1,8 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
+import 'package:get/get_instance/get_instance.dart';
 import 'package:get/get_navigation/src/extension_navigation.dart';
-import 'package:get/get_state_manager/get_state_manager.dart';
 import 'package:get/utils.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
@@ -12,25 +12,52 @@ import 'package:movie_database/models/movies_response.dart';
 import 'package:movie_database/helpers/constants.dart';
 import 'package:movie_database/screens/movie_detail/movie_detail_controller.dart';
 
-class MovieDetailScreen extends GetView<MovieDetailController> {
+class MovieDetailScreen extends StatefulWidget {
   final Results movie;
-  const MovieDetailScreen({Key? key, required this.movie}) : super(key: key);
+  final MovieDetailController controller = Get.find<MovieDetailController>();
+  MovieDetailScreen({Key? key, required this.movie}) : super(key: key);
+
+  @override
+  State<MovieDetailScreen> createState() => _MovieDetailScreenState();
+}
+
+class _MovieDetailScreenState extends State<MovieDetailScreen> {
+  @override
+  void initState() {
+    WidgetsBinding.instance!.addPostFrameCallback((timeStamp) {
+      widget.controller.getMovieReviews(widget.movie.id.toString());
+    });
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
     final mediaQuery = Get.mediaQuery;
     return Scaffold(
       appBar: AppBar(
-        title: Text(movie.title),
+        title: Text(widget.movie.title),
       ),
       body: SafeArea(
         child: SingleChildScrollView(
           child: Column(children: [
-            BackDropWidget(movie: movie, mediaQuery: mediaQuery),
+            BackDropWidget(movie: widget.movie, mediaQuery: mediaQuery),
             const SizedBox(height: 5.0),
-            RatingDetailWidget(movie: movie),
+            RatingDetailWidget(movie: widget.movie),
             const SizedBox(height: 18),
-            MovieDetailWidget(movie: movie)
+            MovieDetailWidget(movie: widget.movie),
+            const SizedBox(height: 5.0),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                Padding(
+                    padding: const EdgeInsets.only(right: 12.0),
+                    child: ElevatedButton.icon(
+                      onPressed: () {},
+                      icon: const Icon(Icons.reviews),
+                      label: const Text('Reviews'),
+                    ))
+              ],
+            )
           ]),
         ),
       ),

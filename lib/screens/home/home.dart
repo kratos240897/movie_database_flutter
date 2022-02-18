@@ -16,8 +16,6 @@ import 'package:movie_database/routes/router.dart';
 import 'package:movie_database/screens/favorites/favorites.dart';
 import 'package:movie_database/screens/home/home_controller.dart';
 import 'package:get/get.dart';
-import 'package:movie_database/screens/movie_detail/movie_detail_screen.dart';
-import 'package:movie_database/screens/screens.dart';
 import 'package:share_plus/share_plus.dart';
 
 class Home extends GetView<HomeController> {
@@ -311,9 +309,7 @@ class MovieListItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      onTap: () => Get.to(
-        () => MovieDetailScreen(movie: controller.movies[index]),
-      ),
+      onTap: () => Get.toNamed(AppRouter.MOVIE_DETAIL, arguments: controller.movies[index]),
       child: Hero(
         tag: controller.movies[index],
         child: LayoutBuilder(builder: (context, constraints) {
