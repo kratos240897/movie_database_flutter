@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:movie_database/helpers/constants.dart';
 import 'package:movie_database/models/review_response.dart';
 
 class Review extends StatelessWidget {
@@ -11,22 +10,60 @@ class Review extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        centerTitle: false,
-        title: Text('Flutter Movies',
-            style: TextStyle(
-                fontSize: 25.0,
-                fontFamily: GoogleFonts.caveat().copyWith().fontFamily)),
-      ),
-      body: SafeArea(child: ListView.builder(itemBuilder: (ctx, index) {
-        return ListTile(
-          leading: CircleAvatar(
-              radius: 40.0,
-              backgroundImage: NetworkImage(Constants.IMAGE_BASE_URL +
-                  reviews[index].authorDetails.avatarPath.toString())),
-                  title: Text(reviews[index].author),
-                  subtitle: Text(reviews[index].content),
-        );
-      })),
+          centerTitle: true,
+          title: const Text(
+            'Reviews',
+          )),
+      body: SafeArea(
+          child: ListView.builder(
+              itemCount: reviews.length,
+              itemBuilder: (ctx, index) {
+                return Card(
+                  elevation: 4.0,
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(15.0)),
+                  margin: const EdgeInsets.symmetric(
+                      horizontal: 12.0, vertical: 10.0),
+                  child: ListTile(
+                    title: Row(
+                      children: [
+                        reviews[index].authorDetails.avatarPath != null
+                            ? CircleAvatar(
+                                radius: 35.0,
+                                backgroundImage: NetworkImage(reviews[index]
+                                    .authorDetails
+                                    .avatarPath
+                                    .toString()))
+                            : const CircleAvatar(
+                                radius: 35.0,
+                                backgroundImage:
+                                    AssetImage('assets/images/user.png')),
+                        const SizedBox(width: 15.0),
+                        Expanded(
+                          child: Text(
+                            reviews[index].author,
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 18.0,
+                                overflow: TextOverflow.ellipsis,
+                                fontFamily: GoogleFonts.spartan().fontFamily),
+                          ),
+                        ),
+                      ],
+                    ),
+                    subtitle: Padding(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 8.0, vertical: 10.0),
+                      child: Text(
+                        reviews[index].content,
+                        style: TextStyle(
+                            fontSize: 16.0,
+                            fontFamily: GoogleFonts.spartan().fontFamily),
+                      ),
+                    ),
+                  ),
+                );
+              })),
     );
   }
 }

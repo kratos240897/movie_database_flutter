@@ -57,8 +57,14 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
                         Get.toNamed(AppRouter.REVIEWS,
                             arguments: widget.controller.reviews);
                       },
+                      style: ElevatedButton.styleFrom(
+                          shape: const StadiumBorder()),
                       icon: const Icon(Icons.reviews),
-                      label: const Text('Reviews'),
+                      label: const Padding(
+                        padding: EdgeInsets.symmetric(vertical: 12.0),
+                        child:
+                            Text('Reviews', style: TextStyle(fontSize: 16.0)),
+                      ),
                     ))
               ],
             )

@@ -15,8 +15,8 @@ import './models/movie_model.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Hive.initFlutter();
   await Firebase.initializeApp();
+  await Hive.initFlutter();
   Hive.registerAdapter(MovieAdapter());
   await Hive.openBox<Movie>(Constants.DB_NAME);
   Loggy.initLoggy(
