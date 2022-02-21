@@ -52,7 +52,7 @@ class SearchedMovieItem extends StatelessWidget {
                   CircleAvatar(
                     radius: constraints.maxWidth * 0.2 / 2,
                     backgroundImage: CachedNetworkImageProvider(
-                        Constants.IMAGE_BASE_URL +
+                        Constants.BASE_IMAGE_URL +
                             movies[index].posterPath.toString()),
                   ),
                   const SizedBox(width: 10.0),

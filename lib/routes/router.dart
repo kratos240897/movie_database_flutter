@@ -13,6 +13,8 @@ import 'package:movie_database/screens/register/register_binding.dart';
 import 'package:movie_database/screens/reviews/reviews.dart';
 import 'package:movie_database/screens/reviews/reviews_binding.dart';
 import 'package:movie_database/screens/search/search_binding.dart';
+import 'package:movie_database/screens/video/video.dart';
+import 'package:movie_database/screens/video/video_binding.dart';
 import '../screens/screens.dart';
 
 class AppRouter {
@@ -22,6 +24,7 @@ class AppRouter {
   static const SEARCH = '/search';
   static const MOVIE_DETAIL = '/movie-detail';
   static const REVIEWS = '/reviews';
+  static const VIDEO = '/video';
   // get getPages => [
   //       GetPage(
   //           name: REGISTER,
@@ -65,6 +68,12 @@ class AppRouter {
             page: () => Review(reviews: args as List<ReviewResults>),
             transition: Transition.downToUp,
             binding: ReviewsBinding());
+            case VIDEO:
+        return GetPageRoute(
+            routeName: VIDEO,
+            page: () => Video(videoId: args as String),
+            transition: Transition.zoom,
+            binding: VideoBindings());
     }
     return null;
   }

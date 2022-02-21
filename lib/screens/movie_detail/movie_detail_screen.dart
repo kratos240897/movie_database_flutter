@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get_instance/get_instance.dart';
 import 'package:get/get_navigation/src/extension_navigation.dart';
 import 'package:get/utils.dart';
@@ -27,6 +28,7 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
   void initState() {
     WidgetsBinding.instance!.addPostFrameCallback((timeStamp) {
       widget.controller.getMovieReviews(widget.movie.id.toString());
+      widget.controller.getVideoDetails(widget.movie.id.toString());
     });
     super.initState();
   }
@@ -41,7 +43,10 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
       body: SafeArea(
         child: SingleChildScrollView(
           child: Column(children: [
-            BackDropWidget(movie: widget.movie, mediaQuery: mediaQuery),
+            BackDropWidget(
+                controller: widget.controller,
+                movie: widget.movie,
+                mediaQuery: mediaQuery),
             const SizedBox(height: 5.0),
             RatingDetailWidget(movie: widget.movie),
             const SizedBox(height: 18),
@@ -76,52 +81,77 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
 }
 
 class BackDropWidget extends StatelessWidget {
+  final MovieDetailController controller;
   final Results movie;
   final MediaQueryData mediaQuery;
   const BackDropWidget(
-      {Key? key, required this.movie, required this.mediaQuery})
+      {Key? key,
+      required this.movie,
+      required this.mediaQuery,
+      required this.controller})
       : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.only(left: 8.0, right: 8.0, top: 8.0),
-      width: double.infinity,
-      height: mediaQuery.size.height * 0.325,
-      child: Hero(
-        tag: movie,
-        transitionOnUserGestures: true,
-        child: Stack(
-          children: [
-            Positioned(
-              top: 0,
-              left: 0,
-              right: 0,
-              bottom: 0,
-              child: Card(
-                  elevation: 10.0,
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10.0)),
-                  clipBehavior: Clip.antiAliasWithSaveLayer),
-            ),
-            Positioned(
-              top: 0,
-              left: 0,
-              right: 0,
-              bottom: 0,
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(10.0),
-                child: CachedNetworkImage(
-                    imageUrl: movie.backdropPath != null
-                        ? Constants.IMAGE_BASE_URL +
-                            movie.backdropPath.toString()
-                        : Constants.IMAGE_BASE_URL +
-                            movie.posterPath.toString(),
-                    filterQuality: FilterQuality.high,
-                    fit: BoxFit.cover),
+    return InkWell(
+      onTap: () =>
+          Get.toNamed(AppRouter.VIDEO, arguments: controller.videoId.value),
+      child: Container(
+        margin: const EdgeInsets.only(left: 8.0, right: 8.0, top: 8.0),
+        width: double.infinity,
+        height: mediaQuery.size.height * 0.325,
+        child: Hero(
+          tag: movie,
+          transitionOnUserGestures: true,
+          child: Stack(
+            children: [
+              Positioned(
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                child: Card(
+                    elevation: 10.0,
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10.0)),
+                    clipBehavior: Clip.antiAliasWithSaveLayer),
               ),
-            ),
-          ],
+              Positioned(
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(10.0),
+                  child: CachedNetworkImage(
+                      imageUrl: movie.backdropPath != null
+                          ? Constants.BASE_IMAGE_URL +
+                              movie.backdropPath.toString()
+                          : Constants.BASE_IMAGE_URL +
+                              movie.posterPath.toString(),
+                      filterQuality: FilterQuality.high,
+                      fit: BoxFit.cover),
+                ),
+              ),
+              Positioned(
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  bottom: 0,
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(10.0),
+                    child: Container(
+                      decoration: const BoxDecoration(color: Colors.black26),
+                      child: const Center(
+                          child: FaIcon(
+                        FontAwesomeIcons.playCircle,
+                        size: 40.0,
+                        color: Colors.white70,
+                      )),
+                    ),
+                  ))
+            ],
+          ),
         ),
       ),
     );

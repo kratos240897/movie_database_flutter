@@ -125,7 +125,7 @@ class SearchedMovieItem extends StatelessWidget {
                   child: CircleAvatar(
                     radius: constraints.maxWidth * 0.2 / 2,
                     backgroundImage: CachedNetworkImageProvider(Constants
-                            .IMAGE_BASE_URL +
+                            .BASE_IMAGE_URL +
                         controller.searchResults[index].posterPath.toString()),
                   ),
                 ),
@@ -267,7 +267,7 @@ class MovieCard extends StatelessWidget {
                 borderRadius: BorderRadius.circular(50.0),
                 image: DecorationImage(
                     fit: BoxFit.fill,
-                    image: CachedNetworkImageProvider(Constants.IMAGE_BASE_URL +
+                    image: CachedNetworkImageProvider(Constants.BASE_IMAGE_URL +
                         movie.posterPath.toString()))),
           ),
           Container(

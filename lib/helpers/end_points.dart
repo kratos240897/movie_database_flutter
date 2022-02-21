@@ -6,4 +6,5 @@ class EndPoints {
   static const upcoming = '/movie/upcoming';
   static const search = '/search/movie';
   static const reviews = '/movie/{movie_id}/reviews';
+  static const videos = '/movie/{movie_id}/videos';
 }

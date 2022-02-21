@@ -3,6 +3,7 @@
 import 'package:movie_database/helpers/end_points.dart';
 import 'package:movie_database/models/movies_response.dart';
 import 'package:movie_database/models/review_response.dart';
+import 'package:movie_database/models/video_details_response.dart';
 import 'package:movie_database/service/api_service.dart';
 import 'package:get/get.dart';
 
@@ -10,6 +11,7 @@ abstract class AppRepo {
   Future<List<Results>> getMovies(String url, Map<String, dynamic> query);
   Future<List<Results>> searchMovies(Map<String, dynamic> query);
   Future<List<ReviewResults>> getMovieReviews(String id);
+  Future<List<VideoResults>> getVideoDetails(String id);
   void init();
 }
 
@@ -52,6 +54,19 @@ class AppRepository extends AppRepo {
           .getRequest(EndPoints.reviews.replaceAll('{movie_id}', id), {});
       final reviews = ReviewResponse.fromJson(res.data).results;
       return reviews;
+    } catch (e) {
+      print(e);
+      return Future.error(e);
+    }
+  }
+
+  @override
+  Future<List<VideoResults>> getVideoDetails(String id) async {
+    try {
+      final res = await _apiService
+          .getRequest(EndPoints.videos.replaceAll('{movie_id}', id), {});
+      final videos = VideoDetailsResponse.fromJson(res.data).results;
+      return videos;
     } catch (e) {
       print(e);
       return Future.error(e);

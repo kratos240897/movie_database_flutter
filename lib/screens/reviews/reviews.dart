@@ -20,10 +20,11 @@ class Review extends StatelessWidget {
               itemBuilder: (ctx, index) {
                 return Card(
                   elevation: 4.0,
+                  shadowColor: Colors.grey,
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(15.0)),
                   margin: const EdgeInsets.symmetric(
-                      horizontal: 12.0, vertical: 10.0),
+                      horizontal: 12.0, vertical: 5.0),
                   child: ListTile(
                     title: Row(
                       children: [
@@ -57,7 +58,9 @@ class Review extends StatelessWidget {
                       child: Text(
                         reviews[index].content,
                         style: TextStyle(
-                            fontSize: 16.0,
+                            fontSize: 14.0,
+                            color: Colors.black,
+                            height: 1.5,
                             fontFamily: GoogleFonts.spartan().fontFamily),
                       ),
                     ),

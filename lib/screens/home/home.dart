@@ -335,7 +335,7 @@ class MovieListItem extends StatelessWidget {
                             child: CachedNetworkImage(
                                 imageUrl: controller.movies[index].posterPath !=
                                         null
-                                    ? Constants.IMAGE_BASE_URL +
+                                    ? Constants.BASE_IMAGE_URL +
                                         controller.movies[index].posterPath
                                     : 'https://globalnews.ca/wp-content/uploads/2020/06/jfj50169012-2.jpg?quality=85&strip=all'),
                           ),
