@@ -10,11 +10,12 @@ import 'package:movie_database/helpers/styles.dart';
 import 'package:movie_database/helpers/utils.dart';
 import 'package:movie_database/models/movies_response.dart';
 import 'package:get/get.dart';
-import 'package:movie_database/screens/screens.dart';
 import 'dart:math' as math;
 
 import 'package:movie_database/screens/search/search_controller.dart';
 import 'package:share_plus/share_plus.dart';
+
+import '../../routes/router.dart';
 
 class SearchScreen extends GetView<SearchController> {
   SearchScreen(this.movies, {Key? key}) : super(key: key);
@@ -111,7 +112,8 @@ class SearchedMovieItem extends StatelessWidget {
       onPressed: () {},
       child: InkWell(
         onTap: () =>
-            Get.to(MovieDetailScreen(movie: controller.searchResults[index])),
+           Get.toNamed(AppRouter.MOVIE_DETAIL,
+            arguments: controller.searchResults[index]),
         child: LayoutBuilder(builder: (context, constraints) {
           double vote =
               (controller.searchResults[index].voteAverage / 2.0) as double;
