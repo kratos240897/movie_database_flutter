@@ -17,6 +17,7 @@ class Register extends StatefulWidget {
 class _RegisterState extends State<Register> {
   final formKey = GlobalKey<FormState>();
   final RegisterController _controller = Get.find<RegisterController>();
+  bool _isObscure = true;
   String name = '';
   String phone = '';
   String email = '';
@@ -132,11 +133,21 @@ class _RegisterState extends State<Register> {
                     ),
                     const SizedBox(height: 12.0),
                     TextFormField(
-                      obscureText: true,
+                      obscureText: _isObscure ? true : false,
                       autovalidateMode: AutovalidateMode.onUserInteraction,
                       decoration: InputDecoration(
                           prefixIcon: const Icon(Icons.lock),
                           labelText: 'Password',
+                          suffixIcon: IconButton(
+                            icon: Icon(_isObscure
+                                ? Icons.visibility
+                                : Icons.visibility_off),
+                            onPressed: () {
+                              setState(() {
+                                _isObscure = !_isObscure;
+                              });
+                            },
+                          ),
                           border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(15.0))),
                       validator: (value) => value != null && value.length < 8

@@ -18,6 +18,7 @@ class Login extends StatefulWidget {
 
 class _LoginState extends State<Login> {
   final formKey = GlobalKey<FormState>();
+  bool _isObscure = true;
   String email = '';
   String password = '';
   final LoginController _controller = Get.find<LoginController>();
@@ -66,11 +67,21 @@ class _LoginState extends State<Login> {
                   ),
                   const SizedBox(height: 8.0),
                   TextFormField(
-                    obscureText: true,
+                    obscureText: _isObscure ? true : false,
                     autovalidateMode: AutovalidateMode.onUserInteraction,
                     decoration: InputDecoration(
                         prefixIcon: const Icon(Icons.lock),
                         labelText: 'Password',
+                        suffixIcon: IconButton(
+                          icon: Icon(_isObscure
+                              ? Icons.visibility
+                              : Icons.visibility_off),
+                          onPressed: () {
+                            setState(() {
+                              _isObscure = !_isObscure;
+                            });
+                          },
+                        ),
                         border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(15.0))),
                     validator: (value) => value != null && value.length < 8

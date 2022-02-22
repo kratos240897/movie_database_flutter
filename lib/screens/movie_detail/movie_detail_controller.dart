@@ -8,7 +8,7 @@ class MovieDetailController extends GetxController {
   final _utils = Utils();
   final AppRepository _appRepo = Get.find<AppRepository>();
   final error = ''.obs;
-  final videoId = ''.obs;
+  final RxList<String> videoId = RxList.empty();
   final RxList<ReviewResults> reviews = RxList.empty();
 
   void getMovieReviews(String id) {
@@ -26,7 +26,12 @@ class MovieDetailController extends GetxController {
     _utils.showLoading();
     _appRepo.getVideoDetails(id).then((value) {
       _utils.hideLoading();
-      videoId.value = value.firstWhere((element) => element.key != null).key!;
+      value.every((element) {
+        if (element.key != null) {
+          videoId.add(element.key!);
+        }
+        return true;
+      });
     }).onError((error, stackTrace) {
       _utils.hideLoading();
       this.error.value = error.toString();

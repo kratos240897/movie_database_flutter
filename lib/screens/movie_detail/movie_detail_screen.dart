@@ -95,7 +95,7 @@ class BackDropWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return InkWell(
       onTap: () =>
-          Get.toNamed(AppRouter.VIDEO, arguments: controller.videoId.value),
+          Get.toNamed(AppRouter.VIDEO, arguments: controller.videoId),
       child: Container(
         margin: const EdgeInsets.only(left: 8.0, right: 8.0, top: 8.0),
         width: double.infinity,
@@ -144,8 +144,8 @@ class BackDropWidget extends StatelessWidget {
                       decoration: const BoxDecoration(color: Colors.black26),
                       child: const Center(
                           child: FaIcon(
-                        FontAwesomeIcons.playCircle,
-                        size: 40.0,
+                        FontAwesomeIcons.solidPlayCircle,
+                        size: 50.0,
                         color: Colors.white70,
                       )),
                     ),

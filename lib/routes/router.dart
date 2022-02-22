@@ -71,7 +71,7 @@ class AppRouter {
             case VIDEO:
         return GetPageRoute(
             routeName: VIDEO,
-            page: () => Video(videoId: args as String),
+            page: () => Video(videoId: args as List<String>),
             transition: Transition.zoom,
             binding: VideoBindings());
     }
