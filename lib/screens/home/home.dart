@@ -309,7 +309,8 @@ class MovieListItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      onTap: () => Get.toNamed(AppRouter.MOVIE_DETAIL, arguments: controller.movies[index]),
+      onTap: () => Get.toNamed(AppRouter.MOVIE_DETAIL,
+          arguments: controller.movies[index]),
       child: Hero(
         tag: controller.movies[index],
         child: LayoutBuilder(builder: (context, constraints) {
@@ -321,7 +322,7 @@ class MovieListItem extends StatelessWidget {
               child: Column(
                 children: [
                   SizedBox(
-                    height: constraints.maxHeight * 0.6,
+                    height: constraints.maxHeight * 0.8,
                     child: Stack(
                       children: [
                         Positioned(
@@ -346,6 +347,7 @@ class MovieListItem extends StatelessWidget {
                           child: ElevatedButton(
                             onPressed: () {},
                             style: ElevatedButton.styleFrom(
+                                primary: Colors.amber,
                                 splashFactory: NoSplash.splashFactory,
                                 shape: const RoundedRectangleBorder(
                                     borderRadius: BorderRadius.only(
@@ -354,7 +356,10 @@ class MovieListItem extends StatelessWidget {
                             child: Text(
                                 controller.movies[index].voteAverage
                                         .toString() +
-                                    ' ⭐',
+                                    ' 💜',
+                                style: const TextStyle(
+                                    color: Colors.black,
+                                    fontWeight: FontWeight.bold),
                                 textAlign: TextAlign.end),
                           ),
                         )
@@ -370,27 +375,10 @@ class MovieListItem extends StatelessWidget {
                         textAlign: TextAlign.center,
                         style: TextStyle(
                             fontSize: 16,
+                            overflow: TextOverflow.ellipsis,
                             fontFamily: GoogleFonts.staatliches()
                                 .copyWith()
                                 .fontFamily)),
-                  ),
-                  SizedBox(height: constraints.maxHeight * 0.01),
-                  Expanded(
-                    child: Padding(
-                      padding: EdgeInsets.symmetric(
-                          horizontal: constraints.maxWidth * 0.05,
-                          vertical: constraints.maxHeight * 0.01),
-                      child: Text(controller.movies[index].overview,
-                          style: TextStyle(
-                              fontFamily: GoogleFonts.quicksand()
-                                  .copyWith()
-                                  .fontFamily),
-                          maxLines:
-                              mediaQuery.orientation == Orientation.portrait
-                                  ? 2
-                                  : 4,
-                          overflow: TextOverflow.ellipsis),
-                    ),
                   ),
                 ],
               ),

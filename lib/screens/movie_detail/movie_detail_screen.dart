@@ -4,11 +4,12 @@ import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get_instance/get_instance.dart';
 import 'package:get/get_navigation/src/extension_navigation.dart';
-import 'package:get/utils.dart';
+import 'package:get/state_manager.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:movie_database/helpers/helpers.dart';
 import 'package:movie_database/helpers/styles.dart';
+import 'package:movie_database/helpers/utils.dart';
 import 'package:movie_database/models/movies_response.dart';
 import 'package:movie_database/helpers/constants.dart';
 import 'package:movie_database/routes/router.dart';
@@ -26,7 +27,7 @@ class MovieDetailScreen extends StatefulWidget {
 class _MovieDetailScreenState extends State<MovieDetailScreen> {
   @override
   void initState() {
-    WidgetsBinding.instance!.addPostFrameCallback((timeStamp) {
+    WidgetsBinding.instance!.addPostFrameCallback((_) {
       widget.controller.getMovieReviews(widget.movie.id.toString());
       widget.controller.getVideoDetails(widget.movie.id.toString());
     });
@@ -52,30 +53,78 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
             const SizedBox(height: 18),
             MovieDetailWidget(movie: widget.movie),
             const SizedBox(height: 5.0),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                Padding(
-                    padding: const EdgeInsets.only(right: 12.0),
-                    child: ElevatedButton.icon(
-                      onPressed: () {
-                        Get.toNamed(AppRouter.REVIEWS,
-                            arguments: widget.controller.reviews);
-                      },
-                      style: ElevatedButton.styleFrom(
-                          shape: const StadiumBorder()),
-                      icon: const Icon(Icons.reviews),
-                      label: const Padding(
-                        padding: EdgeInsets.symmetric(vertical: 12.0),
-                        child:
-                            Text('Reviews', style: TextStyle(fontSize: 16.0)),
-                      ),
-                    ))
-              ],
-            )
+            ReviewButton(controller: widget.controller),
+            Cast(controller: widget.controller)
           ]),
         ),
       ),
+    );
+  }
+}
+
+class Cast extends StatelessWidget {
+  final MovieDetailController controller;
+  const Cast({Key? key, required this.controller}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Obx(() {
+      return Container(
+          height: 120.0,
+          padding: const EdgeInsets.all(8.0),
+          child: ListView.builder(
+              itemCount: controller.cast.length,
+              scrollDirection: Axis.horizontal,
+              shrinkWrap: true,
+              itemBuilder: (context, index) {
+                return LayoutBuilder(builder: (context, constraints) {
+                  return Container(
+                    margin: const EdgeInsets.all(5.0),
+                    child: Column(children: [
+                      controller.cast[index].profilePath != null
+                          ? CircleAvatar(
+                              radius: constraints.maxHeight * 0.4,
+                              backgroundImage: CachedNetworkImageProvider(
+                                  Constants.BASE_IMAGE_URL +
+                                      controller.cast[index].profilePath
+                                          .toString()),
+                            )
+                          : CircleAvatar(
+                              radius: constraints.maxHeight * 0.4,
+                              backgroundImage:
+                                  const AssetImage('assets/images/user.png'),
+                            )
+                    ]),
+                  );
+                });
+              }));
+    });
+  }
+}
+
+class ReviewButton extends StatelessWidget {
+  final MovieDetailController controller;
+  const ReviewButton({Key? key, required this.controller}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.end,
+      children: [
+        Padding(
+            padding: const EdgeInsets.only(right: 12.0),
+            child: ElevatedButton.icon(
+              onPressed: () {
+                Get.toNamed(AppRouter.REVIEWS, arguments: controller.reviews);
+              },
+              style: ElevatedButton.styleFrom(shape: const StadiumBorder()),
+              icon: const Icon(Icons.reviews),
+              label: const Padding(
+                padding: EdgeInsets.symmetric(vertical: 12.0),
+                child: Text('Reviews', style: TextStyle(fontSize: 16.0)),
+              ),
+            ))
+      ],
     );
   }
 }
@@ -94,8 +143,14 @@ class BackDropWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      onTap: () =>
-          Get.toNamed(AppRouter.VIDEO, arguments: controller.videoId),
+      onTap: () {
+        if (controller.videoId.isNotEmpty) {
+          Get.toNamed(AppRouter.VIDEO, arguments: controller.videoId);
+        } else {
+          Utils().showSnackBar(
+              'No videos found for movie', movie.originalTitle, false);
+        }
+      },
       child: Container(
         margin: const EdgeInsets.only(left: 8.0, right: 8.0, top: 8.0),
         width: double.infinity,
@@ -179,7 +234,7 @@ class MovieDetailWidget extends StatelessWidget {
                   fontFamily: GoogleFonts.actor().fontFamily)),
         ),
         Padding(
-          padding: const EdgeInsets.all(3.0),
+          padding: const EdgeInsets.only(top: 5.0),
           child: Text(
             formattedDate,
             style: TextStyle(
@@ -191,7 +246,7 @@ class MovieDetailWidget extends StatelessWidget {
           ),
         ),
         Padding(
-          padding: const EdgeInsets.all(8.0),
+          padding: const EdgeInsets.only(top: 10.0, left: 12.0, right: 12.0),
           child: Text(movie.overview,
               textAlign: TextAlign.start,
               style: TextStyle(
