@@ -18,6 +18,7 @@ import 'package:movie_database/screens/movie_detail/movie_detail_controller.dart
 class MovieDetailScreen extends StatefulWidget {
   final Results movie;
   final MovieDetailController controller = Get.find<MovieDetailController>();
+  final mediaQuery = Get.mediaQuery;
   MovieDetailScreen({Key? key, required this.movie}) : super(key: key);
 
   @override
@@ -42,21 +43,29 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
         title: Text(widget.movie.title),
       ),
       body: SafeArea(
-        child: SingleChildScrollView(
-          child: Column(children: [
-            BackDropWidget(
+        child: Column(children: [
+          SizedBox(
+            height: mediaQuery.size.height * 0.3,
+            child: BackDropWidget(
                 controller: widget.controller,
                 movie: widget.movie,
                 mediaQuery: mediaQuery),
-            const SizedBox(height: 5.0),
-            RatingDetailWidget(movie: widget.movie),
-            const SizedBox(height: 18),
-            MovieDetailWidget(movie: widget.movie),
-            const SizedBox(height: 5.0),
-            ReviewButton(controller: widget.controller),
-            Cast(controller: widget.controller)
-          ]),
-        ),
+          ),
+          SizedBox(height: mediaQuery.size.height * 0.01),
+          SizedBox(
+              height: mediaQuery.size.height * 0.10,
+              child: RatingDetailWidget(movie: widget.movie)),
+          SizedBox(height: mediaQuery.size.height * 0.02),
+          SizedBox(
+              height: mediaQuery.size.height * 0.25,
+              child: MovieDetailWidget(movie: widget.movie)),
+          SizedBox(
+              height: mediaQuery.size.height * 0.06,
+              child: ReviewButton(controller: widget.controller)),
+          Cast(
+              height: mediaQuery.size.height * 0.25,
+              controller: widget.controller)
+        ]),
       ),
     );
   }
@@ -64,40 +73,44 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
 
 class Cast extends StatelessWidget {
   final MovieDetailController controller;
-  const Cast({Key? key, required this.controller}) : super(key: key);
+  final double height;
+  const Cast({Key? key, required this.controller, required this.height})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Obx(() {
-      return Container(
-          height: 120.0,
-          padding: const EdgeInsets.all(8.0),
-          child: ListView.builder(
-              itemCount: controller.cast.length,
-              scrollDirection: Axis.horizontal,
-              shrinkWrap: true,
-              itemBuilder: (context, index) {
-                return LayoutBuilder(builder: (context, constraints) {
-                  return Container(
-                    margin: const EdgeInsets.all(5.0),
-                    child: Column(children: [
-                      controller.cast[index].profilePath != null
-                          ? CircleAvatar(
-                              radius: constraints.maxHeight * 0.4,
-                              backgroundImage: CachedNetworkImageProvider(
-                                  Constants.BASE_IMAGE_URL +
-                                      controller.cast[index].profilePath
-                                          .toString()),
-                            )
-                          : CircleAvatar(
-                              radius: constraints.maxHeight * 0.4,
-                              backgroundImage:
-                                  const AssetImage('assets/images/user.png'),
-                            )
-                    ]),
-                  );
-                });
-              }));
+      return Expanded(
+        child: Container(
+            height: height,
+            padding: const EdgeInsets.only(left: 8.0, right: 8.0, top: 5.0),
+            child: ListView.builder(
+                itemCount: controller.cast.length,
+                scrollDirection: Axis.horizontal,
+                shrinkWrap: true,
+                itemBuilder: (context, index) {
+                  return LayoutBuilder(builder: (context, constraints) {
+                    return Container(
+                      margin: const EdgeInsets.all(5.0),
+                      child: Column(children: [
+                        controller.cast[index].profilePath != null
+                            ? CircleAvatar(
+                                radius: constraints.maxHeight * 0.40,
+                                backgroundImage: CachedNetworkImageProvider(
+                                    Constants.BASE_IMAGE_URL +
+                                        controller.cast[index].profilePath
+                                            .toString()),
+                              )
+                            : CircleAvatar(
+                                radius: constraints.maxHeight * 0.40,
+                                backgroundImage:
+                                    const AssetImage('assets/images/user.png'),
+                              )
+                      ]),
+                    );
+                  });
+                })),
+      );
     });
   }
 }
@@ -249,6 +262,8 @@ class MovieDetailWidget extends StatelessWidget {
           padding: const EdgeInsets.only(top: 10.0, left: 12.0, right: 12.0),
           child: Text(movie.overview,
               textAlign: TextAlign.start,
+              maxLines: 4,
+              overflow: TextOverflow.ellipsis,
               style: TextStyle(
                   height: 1.2,
                   wordSpacing: 3.0,
@@ -272,28 +287,30 @@ class RatingDetailWidget extends StatelessWidget {
             rating: (movie.voteAverage / 2).toDouble(),
             direction: Axis.horizontal,
             itemCount: 5,
-            itemSize: 30.0,
+            itemSize: 25.0,
             itemPadding: const EdgeInsets.symmetric(horizontal: 2.0),
             itemBuilder: (ctx, index) => const Icon(
                   Icons.star,
                   color: Colors.amber,
                 )),
-        const SizedBox(height: 3),
+        const SizedBox(height: 5.0),
         Text((movie.voteAverage / 2).toString(), style: Styles.textStyles.f14),
-        Row(
-          mainAxisSize: MainAxisSize.min,
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Padding(
-              padding: const EdgeInsets.only(top: 5, right: 5),
-              child: Text('${movie.voteCount} votes',
-                  style: TextStyle(
-                      fontSize: 12.0,
-                      fontFamily: GoogleFonts.jost().fontFamily)),
-            ),
-            const Icon(Icons.volunteer_activism_sharp, color: Colors.red)
-          ],
+        Expanded(
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(top: 5, right: 5),
+                child: Text('${movie.voteCount} votes',
+                    style: TextStyle(
+                        fontSize: 12.0,
+                        fontFamily: GoogleFonts.jost().fontFamily)),
+              ),
+              const Icon(Icons.volunteer_activism_sharp, color: Colors.red)
+            ],
+          ),
         ),
       ],
     );
