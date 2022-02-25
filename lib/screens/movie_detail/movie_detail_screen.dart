@@ -14,6 +14,8 @@ import 'package:movie_database/models/movies_response.dart';
 import 'package:movie_database/helpers/constants.dart';
 import 'package:movie_database/routes/router.dart';
 import 'package:movie_database/screens/movie_detail/movie_detail_controller.dart';
+import 'package:movie_database/screens/person/person.dart';
+import 'package:movie_database/screens/person/person_binding.dart';
 
 class MovieDetailScreen extends StatefulWidget {
   final Results movie;
@@ -90,23 +92,30 @@ class Cast extends StatelessWidget {
                 shrinkWrap: true,
                 itemBuilder: (context, index) {
                   return LayoutBuilder(builder: (context, constraints) {
-                    return Container(
-                      margin: const EdgeInsets.all(5.0),
-                      child: Column(children: [
-                        controller.cast[index].profilePath != null
-                            ? CircleAvatar(
-                                radius: constraints.maxHeight * 0.40,
-                                backgroundImage: CachedNetworkImageProvider(
-                                    Constants.BASE_IMAGE_URL +
-                                        controller.cast[index].profilePath
-                                            .toString()),
-                              )
-                            : CircleAvatar(
-                                radius: constraints.maxHeight * 0.40,
-                                backgroundImage:
-                                    const AssetImage('assets/images/user.png'),
-                              )
-                      ]),
+                    return InkWell(
+                      onTap: () => Get.to(
+                          () => Person(
+                              title: controller.cast[index].originalName,
+                              id: controller.cast[index].id.toString()),
+                          binding: PersonBinding()),
+                      child: Container(
+                        margin: const EdgeInsets.all(5.0),
+                        child: Column(children: [
+                          controller.cast[index].profilePath != null
+                              ? CircleAvatar(
+                                  radius: constraints.maxHeight * 0.40,
+                                  backgroundImage: CachedNetworkImageProvider(
+                                      Constants.BASE_IMAGE_URL +
+                                          controller.cast[index].profilePath
+                                              .toString()),
+                                )
+                              : CircleAvatar(
+                                  radius: constraints.maxHeight * 0.40,
+                                  backgroundImage: const AssetImage(
+                                      'assets/images/user.png'),
+                                )
+                        ]),
+                      ),
                     );
                   });
                 })),

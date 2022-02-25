@@ -25,6 +25,7 @@ class AppRouter {
   static const MOVIE_DETAIL = '/movie-detail';
   static const REVIEWS = '/reviews';
   static const VIDEO = '/video';
+  static const PERSON = '/person';
   // get getPages => [
   //       GetPage(
   //           name: REGISTER,
@@ -68,7 +69,7 @@ class AppRouter {
             page: () => Review(reviews: args as List<ReviewResults>),
             transition: Transition.downToUp,
             binding: ReviewsBinding());
-            case VIDEO:
+      case VIDEO:
         return GetPageRoute(
             routeName: VIDEO,
             page: () => Video(videoId: args as List<String>),

@@ -367,18 +367,20 @@ class MovieListItem extends StatelessWidget {
                     ),
                   ),
                   SizedBox(height: constraints.maxHeight * 0.01),
-                  Padding(
-                    padding: EdgeInsets.symmetric(
-                        horizontal: constraints.maxWidth * 0.02,
-                        vertical: constraints.maxHeight * 0.01),
-                    child: Text(controller.movies[index].originalTitle,
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                            fontSize: 16,
-                            overflow: TextOverflow.ellipsis,
-                            fontFamily: GoogleFonts.staatliches()
-                                .copyWith()
-                                .fontFamily)),
+                  Expanded(
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(
+                          horizontal: constraints.maxWidth * 0.02,
+                          vertical: constraints.maxHeight * 0.03),
+                      child: Text(controller.movies[index].originalTitle,
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                              fontSize: 16,
+                              overflow: TextOverflow.ellipsis,
+                              fontFamily: GoogleFonts.staatliches()
+                                  .copyWith()
+                                  .fontFamily)),
+                    ),
                   ),
                 ],
               ),

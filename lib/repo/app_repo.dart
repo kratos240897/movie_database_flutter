@@ -3,6 +3,7 @@
 import 'package:movie_database/helpers/end_points.dart';
 import 'package:movie_database/models/credits_response.dart';
 import 'package:movie_database/models/movies_response.dart';
+import 'package:movie_database/models/profile_response.dart';
 import 'package:movie_database/models/review_response.dart';
 import 'package:movie_database/models/video_details_response.dart';
 import 'package:movie_database/service/api_service.dart';
@@ -14,6 +15,7 @@ abstract class AppRepo {
   Future<List<ReviewResults>> getMovieReviews(String id);
   Future<List<VideoResults>> getVideoDetails(String id);
   Future<List<Cast>> getCredits(String id);
+  Future<ProfileResponse> getPerson(String id);
   void init();
 }
 
@@ -82,6 +84,19 @@ class AppRepository extends AppRepo {
           .getRequest(EndPoints.credits.replaceAll('{movie_id}', id), {});
       final cast = CreditsResponse.fromJson(res.data).cast;
       return cast;
+    } catch (e) {
+      print(e);
+      return Future.error(e);
+    }
+  }
+
+  @override
+  Future<ProfileResponse> getPerson(String id) async {
+     try {
+      final res = await _apiService
+          .getRequest(EndPoints.person.replaceAll('{person_id}', id), {});
+      final profile = ProfileResponse.fromJson(res.data);
+      return profile;
     } catch (e) {
       print(e);
       return Future.error(e);
