@@ -1,3 +1,7 @@
+// ignore_for_file: avoid_print
+
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
@@ -13,6 +17,9 @@ class Video extends StatefulWidget {
 class _VideoState extends State<Video> {
   late YoutubePlayerController _controller;
   int _currentPostiton = 0;
+  String title = '';
+  String author = '';
+  String duration = '';
 
   @override
   void initState() {
@@ -28,6 +35,7 @@ class _VideoState extends State<Video> {
           enableCaption: true,
           controlsVisibleAtStart: true),
     );
+    getVideoDetails();
     super.initState();
   }
 
@@ -44,6 +52,22 @@ class _VideoState extends State<Video> {
     super.dispose();
   }
 
+  void getVideoDetails() {
+    Timer.periodic(const Duration(milliseconds: 500), (timer) {
+      print('timer running');
+      if (_controller.metadata.author.isNotEmpty &&
+          _controller.metadata.title.isNotEmpty &&
+          _controller.metadata.duration.inSeconds.toString().isNotEmpty) {
+        setState(() {
+          author = _controller.metadata.author;
+          title = _controller.metadata.title;
+          duration = _controller.metadata.duration.inSeconds.toString();
+        });
+        timer.cancel();
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return YoutubePlayerBuilder(
@@ -53,6 +77,10 @@ class _VideoState extends State<Video> {
             if (_currentPostiton != widget.videoId.length) {
               _currentPostiton = _currentPostiton + 1;
               _controller.load(widget.videoId[_currentPostiton]);
+              author = '';
+              title = '';
+              duration = '';
+              getVideoDetails();
             }
           },
         ),
@@ -70,7 +98,7 @@ class _VideoState extends State<Video> {
                     Padding(
                       padding: const EdgeInsets.only(top: 15.0, left: 20.0),
                       child: Text(
-                        _controller.metadata.author,
+                        author,
                         style: TextStyle(
                             fontSize: 22.0,
                             fontWeight: FontWeight.bold,
@@ -84,7 +112,7 @@ class _VideoState extends State<Video> {
                     Expanded(
                       child: Padding(
                         padding: const EdgeInsets.only(top: 8.0, left: 20.0),
-                        child: Text(_controller.metadata.title,
+                        child: Text(title,
                             maxLines: 4,
                             overflow: TextOverflow.ellipsis,
                             style: TextStyle(
@@ -97,9 +125,7 @@ class _VideoState extends State<Video> {
                 ),
                 Padding(
                   padding: const EdgeInsets.only(top: 8.0),
-                  child: Text(
-                      _controller.metadata.duration.inSeconds.toString() +
-                          ' Secs',
+                  child: Text(duration + ' Secs',
                       style: TextStyle(
                           fontSize: 17.0,
                           fontWeight: FontWeight.normal,
