@@ -35,62 +35,63 @@ class _PersonState extends State<Person> {
       ),
       body: SafeArea(
         child: Obx(() {
-          return SingleChildScrollView(
-            child: Column(
-              children: [
-                Container(
-                  margin: const EdgeInsets.all(8.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
+          return controller.isLoaded.value == true
+              ? SingleChildScrollView(
+                  child: Column(
                     children: [
-                      controller.isLoaded.value == true
-                          ? CircleAvatar(
+                      Container(
+                        margin: const EdgeInsets.all(8.0),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            CircleAvatar(
                               radius: 60.0,
                               backgroundImage: NetworkImage(
                                   Constants.BASE_IMAGE_URL +
                                       controller.profile.profilePath),
                             )
-                          : const CircleAvatar(
-                              radius: 60.0,
-                              backgroundImage:
-                                  AssetImage('assets/images/user.png'))
+                          ],
+                        ),
+                      ),
+                      Wrap(
+                          spacing: 1.0,
+                          runSpacing: 1.0,
+                          alignment: WrapAlignment.spaceEvenly,
+                          direction: Axis.horizontal,
+                          children: List.generate(
+                              controller.profile.alsoKnownAs.length, (index) {
+                            return Container(
+                              margin:
+                                  const EdgeInsets.symmetric(horizontal: 5.0),
+                              child: ElevatedButton(
+                                  onPressed: () {},
+                                  style: ElevatedButton.styleFrom(
+                                      primary: Colors.amber,
+                                      splashFactory: NoSplash.splashFactory,
+                                      shape: const StadiumBorder()),
+                                  child: Text(
+                                      controller.profile.alsoKnownAs[index],
+                                      style: const TextStyle(
+                                          color: Colors.black))),
+                            );
+                          })),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 8.0, horizontal: 12.0),
+                        child: Text(
+                          controller.profile.biography,
+                          style: TextStyle(
+                              color: Colors.black,
+                              fontSize: 15.0,
+                              wordSpacing: 1.0,
+                              height: 1.4,
+                              fontFamily: GoogleFonts.quicksand().fontFamily),
+                        ),
+                      )
                     ],
                   ),
-                ),
-                Wrap(
-                    spacing: 1.0,
-                    runSpacing: 1.0,
-                    direction: Axis.horizontal,
-                    children: List.generate(
-                        controller.profile.alsoKnownAs.length, (index) {
-                      return Container(
-                        margin: const EdgeInsets.symmetric(horizontal: 5.0),
-                        child: ElevatedButton(
-                            onPressed: () {},
-                            style: ElevatedButton.styleFrom(
-                                primary: Colors.amber,
-                                splashFactory: NoSplash.splashFactory,
-                                shape: const StadiumBorder()),
-                            child: Text(controller.profile.alsoKnownAs[index],
-                                style: const TextStyle(color: Colors.black))),
-                      );
-                    })),
-                Padding(
-                  padding: const EdgeInsets.symmetric(
-                      vertical: 8.0, horizontal: 12.0),
-                  child: Text(
-                    controller.profile.biography,
-                    style: TextStyle(
-                        color: Colors.black,
-                        fontSize: 15.0,
-                        wordSpacing: 1.0,
-                        height: 1.4,
-                        fontFamily: GoogleFonts.quicksand().fontFamily),
-                  ),
                 )
-              ],
-            ),
-          );
+              : Container();
         }),
       ),
     );
