@@ -96,7 +96,8 @@ class _VideoState extends State<Video> {
                 Row(
                   children: [
                     Padding(
-                      padding: const EdgeInsets.only(top: 15.0, left: 20.0),
+                      padding: const EdgeInsets.only(
+                          top: 15.0, left: 20.0, right: 20.0),
                       child: Text(
                         author,
                         style: TextStyle(
@@ -111,7 +112,8 @@ class _VideoState extends State<Video> {
                   children: [
                     Expanded(
                       child: Padding(
-                        padding: const EdgeInsets.only(top: 8.0, left: 20.0),
+                        padding: const EdgeInsets.only(
+                            top: 8.0, left: 20.0, right: 20.0),
                         child: Text(title,
                             maxLines: 4,
                             overflow: TextOverflow.ellipsis,
