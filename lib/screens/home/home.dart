@@ -25,6 +25,7 @@ class Home extends GetView<HomeController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: CupertinoColors.black,
       appBar: AppBar(
         centerTitle: false,
         title: Text('Flutter Movies',
@@ -316,6 +317,7 @@ class MovieListItem extends StatelessWidget {
         child: LayoutBuilder(builder: (context, constraints) {
           return Obx(() {
             return Card(
+              color: Colors.blueGrey[900],
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(15)),
               elevation: 4,
@@ -376,6 +378,7 @@ class MovieListItem extends StatelessWidget {
                           textAlign: TextAlign.center,
                           style: TextStyle(
                               fontSize: 16,
+                              color: Colors.white,
                               overflow: TextOverflow.ellipsis,
                               fontFamily: GoogleFonts.staatliches()
                                   .copyWith()
@@ -402,7 +405,7 @@ class CategoriesWidget extends StatelessWidget {
     return AnimatedContainer(
         margin: const EdgeInsets.only(top: 5, left: 5),
         height: 40.0,
-        color: Colors.white,
+        color: Colors.black,
         duration: const Duration(milliseconds: 400),
         curve: Curves.bounceInOut,
         child: SingleChildScrollView(
@@ -414,7 +417,16 @@ class CategoriesWidget extends StatelessWidget {
                 spacing: 3.0,
                 groupingType: GroupingType.row,
                 direction: Axis.horizontal,
-                unselectedColor: Colors.grey[300],
+                selectedColor: Colors.amber,
+                unselectedTextStyle: TextStyle(
+                    color: Colors.black,
+                    fontWeight: FontWeight.w400,
+                    fontFamily: GoogleFonts.beVietnamPro().fontFamily),
+                selectedTextStyle: TextStyle(
+                    color: Colors.black,
+                    fontWeight: FontWeight.w600,
+                    fontFamily: GoogleFonts.beVietnamPro().fontFamily),
+                unselectedColor: Colors.white,
                 borderRadius: BorderRadius.circular(15.0)),
             onSelected: (index, _) async {
               controller.setSelectedCategory(index);

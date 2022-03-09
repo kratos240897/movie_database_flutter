@@ -2,8 +2,6 @@
 // ignore_for_file: unnecessary_import
 
 import 'dart:async';
-
-import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:movie_database/helpers/boxes.dart';
 import 'package:movie_database/helpers/constants.dart';
 import 'package:movie_database/helpers/helpers.dart';
@@ -14,15 +12,14 @@ import 'package:get/get.dart';
 import 'package:movie_database/models/movie_model.dart';
 import 'package:movie_database/routes/router.dart';
 import 'package:movie_database/service/auth_service.dart';
-import 'package:movie_database/service/connectivity_service.dart';
+
+import '../../helpers/connection_util.dart';
 
 class HomeController extends GetxController {
   var movies = RxList.empty();
   final error = ''.obs;
   final _utils = Utils();
-  final ConnectivityService _connectivityService =
-      Get.find<ConnectivityService>();
-  StreamSubscription<ConnectivityResult>? _streamSubscription;
+  ConnectionUtil connectionStatus = ConnectionUtil.getInstance();
   final AppRepository _appRepo = Get.find<AppRepository>();
   final AuthService _authService = Get.find<AuthService>();
   var favoritesCount = 0.obs;
@@ -32,30 +29,21 @@ class HomeController extends GetxController {
 
   @override
   void onInit() async {
-    await _connectivityService.init();
-    _streamSubscription =
-        _connectivityService.connectivityStream.stream.listen((event) {});
     _appRepo.init();
+    connectionStatus.initialize();
     favoritesCount.value = Boxes.getFavorites().length;
     super.onInit();
   }
 
   @override
   void onReady() {
-    _streamSubscription!.onData((data) {
-      if (data != ConnectivityResult.none) {
-        isInternetAvailable.value = true;
+    connectionStatus.connectionChange.listen((data) {
+      isInternetAvailable.value = data;
+      if (data) {
         getMovies(EndPoints.trending, {});
       }
     });
     super.onReady();
-  }
-
-  @override
-  void dispose() {
-    ConnectivityService().closeConnectivityStream();
-    _streamSubscription?.cancel();
-    super.dispose();
   }
 
   void logout() async {
@@ -113,6 +101,12 @@ class HomeController extends GetxController {
         getMovies(EndPoints.tvShows, {});
         break;
     }
+  }
+
+  @override
+  dispose() {
+    connectionStatus.dispose();
+    super.dispose();
   }
 
   // It is called just before the controller is deleted from memory.

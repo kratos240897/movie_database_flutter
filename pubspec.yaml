@@ -59,6 +59,8 @@ dependencies:
   firebase_auth: ^3.3.7
   group_button: ^4.5.0
   youtube_player_flutter: ^8.0.0
+  data_connection_checker_nulls: ^0.0.2
+  
 
 dev_dependencies:
   flutter_test:

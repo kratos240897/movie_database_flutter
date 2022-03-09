@@ -10,7 +10,6 @@ import 'package:movie_database/helpers/helpers.dart';
 import 'package:movie_database/helpers/styles.dart';
 import 'package:movie_database/routes/router.dart';
 import 'package:movie_database/service/auth_service.dart';
-import 'package:movie_database/service/connectivity_service.dart';
 import './models/movie_model.dart';
 
 void main() async {
@@ -22,7 +21,6 @@ void main() async {
   Loggy.initLoggy(
     logPrinter: const PrettyDeveloperPrinter(),
   );
-  Get.put(ConnectivityService(), permanent: true);
   Get.lazyPut(() => AuthService(), fenix: true);
   Get.lazyPut(() => FirebaseAuth.instance, fenix: true);
   runApp(const MyApp());
