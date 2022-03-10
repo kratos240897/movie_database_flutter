@@ -2,7 +2,9 @@
 // ignore_for_file: unnecessary_import
 
 import 'dart:async';
+import 'package:movie_database/base/base_controller.dart';
 import 'package:movie_database/helpers/boxes.dart';
+import 'package:movie_database/helpers/connection_aware.dart';
 import 'package:movie_database/helpers/constants.dart';
 import 'package:movie_database/helpers/helpers.dart';
 import 'package:movie_database/helpers/utils.dart';
@@ -13,13 +15,10 @@ import 'package:movie_database/models/movie_model.dart';
 import 'package:movie_database/routes/router.dart';
 import 'package:movie_database/service/auth_service.dart';
 
-import '../../helpers/connection_util.dart';
-
-class HomeController extends GetxController {
+class HomeController extends BaseController with ConnectionAware {
   var movies = RxList.empty();
   final error = ''.obs;
   final _utils = Utils();
-  ConnectionUtil connectionStatus = ConnectionUtil.getInstance();
   final AppRepository _appRepo = Get.find<AppRepository>();
   final AuthService _authService = Get.find<AuthService>();
   var favoritesCount = 0.obs;
@@ -30,19 +29,15 @@ class HomeController extends GetxController {
   @override
   void onInit() async {
     _appRepo.init();
-    connectionStatus.initialize();
     favoritesCount.value = Boxes.getFavorites().length;
     super.onInit();
   }
 
   @override
   void onReady() {
-    connectionStatus.connectionChange.listen((data) {
-      isInternetAvailable.value = data;
-      if (data) {
-        getMovies(EndPoints.trending, {});
-      }
-    });
+    if (isInternetAvailable.value == true) {
+      getMovies(EndPoints.trending, {});
+    }
     super.onReady();
   }
 
@@ -103,18 +98,6 @@ class HomeController extends GetxController {
     }
   }
 
-  @override
-  dispose() {
-    connectionStatus.dispose();
-    super.dispose();
-  }
-
-  // It is called just before the controller is deleted from memory.
-  // @override
-  // onClose() {
-  //   super.onClose();
-  // }
-
   getMovies(String url, Map<String, dynamic> query) {
     isLoading.value = true;
     _appRepo.getMovies(url, query).then((value) {
@@ -125,5 +108,17 @@ class HomeController extends GetxController {
       this.error.value = error.toString();
       return Future.error(error!);
     });
+  }
+
+  @override
+  void onNetworkConnected() {
+    isInternetAvailable.value = true;
+    _utils.showSnackBar('Internet Connection', 'Back Online', true);
+  }
+
+  @override
+  void onNetworkDisconnected() {
+    isInternetAvailable.value = false;
+    _utils.showSnackBar('Internet Connection', 'You\'re offline', false);
   }
 }
