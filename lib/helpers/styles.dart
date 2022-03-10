@@ -27,11 +27,11 @@ class _Colors {
 class _TextStyles {
   final f14Regular = TextStyle(
       fontSize: 14,
-      color: Styles.colors.black,
+      color: Styles.colors.white,
       fontFamily: GoogleFonts.nunito().copyWith().fontFamily);
   final f14 = TextStyle(
       fontSize: 14,
-      color: Styles.colors.black,
+      color: Styles.colors.white,
       fontWeight: FontWeight.bold,
       fontFamily: GoogleFonts.nunito().copyWith().fontFamily);
 }

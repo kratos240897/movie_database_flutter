@@ -188,7 +188,7 @@ class BackDropWidget extends StatelessWidget {
                 right: 0,
                 bottom: 0,
                 child: Card(
-                    elevation: 10.0,
+                    elevation: 15.0,
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10.0)),
                     clipBehavior: Clip.antiAliasWithSaveLayer),
@@ -263,7 +263,7 @@ class MovieDetailWidget extends StatelessWidget {
                 color: Styles.colors.themeColor,
                 fontSize: 12.0,
                 fontWeight: FontWeight.bold,
-                letterSpacing: 2.0,
+                letterSpacing: 1.2,
                 fontFamily: GoogleFonts.spartan().fontFamily),
           ),
         ),
