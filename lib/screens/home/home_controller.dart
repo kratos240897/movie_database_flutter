@@ -16,15 +16,13 @@ import 'package:movie_database/routes/router.dart';
 import 'package:movie_database/service/auth_service.dart';
 
 class HomeController extends BaseController with ConnectionAware {
-  var movies = RxList.empty();
-  final error = ''.obs;
-  final _utils = Utils();
+  final movies = RxList.empty();
   final AppRepository _appRepo = Get.find<AppRepository>();
   final AuthService _authService = Get.find<AuthService>();
-  var favoritesCount = 0.obs;
-  var isInternetAvailable = false.obs;
-  var isLoading = false.obs;
-  var selectedIndex = 0.obs;
+  final favoritesCount = 0.obs;
+  final isNetworkAvailable = false.obs;
+  final isLoading = false.obs;
+  final selectedIndex = 0.obs;
 
   @override
   void onInit() async {
@@ -34,20 +32,23 @@ class HomeController extends BaseController with ConnectionAware {
   }
 
   @override
-  void onReady() {
-    if (isInternetAvailable.value == true) {
-      getMovies(EndPoints.trending, {});
-    }
+  void onReady() async {
+    isNetworkAvailable.value = await getIsInternetAvailable();
+    Future.delayed(const Duration(seconds: 3), () async {
+      if (isNetworkAvailable.value == true) {
+        getMovies(EndPoints.trending, {});
+      }
+    });
     super.onReady();
   }
 
   void logout() async {
-    _utils.showLoading();
+    utils.showLoading();
     _authService.signOut().then((value) {
-      _utils.hideLoading();
+      utils.hideLoading();
       if (value == Constants.SIGNOUT_SUCCESS) {
         Get.offAllNamed(AppRouter.LOGIN);
-        _utils.showSnackBar('Logout', 'success', true);
+        utils.showSnackBar('Logout', 'success', true);
       }
     });
   }
@@ -112,13 +113,13 @@ class HomeController extends BaseController with ConnectionAware {
 
   @override
   void onNetworkConnected() {
-    isInternetAvailable.value = true;
-    _utils.showSnackBar('Internet Connection', 'Back Online', true);
+    isNetworkAvailable.value = true;
+    utils.showSnackBar('Internet Connection', 'Back Online', true);
   }
 
   @override
   void onNetworkDisconnected() {
-    isInternetAvailable.value = false;
-    _utils.showSnackBar('Internet Connection', 'You\'re offline', false);
+    isNetworkAvailable.value = false;
+    utils.showSnackBar('Internet Connection', 'You\'re offline', false);
   }
 }

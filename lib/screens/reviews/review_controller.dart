@@ -1,5 +1,5 @@
-import 'package:get/get.dart';
+import 'package:movie_database/base/base_controller.dart';
 
-class ReviewsController extends GetxController {
+class ReviewsController extends BaseController {
   
 }

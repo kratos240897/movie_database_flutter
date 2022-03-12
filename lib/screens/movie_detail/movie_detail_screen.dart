@@ -20,7 +20,6 @@ import 'package:movie_database/screens/person/person_binding.dart';
 class MovieDetailScreen extends StatefulWidget {
   final Results movie;
   final MovieDetailController controller = Get.find<MovieDetailController>();
-  final mediaQuery = Get.mediaQuery;
   MovieDetailScreen({Key? key, required this.movie}) : super(key: key);
 
   @override
@@ -39,35 +38,43 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final mediaQuery = Get.mediaQuery;
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.movie.title),
       ),
-      body: SafeArea(
-        child: Column(children: [
-          SizedBox(
+      body: SafeArea(child: Obx(() {
+        return widget.controller.isNetworkAvailable.value == true
+            ? ContentWidget(controller: widget.controller, movie: widget.movie)
+            : widget.controller.getNoInternetWidget;
+      })),
+    );
+  }
+}
+
+class ContentWidget extends StatelessWidget {
+  ContentWidget({Key? key, required this.controller, required this.movie})
+      : super(key: key);
+  final MovieDetailController controller;
+  final Results movie;
+  final mediaQuery = Get.mediaQuery;
+
+  @override
+  Widget build(BuildContext context) {
+    return SingleChildScrollView(
+      child: Column(
+        children: [
+          Container(
+            margin: const EdgeInsets.symmetric(horizontal: 10.0),
             height: mediaQuery.size.height * 0.3,
             child: BackDropWidget(
-                controller: widget.controller,
-                movie: widget.movie,
-                mediaQuery: mediaQuery),
+                controller: controller, movie: movie, mediaQuery: mediaQuery),
           ),
-          SizedBox(height: mediaQuery.size.height * 0.01),
-          SizedBox(
-              height: mediaQuery.size.height * 0.10,
-              child: RatingDetailWidget(movie: widget.movie)),
-          SizedBox(height: mediaQuery.size.height * 0.02),
-          SizedBox(
-              height: mediaQuery.size.height * 0.25,
-              child: MovieDetailWidget(movie: widget.movie)),
-          SizedBox(
-              height: mediaQuery.size.height * 0.06,
-              child: ReviewButton(controller: widget.controller)),
-          Cast(
-              height: mediaQuery.size.height * 0.25,
-              controller: widget.controller)
-        ]),
+          const SizedBox(height: 12.0),
+          MovieDetailWidget(movie: movie),
+          const SizedBox(height: 15.0),
+          ReviewButton(controller: controller),
+          Cast(controller: controller)
+        ],
       ),
     );
   }
@@ -75,51 +82,67 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
 
 class Cast extends StatelessWidget {
   final MovieDetailController controller;
-  final double height;
-  const Cast({Key? key, required this.controller, required this.height})
-      : super(key: key);
+  const Cast({Key? key, required this.controller}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Obx(() {
-      return Expanded(
-        child: Container(
-            height: height,
-            padding: const EdgeInsets.only(left: 8.0, right: 8.0, top: 5.0),
-            child: ListView.builder(
-                itemCount: controller.cast.length,
-                scrollDirection: Axis.horizontal,
-                shrinkWrap: true,
-                itemBuilder: (context, index) {
-                  return LayoutBuilder(builder: (context, constraints) {
-                    return InkWell(
-                      onTap: () => Get.to(
-                          () => Person(
-                              title: controller.cast[index].originalName,
-                              id: controller.cast[index].id.toString()),
-                          binding: PersonBinding()),
-                      child: Container(
-                        margin: const EdgeInsets.all(5.0),
-                        child: Column(children: [
-                          controller.cast[index].profilePath != null
-                              ? CircleAvatar(
-                                  radius: constraints.maxHeight * 0.40,
+      return Container(
+          height: 180.0,
+          padding: const EdgeInsets.only(
+              left: 8.0, right: 8.0, top: 5.0, bottom: 5.0),
+          child: ListView.builder(
+              itemCount: controller.cast.length,
+              scrollDirection: Axis.horizontal,
+              shrinkWrap: true,
+              itemBuilder: (context, index) {
+                return LayoutBuilder(builder: (context, constraints) {
+                  return InkWell(
+                    onTap: () => Get.to(
+                        () => Person(
+                            title: controller.cast[index].originalName,
+                            id: controller.cast[index].id.toString()),
+                        binding: PersonBinding()),
+                    child: Container(
+                      margin: const EdgeInsets.all(5.0),
+                      child: Column(children: [
+                        controller.cast[index].profilePath != null
+                            ? CircleAvatar(
+                                radius: constraints.maxHeight * 0.30,
+                                backgroundColor: Colors.amber,
+                                child: CircleAvatar(
+                                  radius: constraints.maxHeight * 0.28,
                                   backgroundImage: CachedNetworkImageProvider(
                                       Constants.BASE_IMAGE_URL +
                                           controller.cast[index].profilePath
                                               .toString()),
-                                )
-                              : CircleAvatar(
-                                  radius: constraints.maxHeight * 0.40,
+                                ),
+                              )
+                            : CircleAvatar(
+                                radius: constraints.maxHeight * 0.30,
+                                backgroundColor: Colors.amber,
+                                child: CircleAvatar(
+                                  radius: constraints.maxHeight * 0.28,
+                                  backgroundColor: Colors.white,
                                   backgroundImage: const AssetImage(
-                                      'assets/images/user.png'),
-                                )
-                        ]),
-                      ),
-                    );
-                  });
-                })),
-      );
+                                      'assets/images/actor.png'),
+                                ),
+                              ),
+                        const SizedBox(height: 12.0),
+                        ConstrainedBox(
+                            constraints: BoxConstraints(
+                                maxWidth: constraints.maxHeight * 0.60),
+                            child: Text(
+                              controller.cast[index].character,
+                              textAlign: TextAlign.center,
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                            ))
+                      ]),
+                    ),
+                  );
+                });
+              }));
     });
   }
 }
@@ -255,6 +278,7 @@ class MovieDetailWidget extends StatelessWidget {
                   color: Styles.colors.themeColor,
                   fontFamily: GoogleFonts.actor().fontFamily)),
         ),
+        const SizedBox(height: 5.0),
         Padding(
           padding: const EdgeInsets.only(top: 5.0),
           child: Text(
@@ -267,12 +291,12 @@ class MovieDetailWidget extends StatelessWidget {
                 fontFamily: GoogleFonts.spartan().fontFamily),
           ),
         ),
+        const SizedBox(height: 8.0),
+        RatingDetailWidget(movie: movie),
         Padding(
           padding: const EdgeInsets.only(top: 10.0, left: 12.0, right: 12.0),
           child: Text(movie.overview,
               textAlign: TextAlign.start,
-              maxLines: 4,
-              overflow: TextOverflow.ellipsis,
               style: TextStyle(
                   height: 1.2,
                   wordSpacing: 3.0,
@@ -291,6 +315,7 @@ class RatingDetailWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
+      mainAxisSize: MainAxisSize.min,
       children: [
         RatingBarIndicator(
             rating: (movie.voteAverage / 2).toDouble(),
@@ -302,24 +327,26 @@ class RatingDetailWidget extends StatelessWidget {
                   Icons.star,
                   color: Colors.amber,
                 )),
-        const SizedBox(height: 5.0),
-        Text((movie.voteAverage / 2).toString(), style: Styles.textStyles.f14),
-        Expanded(
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Padding(
-                padding: const EdgeInsets.only(top: 5, right: 5),
-                child: Text('${movie.voteCount} votes',
-                    style: TextStyle(
-                        fontSize: 12.0,
-                        fontFamily: GoogleFonts.jost().fontFamily)),
-              ),
-              const Icon(Icons.volunteer_activism_sharp, color: Colors.red)
-            ],
-          ),
+        Text((movie.voteAverage / 2).toString(),
+            style: TextStyle(
+                fontSize: 14,
+                color: Colors.black,
+                fontWeight: FontWeight.bold,
+                fontFamily: GoogleFonts.nunito().copyWith().fontFamily)),
+        Row(
+          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(top: 5, right: 5),
+              child: Text('${movie.voteCount} votes',
+                  style: TextStyle(
+                      fontSize: 12.0,
+                      fontFamily: GoogleFonts.jost().fontFamily)),
+            ),
+            const Icon(Icons.volunteer_activism_sharp, color: Colors.red)
+          ],
         ),
       ],
     );

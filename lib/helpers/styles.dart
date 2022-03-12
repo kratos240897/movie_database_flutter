@@ -31,7 +31,7 @@ class _TextStyles {
       fontFamily: GoogleFonts.nunito().copyWith().fontFamily);
   final f14 = TextStyle(
       fontSize: 14,
-      color: Styles.colors.white,
+      color: Colors.black,
       fontWeight: FontWeight.bold,
       fontFamily: GoogleFonts.nunito().copyWith().fontFamily);
 }

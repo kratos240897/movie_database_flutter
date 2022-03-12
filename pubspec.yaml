@@ -60,6 +60,8 @@ dependencies:
   group_button: ^4.5.0
   youtube_player_flutter: ^8.0.0
   data_connection_checker_nulls: ^0.0.2
+  lottie: ^1.2.2
+  auto_size_text: ^3.0.0
   
 
 dev_dependencies:
@@ -90,6 +92,8 @@ flutter:
   assets:
     - assets/images/wifi.png
     - assets/images/user.png
+    - assets/images/actor.png
+    - assets/lottie/no_internet.json
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see

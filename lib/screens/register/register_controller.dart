@@ -2,17 +2,16 @@ import 'dart:io';
 
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:movie_database/base/base_controller.dart';
 import 'package:movie_database/helpers/constants.dart';
-import 'package:movie_database/helpers/utils.dart';
 import 'package:movie_database/routes/router.dart';
 import 'package:movie_database/service/auth_service.dart';
 
-class RegisterController extends GetxController {
+class RegisterController extends BaseController {
   final ImagePicker _picker = ImagePicker();
   File? file;
   XFile? image;
   var isImageNotNull = false.obs;
-  final _utils = Utils();
   final AuthService _authService = Get.find<AuthService>();
 
   void pickImage() async {
@@ -27,14 +26,14 @@ class RegisterController extends GetxController {
   }
 
   void register(String email, String password) async {
-    _utils.showLoading();
+    utils.showLoading();
     _authService.signUp(email: email, password: password).then((value) {
-      _utils.hideLoading();
+      utils.hideLoading();
       if (value == Constants.REGISTRATION_SUCCESS) {
-        _utils.showSnackBar('Registration', 'success', true);
+        utils.showSnackBar('Registration', 'success', true);
         Get.offAndToNamed(AppRouter.HOME);
       } else {
-        _utils.showSnackBar('Registration', value, false);
+        utils.showSnackBar('Registration', value, false);
       }
     });
   }

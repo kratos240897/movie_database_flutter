@@ -42,39 +42,13 @@ class Home extends GetView<HomeController> {
           mainAxisSize: MainAxisSize.min,
           children: [
             CategoriesWidget(controller: controller),
-            controller.isInternetAvailable.value
+            controller.isNetworkAvailable.value
                 ? MoviesListWidget(
                     controller: controller, mediaQuery: mediaQuery)
-                : const NoInternetWidget()
+                : controller.getNoInternetWidget
           ],
         );
       })),
-    );
-  }
-}
-
-class NoInternetWidget extends StatelessWidget {
-  const NoInternetWidget({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Expanded(
-      child: Center(
-          child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          SizedBox(
-              height: 90.0,
-              width: 70.0,
-              child: Image.asset('assets/images/wifi.png')),
-          Text('No Internet',
-              style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  color: Colors.deepOrangeAccent,
-                  fontFamily: GoogleFonts.comicNeue().fontFamily,
-                  fontSize: 20))
-        ],
-      )),
     );
   }
 }
