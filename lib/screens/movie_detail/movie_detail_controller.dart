@@ -34,7 +34,6 @@ class MovieDetailController extends BaseController with ConnectionAware {
     _appRepo.getMovieReviews(id).then((value) {
       utils.hideLoading();
       reviews.value = value;
-      getCredits(id);
     }).onError((error, stackTrace) {
       utils.hideLoading();
       this.error.value = error.toString();

@@ -1,4 +1,3 @@
-import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
@@ -121,7 +120,7 @@ class _RegisterState extends State<Register> {
                           border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(15.0))),
                       validator: (value) {
-                        if (!EmailValidator.validate(value!)) {
+                        if (!GetUtils.isEmail(value!)) {
                           return 'Enter a valid email';
                         } else {
                           return null;

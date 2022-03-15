@@ -92,7 +92,7 @@ class AppRepository extends AppRepo {
 
   @override
   Future<ProfileResponse> getPerson(String id) async {
-     try {
+    try {
       final res = await _apiService
           .getRequest(EndPoints.person.replaceAll('{person_id}', id), {});
       final profile = ProfileResponse.fromJson(res.data);
