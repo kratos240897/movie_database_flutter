@@ -46,7 +46,7 @@ class HomeController extends BaseController with ConnectionAware {
     utils.showLoading();
     _authService.signOut().then((value) {
       utils.hideLoading();
-      if (value == Constants.SIGNOUT_SUCCESS) {
+      if (value == AuthStatus.signoutSuccess.toString()) {
         Get.offAllNamed(AppRouter.LOGIN);
         utils.showSnackBar('Logout', 'success', true);
       }

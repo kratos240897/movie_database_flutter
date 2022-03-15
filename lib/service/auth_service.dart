@@ -14,7 +14,7 @@ class AuthService {
     try {
       await _firebaseAuth.signInWithEmailAndPassword(
           email: email, password: password);
-      return Constants.LOGIN_SUCCESS;
+      return AuthStatus.loginSuccess.toString();
     } on FirebaseAuthException catch (e) {
       if (e.code == 'user-not-found') {
         return 'No user found for this email.';
@@ -30,7 +30,7 @@ class AuthService {
     try {
       await _firebaseAuth.createUserWithEmailAndPassword(
           email: email, password: password);
-      return Constants.REGISTRATION_SUCCESS;
+      return AuthStatus.registrationSuccess.toString();
     } on FirebaseAuthException catch (e) {
       if (e.code == 'weak-password') {
         return 'The password provided is too weak.';
@@ -44,7 +44,7 @@ class AuthService {
   Future<String> signOut() async {
     try {
       await _firebaseAuth.signOut();
-      return Constants.SIGNOUT_SUCCESS;
+      return AuthStatus.signoutSuccess.toString();
     } on FirebaseAuthException catch (e) {
       return e.message!;
     }

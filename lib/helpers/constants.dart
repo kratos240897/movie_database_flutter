@@ -9,7 +9,10 @@ class Constants {
   static const DB_NAME = 'favorites';
   static const USER_PREFS = 'user_prefs';
   static const KEY_LOGIN = 'login';
-  static const LOGIN_SUCCESS = 'Sign in success';
-  static const REGISTRATION_SUCCESS = 'Registration success';
-  static const SIGNOUT_SUCCESS = 'Logout success';
+}
+
+enum AuthStatus{
+  loginSuccess,
+  registrationSuccess,
+  signoutSuccess
 }

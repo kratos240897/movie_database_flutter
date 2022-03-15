@@ -29,7 +29,7 @@ class RegisterController extends BaseController {
     utils.showLoading();
     _authService.signUp(email: email, password: password).then((value) {
       utils.hideLoading();
-      if (value == Constants.REGISTRATION_SUCCESS) {
+      if (value == AuthStatus.registrationSuccess.toString()) {
         utils.showSnackBar('Registration', 'success', true);
         Get.offAndToNamed(AppRouter.HOME);
       } else {

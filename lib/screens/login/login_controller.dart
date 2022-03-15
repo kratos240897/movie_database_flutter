@@ -12,7 +12,7 @@ class LoginController extends BaseController with ConnectionAware {
     utils.showLoading();
     _authService.signIn(email: email, password: password).then((value) {
       utils.hideLoading();
-      if (value == Constants.LOGIN_SUCCESS) {
+      if (value == AuthStatus.loginSuccess.toString()) {
         utils.showSnackBar('Login', 'success', true);
         Get.offAndToNamed(AppRouter.HOME);
       } else {

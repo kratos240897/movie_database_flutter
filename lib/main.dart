@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_loggy/flutter_loggy.dart';
+import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:get/get.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:loggy/loggy.dart';
@@ -18,12 +19,20 @@ void main() async {
   await Hive.initFlutter();
   Hive.registerAdapter(MovieAdapter());
   await Hive.openBox<Movie>(Constants.DB_NAME);
+  FlutterNativeSplash.removeAfter(initialization);
+  inject();
+  runApp(const MyApp());
+}
+
+Future initialization(BuildContext? context) async {
   Loggy.initLoggy(
     logPrinter: const PrettyDeveloperPrinter(),
   );
+}
+
+void inject() {
   Get.lazyPut(() => AuthService(), fenix: true);
   Get.lazyPut(() => FirebaseAuth.instance, fenix: true);
-  runApp(const MyApp());
 }
 
 class MyApp extends StatefulWidget {
