@@ -1,4 +1,3 @@
-
 class EndPoints {
   static const topRated = '/movie/top_rated';
   static const trending = '/trending/movie/day';
@@ -11,4 +10,5 @@ class EndPoints {
   static const credits = '/movie/{movie_id}/credits';
   static const person = '/person/{person_id}';
   static const providers = '/movie/{movie_id}/watch/providers';
+  static const details = '/movie/{movie_id}';
 }
