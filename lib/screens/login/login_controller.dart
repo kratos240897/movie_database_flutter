@@ -1,11 +1,10 @@
 import 'package:get/get.dart';
 import 'package:movie_database/base/base_controller.dart';
-import 'package:movie_database/helpers/connection_aware.dart';
 import 'package:movie_database/helpers/constants.dart';
 import 'package:movie_database/routes/router.dart';
 import 'package:movie_database/service/auth_service.dart';
 
-class LoginController extends BaseController with ConnectionAware {
+class LoginController extends BaseController {
   final AuthService _authService = Get.find<AuthService>();
 
   void login(String email, String password) async {
@@ -19,13 +18,5 @@ class LoginController extends BaseController with ConnectionAware {
         utils.showSnackBar('Login', value, false);
       }
     });
-  }
-
-  @override
-  void onNetworkConnected() {
-  }
-
-  @override
-  void onNetworkDisconnected() {
   }
 }

@@ -400,7 +400,7 @@ class CategoriesWidget extends StatelessWidget {
                     fontFamily: GoogleFonts.beVietnamPro().fontFamily),
                 unselectedColor: Colors.grey[300],
                 borderRadius: BorderRadius.circular(15.0)),
-            onSelected: (index, _) async {
+            onSelected: (_, index, __) async {
               controller.setSelectedCategory(index);
             },
             buttons: const [

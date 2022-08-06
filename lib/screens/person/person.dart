@@ -25,7 +25,7 @@ class _PersonState extends State<Person> {
 
   @override
   void initState() {
-    WidgetsBinding.instance!.addPostFrameCallback((_) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
       controller.getPerson(widget.id);
     });
     super.initState();
@@ -108,109 +108,103 @@ class _PersonState extends State<Person> {
     return Scaffold(
       body: Obx(() {
         return controller.isLoaded.value == true
-            ? SafeArea(
-                child: NestedScrollView(
-                    headerSliverBuilder: ((context, innerBoxIsScrolled) {
-                  return [
-                    SliverOverlapAbsorber(
-                      handle: NestedScrollView.sliverOverlapAbsorberHandleFor(
-                          context),
-                      sliver: SliverAppBar(
-                        backgroundColor: Styles.colors.primaryColor,
-                        expandedHeight: 400.0,
-                        pinned: true,
-                        primary: true,
-                        flexibleSpace: FlexibleSpaceBar(
-                          title: Text(
-                            widget.title,
-                            style: TextStyle(
-                                fontSize: 25.0,
-                                fontFamily: GoogleFonts.caveat().fontFamily),
-                          ),
-                          background: Stack(
-                            children: [
-                              Positioned.fill(
-                                child: CachedNetworkImage(
-                                  imageUrl: Constants.BASE_IMAGE_URL +
-                                      controller.profile.profilePath,
-                                  fit: BoxFit.cover,
-                                ),
+            ? NestedScrollView(
+                headerSliverBuilder: ((context, innerBoxIsScrolled) {
+                return [
+                  SliverOverlapAbsorber(
+                    handle: NestedScrollView.sliverOverlapAbsorberHandleFor(
+                        context),
+                    sliver: SliverAppBar(
+                      backgroundColor: Styles.colors.primaryColor,
+                      expandedHeight: 400.0,
+                      pinned: true,
+                      primary: true,
+                      flexibleSpace: FlexibleSpaceBar(
+                        title: Text(
+                          widget.title,
+                          style: TextStyle(
+                              fontSize: 25.0,
+                              fontFamily: GoogleFonts.caveat().fontFamily),
+                        ),
+                        background: Stack(
+                          children: [
+                            Positioned.fill(
+                              child: CachedNetworkImage(
+                                imageUrl: Constants.BASE_IMAGE_URL +
+                                    controller.profile.profilePath,
+                                fit: BoxFit.cover,
                               ),
-                              Positioned.fill(
-                                  child: Container(color: Colors.black26)),
-                            ],
-                          ),
-                        ),
-                        leading: Padding(
-                          padding: const EdgeInsets.only(top: 5.0, left: 12.0),
-                          child: InkWell(
-                              onTap: () => Get.back(),
-                              child:
-                                  const Icon(Icons.arrow_back_ios_new_sharp)),
-                        ),
-                        centerTitle: true,
-                        actions: const [
-                          Padding(
-                            padding: EdgeInsets.only(top: 5.0, right: 15.0),
-                            child: Icon(FontAwesomeIcons.wikipediaW),
-                          )
-                        ],
-                      ),
-                    )
-                  ];
-                }), body: SafeArea(child: Builder(builder: ((context) {
-                  return CustomScrollView(
-                    slivers: [
-                      SliverOverlapInjector(
-                          handle:
-                              NestedScrollView.sliverOverlapAbsorberHandleFor(
-                                  context)),
-                      SliverToBoxAdapter(
-                          child: Column(
-                        children: [
-                          Wrap(
-                              spacing: 1.0,
-                              runSpacing: 1.0,
-                              alignment: WrapAlignment.spaceEvenly,
-                              direction: Axis.horizontal,
-                              children: List.generate(
-                                  controller.profile.alsoKnownAs.length,
-                                  (index) {
-                                return Container(
-                                  margin: const EdgeInsets.symmetric(
-                                      horizontal: 5.0),
-                                  child: ElevatedButton(
-                                      onPressed: () {},
-                                      style: ElevatedButton.styleFrom(
-                                          primary: Colors.amber,
-                                          splashFactory: NoSplash.splashFactory,
-                                          shape: const StadiumBorder()),
-                                      child: Text(
-                                          controller.profile.alsoKnownAs[index],
-                                          style: const TextStyle(
-                                              color: Colors.black))),
-                                );
-                              })),
-                          Padding(
-                            padding: const EdgeInsets.symmetric(
-                                vertical: 8.0, horizontal: 12.0),
-                            child: Text(
-                              controller.profile.biography,
-                              style: TextStyle(
-                                  color: Colors.black,
-                                  fontSize: 15.0,
-                                  wordSpacing: 1.0,
-                                  height: 1.4,
-                                  fontFamily:
-                                      GoogleFonts.quicksand().fontFamily),
                             ),
-                          )
-                        ],
-                      ))
-                    ],
-                  );
-                })))),
-              )
+                            Positioned.fill(
+                                child: Container(color: Colors.black26)),
+                          ],
+                        ),
+                      ),
+                      leading: Padding(
+                        padding: const EdgeInsets.only(top: 5.0, left: 12.0),
+                        child: InkWell(
+                            onTap: () => Get.back(),
+                            child: const Icon(Icons.arrow_back_ios_new_sharp)),
+                      ),
+                      centerTitle: true,
+                      actions: const [
+                        Padding(
+                          padding: EdgeInsets.only(top: 5.0, right: 15.0),
+                          child: Icon(FontAwesomeIcons.wikipediaW),
+                        )
+                      ],
+                    ),
+                  )
+                ];
+              }), body: SafeArea(child: Builder(builder: ((context) {
+                return CustomScrollView(
+                  slivers: [
+                    SliverOverlapInjector(
+                        handle: NestedScrollView.sliverOverlapAbsorberHandleFor(
+                            context)),
+                    SliverToBoxAdapter(
+                        child: Column(
+                      children: [
+                        Wrap(
+                            spacing: 1.0,
+                            runSpacing: 1.0,
+                            alignment: WrapAlignment.spaceEvenly,
+                            direction: Axis.horizontal,
+                            children: List.generate(
+                                controller.profile.alsoKnownAs.length, (index) {
+                              return Container(
+                                margin:
+                                    const EdgeInsets.symmetric(horizontal: 5.0),
+                                child: ElevatedButton(
+                                    onPressed: () {},
+                                    style: ElevatedButton.styleFrom(
+                                        primary: Colors.amber,
+                                        splashFactory: NoSplash.splashFactory,
+                                        shape: const StadiumBorder()),
+                                    child: Text(
+                                        controller.profile.alsoKnownAs[index],
+                                        style: const TextStyle(
+                                            color: Colors.black))),
+                              );
+                            })),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 8.0, horizontal: 12.0),
+                          child: Text(
+                            controller.profile.biography,
+                            style: TextStyle(
+                                color: Colors.black,
+                                fontSize: 15.0,
+                                wordSpacing: 1.0,
+                                height: 1.4,
+                                fontFamily: GoogleFonts.quicksand().fontFamily),
+                          ),
+                        )
+                      ],
+                    ))
+                  ],
+                );
+              }))))
             : Container();
       }),
     );

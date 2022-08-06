@@ -24,16 +24,14 @@ void main() async {
   await Hive.initFlutter();
   Hive.registerAdapter(MovieAdapter());
   await Hive.openBox<Movie>(Constants.DB_NAME);
-  FlutterNativeSplash.removeAfter(initialization);
-  inject();
-  runApp(const MyApp());
-}
-
-Future initialization(BuildContext? context) async {
   Loggy.initLoggy(
     logPrinter: const PrettyDeveloperPrinter(),
   );
+  inject();
+  FlutterNativeSplash.remove();
+  runApp(const MyApp());
 }
+
 
 void inject() {
   Get.lazyPut(() => AuthService(), fenix: true);

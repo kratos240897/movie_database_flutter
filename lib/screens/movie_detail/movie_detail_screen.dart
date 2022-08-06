@@ -29,11 +29,7 @@ class MovieDetailScreen extends StatefulWidget {
 class _MovieDetailScreenState extends State<MovieDetailScreen> {
   @override
   void initState() {
-    WidgetsBinding.instance!.addPostFrameCallback((_) {
-      widget.controller.getVideoDetails(widget.movie.id.toString());
-      widget.controller.getCredits(widget.movie.id.toString());
-      widget.controller.getMovieReviews(widget.movie.id.toString());
-    });
+    widget.controller.movieId = widget.movie.id.toString();
     super.initState();
   }
 

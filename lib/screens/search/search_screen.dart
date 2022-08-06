@@ -186,7 +186,7 @@ class _CarouselMovieSliderState extends State<CarouselMovieSlider> {
   void initState() {
     _pageController =
         PageController(viewportFraction: 0.8, initialPage: _initalPage);
-    WidgetsBinding.instance?.addPostFrameCallback((_) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
       _animateSlider();
     });
     super.initState();

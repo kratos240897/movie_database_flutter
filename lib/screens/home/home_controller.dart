@@ -4,7 +4,6 @@
 import 'dart:async';
 import 'package:movie_database/base/base_controller.dart';
 import 'package:movie_database/helpers/boxes.dart';
-import 'package:movie_database/helpers/connection_aware.dart';
 import 'package:movie_database/helpers/constants.dart';
 import 'package:movie_database/helpers/helpers.dart';
 import 'package:movie_database/helpers/utils.dart';
@@ -15,12 +14,12 @@ import 'package:movie_database/models/movie_model.dart';
 import 'package:movie_database/routes/router.dart';
 import 'package:movie_database/service/auth_service.dart';
 
-class HomeController extends BaseController with ConnectionAware {
+class HomeController extends BaseController {
   final movies = RxList.empty();
   final AppRepository _appRepo = Get.find<AppRepository>();
   final AuthService _authService = Get.find<AuthService>();
   final favoritesCount = 0.obs;
-  final isNetworkAvailable = false.obs;
+  
   final isLoading = false.obs;
   final selectedIndex = 0.obs;
 
@@ -33,7 +32,6 @@ class HomeController extends BaseController with ConnectionAware {
 
   @override
   void onReady() async {
-    isNetworkAvailable.value = await getIsInternetAvailable();
     Future.delayed(const Duration(seconds: 3), () async {
       if (isNetworkAvailable.value == true) {
         getMovies(EndPoints.trending, {});
@@ -109,17 +107,5 @@ class HomeController extends BaseController with ConnectionAware {
       this.error.value = error.toString();
       return Future.error(error!);
     });
-  }
-
-  @override
-  void onNetworkConnected() {
-    isNetworkAvailable.value = true;
-    utils.showSnackBar('Internet Connection', 'Back Online', true);
-  }
-
-  @override
-  void onNetworkDisconnected() {
-    isNetworkAvailable.value = false;
-    utils.showSnackBar('Internet Connection', 'You\'re offline', false);
   }
 }

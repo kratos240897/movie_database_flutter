@@ -6,9 +6,10 @@ import 'package:lottie/lottie.dart';
 import '../helpers/connection_aware.dart';
 import '../helpers/utils.dart';
 
-abstract class BaseController extends GetxController {
+abstract class BaseController extends GetxController with ConnectionAware {
   final error = ''.obs;
   final utils = Utils();
+  final isNetworkAvailable = false.obs;
 
   get getNoInternetWidget => const NoInternetWidget();
 
@@ -23,29 +24,43 @@ abstract class BaseController extends GetxController {
 
   @override
   void onInit() {
-    if (this is ConnectionAware) {
-      ConnectionAware awareObj = this as ConnectionAware;
-      awareObj.connectivitySubscription =
-          Connectivity().onConnectivityChanged.listen((event) {
-        if (event == ConnectivityResult.mobile ||
-            event == ConnectivityResult.wifi) {
-          awareObj.networkState = NetworkState.connected;
-          awareObj.onNetworkConnected();
-        } else if (event == ConnectivityResult.none) {
-          awareObj.networkState = NetworkState.disconnected;
-          awareObj.onNetworkDisconnected();
-        }
-      });
-    }
+    ConnectionAware awareObj = this;
+    awareObj.connectivitySubscription =
+        Connectivity().onConnectivityChanged.listen((event) {
+      if (event == ConnectivityResult.mobile ||
+          event == ConnectivityResult.wifi) {
+        awareObj.networkState = NetworkState.connected;
+        awareObj.onNetworkConnected();
+      } else if (event == ConnectivityResult.none) {
+        awareObj.networkState = NetworkState.disconnected;
+        awareObj.onNetworkDisconnected();
+      }
+    });
     super.onInit();
   }
 
   @override
+  void onReady() async {
+    isNetworkAvailable.value = await getIsInternetAvailable();
+    super.onReady();
+  }
+
+  @override
   void dispose() {
-    if (this is ConnectionAware) {
-      (this as ConnectionAware).connectivitySubscription?.cancel();
-    }
+    connectivitySubscription?.cancel();
     super.dispose();
+  }
+
+  @override
+  void onNetworkConnected() {
+    isNetworkAvailable.value = true;
+    utils.showSnackBar('Internet Connection', 'Back Online', true);
+  }
+
+  @override
+  void onNetworkDisconnected() {
+    isNetworkAvailable.value = false;
+    utils.showSnackBar('Internet Connection', 'You\'re offline', false);
   }
 }
 
@@ -54,9 +69,8 @@ class NoInternetWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Expanded(
-        child: Center(
-            child: Lottie.asset('assets/lottie/no_internet.json',
-                width: 400.0, height: 400.0)));
+    return Center(
+        child: Lottie.asset('assets/lottie/no_internet.json',
+            width: 400.0, height: 400.0));
   }
 }

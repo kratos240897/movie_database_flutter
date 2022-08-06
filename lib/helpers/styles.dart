@@ -27,7 +27,7 @@ class _Colors {
 class _TextStyles {
   final f14Regular = TextStyle(
       fontSize: 14,
-      color: Styles.colors.white,
+      color: Styles.colors.black,
       fontFamily: GoogleFonts.nunito().copyWith().fontFamily);
   final f14 = TextStyle(
       fontSize: 14,

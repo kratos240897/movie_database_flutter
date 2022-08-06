@@ -1,20 +1,22 @@
 import 'package:get/get.dart';
 import 'package:movie_database/base/base_controller.dart';
-import 'package:movie_database/helpers/connection_aware.dart';
 import 'package:movie_database/models/credits_response.dart';
 import 'package:movie_database/models/review_response.dart';
 import 'package:movie_database/repo/app_repo.dart';
 
-class MovieDetailController extends BaseController with ConnectionAware {
+class MovieDetailController extends BaseController {
   final AppRepository _appRepo = Get.find<AppRepository>();
   final RxList<String> videoId = RxList.empty();
   final RxList<ReviewResults> reviews = RxList.empty();
   final RxList<Cast> cast = RxList.empty();
-  final isNetworkAvailable = false.obs;
+  var movieId = '';
+
 
   @override
   void onReady() async {
-    isNetworkAvailable.value = await getIsInternetAvailable();
+    getVideoDetails(movieId);
+    getCredits(movieId);
+    getMovieReviews(movieId);
     super.onReady();
   }
 
@@ -54,15 +56,5 @@ class MovieDetailController extends BaseController with ConnectionAware {
       utils.hideLoading();
       this.error.value = error.toString();
     });
-  }
-
-  @override
-  void onNetworkConnected() {
-    isNetworkAvailable.value = true;
-  }
-
-  @override
-  void onNetworkDisconnected() {
-    isNetworkAvailable.value = false;
   }
 }
