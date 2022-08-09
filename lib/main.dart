@@ -12,7 +12,8 @@ import 'package:movie_database/helpers/helpers.dart';
 import 'package:movie_database/helpers/styles.dart';
 import 'package:movie_database/routes/router.dart';
 import 'package:movie_database/service/auth_service.dart';
-import './models/movie_model.dart';
+
+import 'data/models/movie_model.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

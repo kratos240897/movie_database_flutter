@@ -2,12 +2,14 @@
 
 import 'package:flutter/material.dart';
 import 'package:get/route_manager.dart';
-import 'package:movie_database/models/movies_response.dart';
-import 'package:movie_database/models/review_response.dart';
+import 'package:movie_database/screens/favorites/favorites.dart';
+import 'package:movie_database/screens/favorites/favorties_binding.dart';
 import 'package:movie_database/screens/home/home_binding.dart';
 import 'package:movie_database/screens/login/login.dart';
 import 'package:movie_database/screens/login/login_binding.dart';
 import 'package:movie_database/screens/movie_detail/movie_detail_binding.dart';
+import 'package:movie_database/screens/person/person.dart';
+import 'package:movie_database/screens/person/person_binding.dart';
 import 'package:movie_database/screens/register/register.dart';
 import 'package:movie_database/screens/register/register_binding.dart';
 import 'package:movie_database/screens/reviews/reviews.dart';
@@ -15,6 +17,8 @@ import 'package:movie_database/screens/reviews/reviews_binding.dart';
 import 'package:movie_database/screens/search/search_binding.dart';
 import 'package:movie_database/screens/video/video.dart';
 import 'package:movie_database/screens/video/video_binding.dart';
+import '../data/models/movies_response.dart';
+import '../data/models/review_response.dart';
 import '../screens/screens.dart';
 
 class AppRouter {
@@ -26,6 +30,7 @@ class AppRouter {
   static const REVIEWS = '/reviews';
   static const VIDEO = '/video';
   static const PERSON = '/person';
+  static const FAVORITES = '/favorites';
   // get getPages => [
   //       GetPage(
   //           name: REGISTER,
@@ -61,7 +66,7 @@ class AppRouter {
         return GetPageRoute(
             routeName: MOVIE_DETAIL,
             page: () => MovieDetailScreen(movie: args as Results),
-            transition: Transition.cupertino,
+            transition: Transition.downToUp,
             binding: MovieDetailBinding());
       case REVIEWS:
         return GetPageRoute(
@@ -75,6 +80,20 @@ class AppRouter {
             page: () => Video(videoId: args as List<String>),
             transition: Transition.zoom,
             binding: VideoBindings());
+      case PERSON:
+        final title = (args as Map)['title'];
+        final id = args['id'];
+        return GetPageRoute(
+            routeName: PERSON,
+            page: () => Person(title: title, id: id),
+            binding: PersonBinding(),
+            transition: Transition.circularReveal);
+      case FAVORITES:
+        return GetPageRoute(
+            routeName: AppRouter.FAVORITES,
+            page: () => const Favorties(),
+            transition: Transition.rightToLeftWithFade,
+            binding: FavoritesBinding());
     }
     return null;
   }

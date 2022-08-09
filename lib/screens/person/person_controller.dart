@@ -1,6 +1,6 @@
 import 'package:get/get.dart';
 import 'package:movie_database/base/base_controller.dart';
-import 'package:movie_database/models/profile_response.dart';
+import '../../data/models/profile_response.dart';
 import '../../repo/app_repo.dart';
 
 class PersonController extends BaseController {

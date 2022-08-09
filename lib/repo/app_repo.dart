@@ -1,13 +1,14 @@
 // ignore_for_file: avoid_print
 
 import 'package:movie_database/helpers/end_points.dart';
-import 'package:movie_database/models/credits_response.dart';
-import 'package:movie_database/models/movies_response.dart';
-import 'package:movie_database/models/profile_response.dart';
-import 'package:movie_database/models/review_response.dart';
-import 'package:movie_database/models/video_details_response.dart';
 import 'package:movie_database/service/api_service.dart';
 import 'package:get/get.dart';
+
+import '../data/models/credits_response.dart';
+import '../data/models/movies_response.dart';
+import '../data/models/profile_response.dart';
+import '../data/models/review_response.dart';
+import '../data/models/video_details_response.dart';
 
 abstract class AppRepo {
   Future<List<Results>> getMovies(String url, Map<String, dynamic> query);
@@ -32,6 +33,7 @@ class AppRepository extends AppRepo {
     try {
       final res = await _apiService.getRequest(url, query);
       final movies = MoviesResponse.fromJson(res.data).results;
+      print('getMovies called>>>');
       return movies;
     } catch (e) {
       print(e);

@@ -2,9 +2,10 @@ import 'package:get/get.dart';
 import 'package:movie_database/base/base_controller.dart';
 import 'package:movie_database/helpers/boxes.dart';
 import 'package:movie_database/helpers/utils.dart';
-import 'package:movie_database/models/movies_response.dart';
 import 'package:movie_database/repo/app_repo.dart';
-import 'package:movie_database/models/movie_model.dart';
+
+import '../../data/models/movie_model.dart';
+import '../../data/models/movies_response.dart';
 
 class SearchController extends BaseController {
   RxList<Results> searchResults = RxList.empty();

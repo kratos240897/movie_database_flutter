@@ -8,7 +8,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:movie_database/helpers/boxes.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:movie_database/helpers/constants.dart';
-import 'package:movie_database/models/movie_model.dart';
+import '../../data/models/movie_model.dart';
 import './favorites_controller.dart';
 
 class Favorties extends GetView<FavoritesController> {

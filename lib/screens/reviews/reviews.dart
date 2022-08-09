@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:movie_database/models/review_response.dart';
+
+import '../../data/models/review_response.dart';
 
 class Review extends StatelessWidget {
   final List<ReviewResults> reviews;

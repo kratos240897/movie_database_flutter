@@ -1,4 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -10,12 +11,11 @@ import 'package:intl/intl.dart';
 import 'package:movie_database/helpers/helpers.dart';
 import 'package:movie_database/helpers/styles.dart';
 import 'package:movie_database/helpers/utils.dart';
-import 'package:movie_database/models/movies_response.dart';
 import 'package:movie_database/helpers/constants.dart';
 import 'package:movie_database/routes/router.dart';
 import 'package:movie_database/screens/movie_detail/movie_detail_controller.dart';
-import 'package:movie_database/screens/person/person.dart';
-import 'package:movie_database/screens/person/person_binding.dart';
+
+import '../../data/models/movies_response.dart';
 
 class MovieDetailScreen extends StatefulWidget {
   final Results movie;
@@ -41,7 +41,10 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
       ),
       body: SafeArea(child: Obx(() {
         return widget.controller.isNetworkAvailable.value == true
-            ? ContentWidget(controller: widget.controller, movie: widget.movie)
+            ? widget.controller.isLoading.value
+                ? const Center(child: CupertinoActivityIndicator())
+                : ContentWidget(
+                    controller: widget.controller, movie: widget.movie)
             : widget.controller.getNoInternetWidget;
       })),
     );
@@ -95,11 +98,10 @@ class Cast extends StatelessWidget {
               itemBuilder: (context, index) {
                 return LayoutBuilder(builder: (context, constraints) {
                   return InkWell(
-                    onTap: () => Get.to(
-                        () => Person(
-                            title: controller.cast[index].originalName,
-                            id: controller.cast[index].id.toString()),
-                        binding: PersonBinding()),
+                    onTap: () => Get.toNamed(AppRouter.PERSON, arguments: {
+                      'title': controller.cast[index].originalName,
+                      'id': controller.cast[index].id.toString()
+                    }),
                     child: Container(
                       margin: const EdgeInsets.all(5.0),
                       child: Column(children: [
@@ -197,58 +199,54 @@ class BackDropWidget extends StatelessWidget {
         margin: const EdgeInsets.only(left: 8.0, right: 8.0, top: 8.0),
         width: double.infinity,
         height: mediaQuery.size.height * 0.325,
-        child: Hero(
-          tag: movie,
-          transitionOnUserGestures: true,
-          child: Stack(
-            children: [
-              Positioned(
-                top: 0,
-                left: 0,
-                right: 0,
-                bottom: 0,
-                child: Card(
-                    elevation: 15.0,
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10.0)),
-                    clipBehavior: Clip.antiAliasWithSaveLayer),
+        child: Stack(
+          children: [
+            Positioned(
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              child: Card(
+                  elevation: 15.0,
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10.0)),
+                  clipBehavior: Clip.antiAliasWithSaveLayer),
+            ),
+            Positioned(
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(10.0),
+                child: CachedNetworkImage(
+                    imageUrl: movie.backdropPath != null
+                        ? Constants.BASE_IMAGE_URL +
+                            movie.backdropPath.toString()
+                        : Constants.BASE_IMAGE_URL +
+                            movie.posterPath.toString(),
+                    filterQuality: FilterQuality.high,
+                    fit: BoxFit.cover),
               ),
-              Positioned(
+            ),
+            Positioned(
                 top: 0,
                 left: 0,
                 right: 0,
                 bottom: 0,
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(10.0),
-                  child: CachedNetworkImage(
-                      imageUrl: movie.backdropPath != null
-                          ? Constants.BASE_IMAGE_URL +
-                              movie.backdropPath.toString()
-                          : Constants.BASE_IMAGE_URL +
-                              movie.posterPath.toString(),
-                      filterQuality: FilterQuality.high,
-                      fit: BoxFit.cover),
-                ),
-              ),
-              Positioned(
-                  top: 0,
-                  left: 0,
-                  right: 0,
-                  bottom: 0,
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(10.0),
-                    child: Container(
-                      decoration: const BoxDecoration(color: Colors.black26),
-                      child: const Center(
-                          child: FaIcon(
-                        FontAwesomeIcons.solidPlayCircle,
-                        size: 50.0,
-                        color: Colors.white70,
-                      )),
-                    ),
-                  ))
-            ],
-          ),
+                  child: Container(
+                    decoration: const BoxDecoration(color: Colors.black26),
+                    child: const Center(
+                        child: FaIcon(
+                      FontAwesomeIcons.solidPlayCircle,
+                      size: 50.0,
+                      color: Colors.white70,
+                    )),
+                  ),
+                ))
+          ],
         ),
       ),
     );

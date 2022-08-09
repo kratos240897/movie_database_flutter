@@ -11,12 +11,13 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:group_button/group_button.dart';
 import 'package:movie_database/helpers/constants.dart';
 import 'package:movie_database/helpers/styles.dart';
-import 'package:movie_database/models/movies_response.dart';
 import 'package:movie_database/routes/router.dart';
 import 'package:movie_database/screens/favorites/favorites.dart';
 import 'package:movie_database/screens/home/home_controller.dart';
 import 'package:get/get.dart';
 import 'package:share_plus/share_plus.dart';
+
+import '../../data/models/movies_response.dart';
 
 class Home extends GetView<HomeController> {
   Home({Key? key}) : super(key: key);
@@ -119,8 +120,7 @@ class FavoriteActionButton extends StatelessWidget {
     return Obx(() {
       return controller.favoritesCount.value > 0
           ? GestureDetector(
-              onTap: () => Get.to(() => const Favorties(),
-                  transition: Transition.leftToRightWithFade),
+              onTap: () => Get.toNamed(AppRouter.FAVORITES),
               child: Container(
                   margin:
                       const EdgeInsets.only(left: 5.0, bottom: 5.0, top: 10.0),
@@ -142,8 +142,7 @@ class FavoriteActionButton extends StatelessWidget {
                   )),
             )
           : GestureDetector(
-              onTap: () => Get.to(() => const Favorties(),
-                  transition: Transition.leftToRightWithFade),
+              onTap: () => Get.toNamed(AppRouter.FAVORITES),
               child: Container(
                 margin:
                     const EdgeInsets.only(bottom: 5.0, top: 10.0, left: 5.0),
@@ -231,8 +230,7 @@ class MoviesListWidget extends StatelessWidget {
                           ],
                           onPressed: () {},
                           child: MovieListItem(
-                            controller: controller,
-                            index: index,
+                           movie: controller.movies[index],
                             mediaQuery: mediaQuery,
                           ));
                     }),
@@ -270,99 +268,88 @@ class MoviesListWidget extends StatelessWidget {
 }
 
 class MovieListItem extends StatelessWidget {
-  final HomeController controller;
-  final int index;
+  final Results movie;
   final MediaQueryData mediaQuery;
-  const MovieListItem(
-      {Key? key,
-      required this.controller,
-      required this.index,
-      required this.mediaQuery})
+  const MovieListItem({Key? key, required this.movie, required this.mediaQuery})
       : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return InkWell(
       onTap: () => Get.toNamed(AppRouter.MOVIE_DETAIL,
-          arguments: controller.movies[index]),
-      child: Hero(
-        tag: controller.movies[index],
-        child: LayoutBuilder(builder: (context, constraints) {
-          return Obx(() {
-            return Card(
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(15)),
-              elevation: 15,
-              child: Column(
-                children: [
-                  SizedBox(
-                    height: constraints.maxHeight * 0.8,
-                    child: Stack(
-                      children: [
-                        Positioned(
-                          top: 0,
-                          left: 0,
-                          right: 0,
-                          child: ClipRRect(
-                            borderRadius: const BorderRadius.only(
-                                topLeft: Radius.circular(15),
-                                topRight: Radius.circular(15)),
-                            child: CachedNetworkImage(
-                                imageUrl: controller.movies[index].posterPath !=
-                                        null
-                                    ? Constants.BASE_IMAGE_URL +
-                                        controller.movies[index].posterPath
-                                    : 'https://globalnews.ca/wp-content/uploads/2020/06/jfj50169012-2.jpg?quality=85&strip=all'),
-                          ),
-                        ),
-                        Positioned(
-                          bottom: 0,
-                          right: 0,
-                          child: ElevatedButton(
-                            onPressed: () {},
-                            style: ElevatedButton.styleFrom(
-                                primary: Colors.amber,
-                                splashFactory: NoSplash.splashFactory,
-                                shape: const RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.only(
-                                        topLeft: Radius.circular(10.0),
-                                        bottomLeft: Radius.circular(10.0)))),
-                            child: Text(
-                                controller.movies[index].voteAverage
-                                        .toString() +
-                                    ' 💜',
-                                style: const TextStyle(
-                                    color: Colors.black,
-                                    fontWeight: FontWeight.bold),
-                                textAlign: TextAlign.end),
-                          ),
-                        )
-                      ],
+          arguments: movie),
+      child: LayoutBuilder(builder: (context, constraints) {
+        return Card(
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+          elevation: 15,
+          child: Column(
+            children: [
+              SizedBox(
+                height: constraints.maxHeight * 0.8,
+                child: Stack(
+                  children: [
+                    Positioned(
+                      top: 0,
+                      left: 0,
+                      right: 0,
+                      child: ClipRRect(
+                        borderRadius: const BorderRadius.only(
+                            topLeft: Radius.circular(15),
+                            topRight: Radius.circular(15)),
+                        child: CachedNetworkImage(
+                            imageUrl: movie.posterPath !=
+                                    null
+                                ? Constants.BASE_IMAGE_URL +
+                                    movie.posterPath!
+                                : 'https://globalnews.ca/wp-content/uploads/2020/06/jfj50169012-2.jpg?quality=85&strip=all'),
+                      ),
                     ),
-                  ),
-                  SizedBox(height: constraints.maxHeight * 0.01),
-                  Expanded(
-                    child: Padding(
-                      padding: EdgeInsets.symmetric(
-                          horizontal: constraints.maxWidth * 0.02,
-                          vertical: constraints.maxHeight * 0.03),
-                      child: Text(controller.movies[index].originalTitle,
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                              fontSize: 16,
-                              color: Colors.black,
-                              overflow: TextOverflow.ellipsis,
-                              fontFamily: GoogleFonts.staatliches()
-                                  .copyWith()
-                                  .fontFamily)),
-                    ),
-                  ),
-                ],
+                    Positioned(
+                      bottom: 0,
+                      right: 0,
+                      child: ElevatedButton(
+                        onPressed: () {},
+                        style: ElevatedButton.styleFrom(
+                            primary: Colors.amber,
+                            splashFactory: NoSplash.splashFactory,
+                            shape: const RoundedRectangleBorder(
+                                borderRadius: BorderRadius.only(
+                                    topLeft: Radius.circular(10.0),
+                                    bottomLeft: Radius.circular(10.0)))),
+                        child: Text(
+                            movie.voteAverage.toString() +
+                                ' 💜',
+                            style: const TextStyle(
+                                color: Colors.black,
+                                fontWeight: FontWeight.bold),
+                            textAlign: TextAlign.end),
+                      ),
+                    )
+                  ],
+                ),
               ),
-            );
-          });
-        }),
-      ),
+              SizedBox(height: constraints.maxHeight * 0.01),
+              Expanded(
+                child: Padding(
+                  padding: EdgeInsets.symmetric(
+                      horizontal: constraints.maxWidth * 0.02,
+                      vertical: constraints.maxHeight * 0.03),
+                  child: Text(movie.originalTitle,
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                          fontSize: 16,
+                          color: Colors.black,
+                          overflow: TextOverflow.ellipsis,
+                          fontFamily: GoogleFonts.staatliches()
+                              .copyWith()
+                              .fontFamily)),
+                ),
+              ),
+            ],
+          ),
+        );
+      }),
     );
   }
 }

@@ -8,13 +8,13 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:movie_database/helpers/constants.dart';
 import 'package:movie_database/helpers/styles.dart';
 import 'package:movie_database/helpers/utils.dart';
-import 'package:movie_database/models/movies_response.dart';
 import 'package:get/get.dart';
 import 'dart:math' as math;
 
 import 'package:movie_database/screens/search/search_controller.dart';
 import 'package:share_plus/share_plus.dart';
 
+import '../../data/models/movies_response.dart';
 import '../../routes/router.dart';
 
 class SearchScreen extends GetView<SearchController> {
