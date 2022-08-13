@@ -10,7 +10,7 @@ import 'package:movie_database/helpers/boxes.dart';
 import 'package:movie_database/helpers/constants.dart';
 import 'package:movie_database/helpers/helpers.dart';
 import 'package:movie_database/helpers/utils.dart';
-import 'package:movie_database/repo/app_repo.dart';
+import 'package:movie_database/repo/home_repo.dart';
 import 'package:get/get.dart';
 import 'package:movie_database/routes/router.dart';
 import 'package:movie_database/service/auth_service.dart';
@@ -20,7 +20,7 @@ import '../../data/models/movies_response.dart';
 
 class HomeController extends BaseController {
   final movies = RxList.empty();
-  final AppRepository _appRepo = Get.find<AppRepository>();
+  final HomeRepository _repo = Get.find<HomeRepository>();
   final AuthService _authService = Get.find<AuthService>();
   final favoritesCount = 0.obs;
 
@@ -29,7 +29,6 @@ class HomeController extends BaseController {
 
   @override
   void onInit() async {
-    _appRepo.init();
     favoritesCount.value = Boxes.getFavorites().length;
     super.onInit();
   }
@@ -50,7 +49,7 @@ class HomeController extends BaseController {
     _authService.signOut().then((value) {
       utils.hideLoading();
       if (value == AuthStatus.signoutSuccess.toString()) {
-        Get.offAllNamed(AppRouter.LOGIN);
+        Get.offAllNamed(PageRouter.LOGIN);
         utils.showSnackBar('Logout', 'success', true);
       }
     });
@@ -129,7 +128,7 @@ class HomeController extends BaseController {
 
   getMovies(String url, Map<String, dynamic> query) {
     isLoading.value = true;
-    _appRepo.getMovies(url, query).then((value) {
+    _repo.getMovies(url, query).then((value) {
       cacheResponse(value);
       isLoading.value = false;
       movies.value = value;

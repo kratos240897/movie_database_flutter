@@ -11,6 +11,10 @@ class ApiService {
       contentType: 'application/json',
       headers: {'Authorization': 'Bearer ${Constants.API_KEY}'}));
 
+  ApiService() {
+    addInterceptor();
+  }
+
   void addInterceptor() {
     dio.interceptors.add(LoggyDioInterceptor());
     dio.interceptors.add(

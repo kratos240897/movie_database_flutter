@@ -98,7 +98,7 @@ class _LoginState extends State<Login> {
                             fontFamily: GoogleFonts.raleway().fontFamily)),
                     const SizedBox(width: 4.0),
                     InkWell(
-                      onTap: () => Get.offNamed(AppRouter.REGISTER),
+                      onTap: () => Get.offNamed(PageRouter.REGISTER),
                       child: Text('Register',
                           style: TextStyle(
                               fontWeight: FontWeight.w400,

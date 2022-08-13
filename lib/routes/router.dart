@@ -21,7 +21,15 @@ import '../data/models/movies_response.dart';
 import '../data/models/review_response.dart';
 import '../screens/screens.dart';
 
-class AppRouter {
+class PageRouter {
+  PageRouter._();
+  static PageRouter? instance;
+  factory PageRouter() {
+    if (instance != null) {
+      return instance!;
+    }
+    return PageRouter._();
+  }
   static const LOGIN = '/login';
   static const REGISTER = '/register';
   static const HOME = '/home';
@@ -31,14 +39,6 @@ class AppRouter {
   static const VIDEO = '/video';
   static const PERSON = '/person';
   static const FAVORITES = '/favorites';
-  // get getPages => [
-  //       GetPage(
-  //           name: REGISTER,
-  //           page: () => const Register(),
-  //           binding: RegisterBiding()),
-  //       GetPage(name: LOGIN, page: () => const Login()),
-  //       GetPage(name: HOME, page: () => Home(), binding: HomeBinding())
-  //     ];
 
   Route? generateRoutes(RouteSettings settings) {
     final args = settings.arguments;
@@ -90,7 +90,7 @@ class AppRouter {
             transition: Transition.circularReveal);
       case FAVORITES:
         return GetPageRoute(
-            routeName: AppRouter.FAVORITES,
+            routeName: PageRouter.FAVORITES,
             page: () => const Favorties(),
             transition: Transition.rightToLeftWithFade,
             binding: FavoritesBinding());

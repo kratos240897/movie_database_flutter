@@ -2,19 +2,20 @@ import 'package:get/get.dart';
 import 'package:movie_database/base/base_controller.dart';
 import 'package:movie_database/helpers/boxes.dart';
 import 'package:movie_database/helpers/utils.dart';
-import 'package:movie_database/repo/app_repo.dart';
+import 'package:movie_database/repo/home_repo.dart';
+import 'package:movie_database/repo/search_repo.dart';
 
 import '../../data/models/movie_model.dart';
 import '../../data/models/movies_response.dart';
 
 class SearchController extends BaseController {
   RxList<Results> searchResults = RxList.empty();
-  final AppRepository _appRepo = Get.find<AppRepository>();
+  final SearchRepository _repo = Get.find<SearchRepository>();
   var isSearchHasFocus = false.obs;
 
   searchMovies(String query) {
     utils.showLoading();
-    _appRepo.searchMovies({'query': query}).then((value) {
+    _repo.searchMovies({'query': query}).then((value) {
       utils.hideLoading();
       searchResults.value = value;
     }).onError((error, stackTrace) {

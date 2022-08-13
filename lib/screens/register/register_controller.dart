@@ -31,7 +31,7 @@ class RegisterController extends BaseController {
       utils.hideLoading();
       if (value == AuthStatus.registrationSuccess.toString()) {
         utils.showSnackBar('Registration', 'success', true);
-        Get.offAndToNamed(AppRouter.HOME);
+        Get.offAndToNamed(PageRouter.HOME);
       } else {
         utils.showSnackBar('Registration', value, false);
       }

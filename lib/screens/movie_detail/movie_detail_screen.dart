@@ -98,7 +98,7 @@ class Cast extends StatelessWidget {
               itemBuilder: (context, index) {
                 return LayoutBuilder(builder: (context, constraints) {
                   return InkWell(
-                    onTap: () => Get.toNamed(AppRouter.PERSON, arguments: {
+                    onTap: () => Get.toNamed(PageRouter.PERSON, arguments: {
                       'title': controller.cast[index].originalName,
                       'id': controller.cast[index].id.toString()
                     }),
@@ -159,7 +159,7 @@ class ReviewButton extends StatelessWidget {
             padding: const EdgeInsets.only(right: 12.0),
             child: ElevatedButton.icon(
               onPressed: () {
-                Get.toNamed(AppRouter.REVIEWS, arguments: controller.reviews);
+                Get.toNamed(PageRouter.REVIEWS, arguments: controller.reviews);
               },
               style: ElevatedButton.styleFrom(shape: const StadiumBorder()),
               icon: const Icon(Icons.reviews),
@@ -189,7 +189,7 @@ class BackDropWidget extends StatelessWidget {
     return InkWell(
       onTap: () {
         if (controller.videoId.isNotEmpty) {
-          Get.toNamed(AppRouter.VIDEO, arguments: controller.videoId);
+          Get.toNamed(PageRouter.VIDEO, arguments: controller.videoId);
         } else {
           Utils().showSnackBar(
               'No videos found for movie', movie.originalTitle, false);

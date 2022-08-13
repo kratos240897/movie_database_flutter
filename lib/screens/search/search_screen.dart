@@ -26,10 +26,10 @@ class SearchScreen extends GetView<SearchController> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Search Movies',
+        title: Text('Myth Flix',
             style: TextStyle(
-                fontSize: 25.0,
-                fontFamily: GoogleFonts.caveat().copyWith().fontFamily)),
+                fontSize: 22.0,
+                fontFamily: GoogleFonts.josefinSans().copyWith().fontFamily)),
       ),
       body: SafeArea(
         child: Obx(() {
@@ -111,8 +111,7 @@ class SearchedMovieItem extends StatelessWidget {
       ],
       onPressed: () {},
       child: InkWell(
-        onTap: () =>
-           Get.toNamed(AppRouter.MOVIE_DETAIL,
+        onTap: () => Get.toNamed(PageRouter.MOVIE_DETAIL,
             arguments: controller.searchResults[index]),
         child: LayoutBuilder(builder: (context, constraints) {
           double vote =

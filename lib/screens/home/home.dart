@@ -68,7 +68,7 @@ class SearchActionButton extends StatelessWidget {
       splashColor: Colors.transparent,
       highlightColor: Colors.transparent,
       onTap: () => Get.toNamed(
-        AppRouter.SEARCH,
+        PageRouter.SEARCH,
         arguments: controller.movies.value as List<Results>,
       ),
       child: Container(
@@ -122,7 +122,7 @@ class FavoriteActionButton extends StatelessWidget {
     return Obx(() {
       return controller.favoritesCount.value > 0
           ? GestureDetector(
-              onTap: () => Get.toNamed(AppRouter.FAVORITES),
+              onTap: () => Get.toNamed(PageRouter.FAVORITES),
               child: Container(
                   margin:
                       const EdgeInsets.only(left: 5.0, bottom: 5.0, top: 10.0),
@@ -144,7 +144,7 @@ class FavoriteActionButton extends StatelessWidget {
                   )),
             )
           : GestureDetector(
-              onTap: () => Get.toNamed(AppRouter.FAVORITES),
+              onTap: () => Get.toNamed(PageRouter.FAVORITES),
               child: Container(
                 margin:
                     const EdgeInsets.only(bottom: 5.0, top: 10.0, left: 5.0),
@@ -278,7 +278,7 @@ class MovieListItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      onTap: () => Get.toNamed(AppRouter.MOVIE_DETAIL, arguments: movie),
+      onTap: () => Get.toNamed(PageRouter.MOVIE_DETAIL, arguments: movie),
       child: LayoutBuilder(builder: (context, constraints) {
         return Card(
           shape:

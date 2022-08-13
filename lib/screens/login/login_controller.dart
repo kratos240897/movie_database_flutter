@@ -13,7 +13,7 @@ class LoginController extends BaseController {
       utils.hideLoading();
       if (value == AuthStatus.loginSuccess.toString()) {
         utils.showSnackBar('Login', 'success', true);
-        Get.offAndToNamed(AppRouter.HOME);
+        Get.offAndToNamed(PageRouter.HOME);
       } else {
         utils.showSnackBar('Login', value, false);
       }

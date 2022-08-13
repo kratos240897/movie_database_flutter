@@ -33,7 +33,6 @@ void main() async {
   runApp(const MyApp());
 }
 
-
 void inject() {
   Get.lazyPut(() => AuthService(), fenix: true);
   Get.lazyPut(() => FirebaseAuth.instance, fenix: true);
@@ -64,12 +63,12 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return GetMaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Flutter Movies',
+      title: 'Myth Flix',
       theme: ThemeData(
         primarySwatch: Styles.colors.primaryColor,
       ),
-      initialRoute: isLoggedIn == true ? AppRouter.HOME : AppRouter.LOGIN,
-      onGenerateRoute: AppRouter().generateRoutes,
+      initialRoute: isLoggedIn == true ? PageRouter.HOME : PageRouter.LOGIN,
+      onGenerateRoute: PageRouter().generateRoutes,
     );
   }
 }
