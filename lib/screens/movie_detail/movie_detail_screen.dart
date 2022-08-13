@@ -322,7 +322,7 @@ class RatingDetailWidget extends StatelessWidget {
                   Icons.star,
                   color: Colors.amber,
                 )),
-        Text((movie.voteAverage / 2).toString(),
+        Text((movie.voteAverage / 2).toStringAsFixed(1),
             style: TextStyle(
                 fontSize: 14,
                 color: Colors.black,

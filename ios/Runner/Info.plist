@@ -10,7 +10,7 @@
 		<key>CFBundleDevelopmentRegion</key>
 		<string>$(DEVELOPMENT_LANGUAGE)</string>
 		<key>CFBundleDisplayName</key>
-		<string>Movie Database</string>
+		<string>Myth Flix</string>
 		<key>CFBundleExecutable</key>
 		<string>$(EXECUTABLE_NAME)</string>
 		<key>CFBundleIdentifier</key>
@@ -52,5 +52,9 @@
 		<false/>
 		<key>CADisableMinimumFrameDurationOnPhone</key>
 		<true/>
+		<key>UIBackgroundModes</key>
+            <array>
+            <string>remote-notification</string>
+        </array>
 	</dict>
 </plist>

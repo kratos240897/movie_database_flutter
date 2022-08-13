@@ -2,6 +2,7 @@
 // ignore_for_file: unnecessary_import
 
 import 'dart:async';
+import 'package:flutter_app_badger/flutter_app_badger.dart';
 import 'package:movie_database/base/base_controller.dart';
 import 'package:movie_database/data/cache/cache_constants.dart';
 import 'package:movie_database/data/cache/cache_repository.dart';
@@ -40,6 +41,7 @@ class HomeController extends BaseController {
         getMovies(EndPoints.trending, {});
       }
     });
+    FlutterAppBadger.updateBadgeCount(1);
     super.onReady();
   }
 

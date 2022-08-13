@@ -12,7 +12,6 @@ import 'package:group_button/group_button.dart';
 import 'package:movie_database/helpers/constants.dart';
 import 'package:movie_database/helpers/styles.dart';
 import 'package:movie_database/routes/router.dart';
-import 'package:movie_database/screens/favorites/favorites.dart';
 import 'package:movie_database/screens/home/home_controller.dart';
 import 'package:get/get.dart';
 import 'package:share_plus/share_plus.dart';
@@ -28,10 +27,13 @@ class Home extends GetView<HomeController> {
     return Scaffold(
       appBar: AppBar(
         centerTitle: false,
-        title: Text('Flutter Movies',
-            style: TextStyle(
-                fontSize: 25.0,
-                fontFamily: GoogleFonts.caveat().copyWith().fontFamily)),
+        title: Padding(
+          padding: const EdgeInsets.only(top: 8.0),
+          child: Text('Myth Flix',
+              style: TextStyle(
+                  fontSize: 22.0,
+                  fontFamily: GoogleFonts.josefinSans().copyWith().fontFamily)),
+        ),
         actions: [
           SearchActionButton(controller: controller),
           FavoriteActionButton(controller: controller),
@@ -230,7 +232,7 @@ class MoviesListWidget extends StatelessWidget {
                           ],
                           onPressed: () {},
                           child: MovieListItem(
-                           movie: controller.movies[index],
+                            movie: controller.movies[index],
                             mediaQuery: mediaQuery,
                           ));
                     }),
@@ -276,8 +278,7 @@ class MovieListItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      onTap: () => Get.toNamed(AppRouter.MOVIE_DETAIL,
-          arguments: movie),
+      onTap: () => Get.toNamed(AppRouter.MOVIE_DETAIL, arguments: movie),
       child: LayoutBuilder(builder: (context, constraints) {
         return Card(
           shape:
@@ -298,10 +299,8 @@ class MovieListItem extends StatelessWidget {
                             topLeft: Radius.circular(15),
                             topRight: Radius.circular(15)),
                         child: CachedNetworkImage(
-                            imageUrl: movie.posterPath !=
-                                    null
-                                ? Constants.BASE_IMAGE_URL +
-                                    movie.posterPath!
+                            imageUrl: movie.posterPath != null
+                                ? Constants.BASE_IMAGE_URL + movie.posterPath!
                                 : 'https://globalnews.ca/wp-content/uploads/2020/06/jfj50169012-2.jpg?quality=85&strip=all'),
                       ),
                     ),
@@ -317,9 +316,7 @@ class MovieListItem extends StatelessWidget {
                                 borderRadius: BorderRadius.only(
                                     topLeft: Radius.circular(10.0),
                                     bottomLeft: Radius.circular(10.0)))),
-                        child: Text(
-                            movie.voteAverage.toString() +
-                                ' 💜',
+                        child: Text(movie.voteAverage.toString() + ' 💜',
                             style: const TextStyle(
                                 color: Colors.black,
                                 fontWeight: FontWeight.bold),
@@ -341,9 +338,8 @@ class MovieListItem extends StatelessWidget {
                           fontSize: 16,
                           color: Colors.black,
                           overflow: TextOverflow.ellipsis,
-                          fontFamily: GoogleFonts.staatliches()
-                              .copyWith()
-                              .fontFamily)),
+                          fontFamily:
+                              GoogleFonts.staatliches().copyWith().fontFamily)),
                 ),
               ),
             ],
