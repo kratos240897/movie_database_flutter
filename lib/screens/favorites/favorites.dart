@@ -18,10 +18,12 @@ class Favorties extends GetView<FavoritesController> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+          centerTitle: false,
           title: Text('Favorites',
               style: TextStyle(
-                  fontSize: 25.0,
-                  fontFamily: GoogleFonts.caveat().copyWith().fontFamily))),
+                  fontSize: 22.0,
+                  fontFamily:
+                      GoogleFonts.josefinSans().copyWith().fontFamily))),
       body: SafeArea(
           child: ValueListenableBuilder(
               valueListenable: Boxes.getFavorites().listenable(),

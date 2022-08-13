@@ -14,8 +14,16 @@ import 'package:movie_database/routes/router.dart';
 import 'package:movie_database/service/auth_service.dart';
 
 import 'data/models/movie_model.dart';
+import 'service/api_service.dart';
 
 void main() async {
+  await init();
+  await inject();
+  FlutterNativeSplash.remove();
+  runApp(const MyApp());
+}
+
+Future<void> init() async {
   WidgetsFlutterBinding.ensureInitialized();
   SystemChrome.setSystemUIOverlayStyle(
       SystemUiOverlayStyle(statusBarColor: Styles.colors.primaryColor));
@@ -28,12 +36,10 @@ void main() async {
   Loggy.initLoggy(
     logPrinter: const PrettyDeveloperPrinter(),
   );
-  inject();
-  FlutterNativeSplash.remove();
-  runApp(const MyApp());
 }
 
-void inject() {
+Future<void> inject() async {
+  Get.lazyPut(() => ApiService(), fenix: true);
   Get.lazyPut(() => AuthService(), fenix: true);
   Get.lazyPut(() => FirebaseAuth.instance, fenix: true);
 }

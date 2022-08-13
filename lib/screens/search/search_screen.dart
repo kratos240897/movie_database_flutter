@@ -26,7 +26,8 @@ class SearchScreen extends GetView<SearchController> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Myth Flix',
+        centerTitle: false,
+        title: Text('Search Movies',
             style: TextStyle(
                 fontSize: 22.0,
                 fontFamily: GoogleFonts.josefinSans().copyWith().fontFamily)),

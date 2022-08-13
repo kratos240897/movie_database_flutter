@@ -10,6 +10,7 @@ import 'package:get/state_manager.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:group_button/group_button.dart';
 import 'package:movie_database/helpers/constants.dart';
+import 'package:movie_database/helpers/device_size.dart';
 import 'package:movie_database/helpers/styles.dart';
 import 'package:movie_database/routes/router.dart';
 import 'package:movie_database/screens/home/home_controller.dart';
@@ -189,9 +190,7 @@ class MoviesListWidget extends StatelessWidget {
                                 ? mediaQuery.size.height * 0.3
                                 : mediaQuery.size.height * 0.7,
                         crossAxisCount:
-                            mediaQuery.orientation == Orientation.portrait
-                                ? 2
-                                : 3,
+                            getDeviceType() == DeviceType.Phone ? 2 : 3,
                         crossAxisSpacing: 4.0,
                         mainAxisSpacing: 4.0),
                     itemBuilder: (ctx, index) {
@@ -246,9 +245,7 @@ class MoviesListWidget extends StatelessWidget {
                                 ? mediaQuery.size.height * 0.3
                                 : mediaQuery.size.height * 0.7,
                         crossAxisCount:
-                            mediaQuery.orientation == Orientation.portrait
-                                ? 2
-                                : 3,
+                            getDeviceType() == DeviceType.Phone ? 2 : 3,
                         crossAxisSpacing: 4.0,
                         mainAxisSpacing: 4.0),
                     itemBuilder: (ctx, index) {
