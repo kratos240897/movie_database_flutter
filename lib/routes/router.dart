@@ -60,7 +60,7 @@ class PageRouter {
         return GetPageRoute(
             routeName: SEARCH,
             page: () => SearchScreen(args as List<Results>),
-            transition: Transition.circularReveal,
+            transition: Transition.downToUp,
             binding: SearchBinding());
       case MOVIE_DETAIL:
         return GetPageRoute(

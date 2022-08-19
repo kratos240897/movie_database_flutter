@@ -6,6 +6,7 @@ import 'package:focused_menu/modals.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:movie_database/helpers/constants.dart';
+import 'package:movie_database/helpers/device_size.dart';
 import 'package:movie_database/helpers/styles.dart';
 import 'package:movie_database/helpers/utils.dart';
 import 'package:get/get.dart';
@@ -83,6 +84,9 @@ class SearchedMovieItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final movie = controller.searchResults[index];
+    double vote = (movie.voteAverage / 2.0) as double;
+    String rating = vote.toStringAsFixed(1);
     return FocusedMenuHolder(
       blurBackgroundColor: Colors.white,
       menuOffset: 8.0,
@@ -93,7 +97,7 @@ class SearchedMovieItem extends StatelessWidget {
             title: Text('Favorite', style: Styles.textStyles.f14Regular),
             trailingIcon: const Icon(Icons.favorite, color: Colors.red),
             onPressed: () async {
-              controller.addFavorite(controller.searchResults[index]);
+              controller.addFavorite(movie);
             }),
         FocusedMenuItem(
             title: Text('Share', style: Styles.textStyles.f14Regular),
@@ -112,37 +116,35 @@ class SearchedMovieItem extends StatelessWidget {
       ],
       onPressed: () {},
       child: InkWell(
-        onTap: () => Get.toNamed(PageRouter.MOVIE_DETAIL,
-            arguments: controller.searchResults[index]),
-        child: LayoutBuilder(builder: (context, constraints) {
-          double vote =
-              (controller.searchResults[index].voteAverage / 2.0) as double;
-          String rating = vote.toStringAsFixed(1);
-          return Container(
-            margin: const EdgeInsets.all(8.0),
+          onTap: () => Get.toNamed(PageRouter.MOVIE_DETAIL,
+              arguments: controller.searchResults[index]),
+          child: Container(
+            margin: const EdgeInsets.symmetric(vertical: 8.0),
             child: Row(
               children: [
-                Hero(
-                  tag: controller.searchResults[index],
-                  child: CircleAvatar(
-                    radius: constraints.maxWidth * 0.2 / 2,
-                    backgroundImage: CachedNetworkImageProvider(Constants
-                            .BASE_IMAGE_URL +
-                        controller.searchResults[index].posterPath.toString()),
+                Expanded(
+                  flex: 2,
+                  child: AspectRatio(
+                    aspectRatio: 16 / 9,
+                    child: CircleAvatar(
+                      backgroundImage: CachedNetworkImageProvider(
+                        Constants.BASE_IMAGE_URL + movie.posterPath.toString(),
+                      ),
+                    ),
                   ),
                 ),
                 const SizedBox(width: 10.0),
-                SizedBox(
-                  width: constraints.maxWidth * 0.53,
+                Expanded(
+                  flex: 7,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(controller.searchResults[index].title,
+                      Text(movie.title,
                           style: TextStyle(
                               fontSize: 16.0,
                               fontFamily: GoogleFonts.quicksand().fontFamily,
                               fontWeight: FontWeight.bold)),
-                      Text(controller.searchResults[index].overview,
+                      Text(movie.overview,
                           style: TextStyle(
                             fontFamily: GoogleFonts.quicksand().fontFamily,
                           ),
@@ -153,7 +155,7 @@ class SearchedMovieItem extends StatelessWidget {
                 ),
                 const Spacer(),
                 Expanded(
-                  flex: 3,
+                  flex: 1,
                   child: Text(
                     '⭐ ' + rating,
                     textAlign: TextAlign.start,
@@ -163,9 +165,7 @@ class SearchedMovieItem extends StatelessWidget {
                 ),
               ],
             ),
-          );
-        }),
-      ),
+          )),
     );
   }
 }
@@ -222,7 +222,7 @@ class _CarouselMovieSliderState extends State<CarouselMovieSlider> {
       child: Padding(
           padding: const EdgeInsets.all(15.0),
           child: AspectRatio(
-              aspectRatio: 0.85,
+              aspectRatio: 0.75,
               child: PageView.builder(
                   controller: _pageController,
                   onPageChanged: (value) => setState(() {
@@ -259,43 +259,50 @@ class MovieCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return LayoutBuilder(builder: (context, constraints) {
-      return Column(
-        children: [
-          Container(
-            height: constraints.maxHeight * 0.65,
-            margin: const EdgeInsets.all(10.0),
-            decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(50.0),
-                image: DecorationImage(
-                    fit: BoxFit.fill,
-                    image: CachedNetworkImageProvider(Constants.BASE_IMAGE_URL +
-                        movie.posterPath.toString()))),
-          ),
-          Container(
-            margin: const EdgeInsets.symmetric(vertical: 15.0),
-            child: Text(movie.title,
-                textAlign: TextAlign.start,
-                style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 18,
-                    color: Styles.colors.themeColor,
-                    overflow: TextOverflow.ellipsis,
-                    fontFamily: GoogleFonts.actor().fontFamily)),
-          ),
-          RatingBarIndicator(
-              rating: (movie.voteAverage / 2).toDouble(),
-              direction: Axis.horizontal,
-              itemCount: 5,
-              itemSize: 30.0,
-              itemPadding: const EdgeInsets.symmetric(horizontal: 2.0),
-              itemBuilder: (ctx, index) => const Icon(
-                    Icons.star,
-                    color: Colors.amber,
-                  ))
-        ],
-      );
-    });
+    return GestureDetector(
+      onTap: () => Get.toNamed(PageRouter.MOVIE_DETAIL, arguments: movie),
+      child: LayoutBuilder(builder: (context, constraints) {
+        return Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+              height: getDeviceType() == DeviceType.Phone
+                  ? constraints.maxHeight * 0.65
+                  : constraints.maxHeight * 0.75,
+              margin: EdgeInsets.all(
+                  getDeviceType() == DeviceType.Phone ? 15.0 : 30.0),
+              decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(50.0),
+                  image: DecorationImage(
+                      fit: BoxFit.fill,
+                      image: CachedNetworkImageProvider(Constants.BASE_IMAGE_URL +
+                          movie.posterPath.toString()))),
+            ),
+            Container(
+              margin: const EdgeInsets.symmetric(vertical: 15.0),
+              child: Text(movie.title,
+                  textAlign: TextAlign.start,
+                  style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 18,
+                      color: Styles.colors.themeColor,
+                      overflow: TextOverflow.ellipsis,
+                      fontFamily: GoogleFonts.actor().fontFamily)),
+            ),
+            RatingBarIndicator(
+                rating: (movie.voteAverage / 2).toDouble(),
+                direction: Axis.horizontal,
+                itemCount: 5,
+                itemSize: 30.0,
+                itemPadding: const EdgeInsets.symmetric(horizontal: 2.0),
+                itemBuilder: (ctx, index) => const Icon(
+                      Icons.star,
+                      color: Colors.amber,
+                    ))
+          ],
+        );
+      }),
+    );
   }
 }
 

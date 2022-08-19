@@ -62,6 +62,7 @@ dependencies:
   firebase_core: ^1.20.0
   dio_http_cache: ^0.3.0
   flutter_app_badger: ^1.4.0
+  flutter_dotenv: ^5.0.2
   
 
 dev_dependencies:
@@ -104,6 +105,7 @@ flutter:
     - assets/images/actor.png
     - assets/images/logo.png
     - assets/lottie/no_internet.json
+    - .env
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see
