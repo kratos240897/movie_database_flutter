@@ -1,5 +1,5 @@
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:movie_database/base/base_controller.dart';
+import '../../base/base_controller.dart';
 
 class FavoritesController extends BaseController {
   @override

@@ -1,8 +1,9 @@
 import 'package:flutter/widgets.dart';
-// ignore: constant_identifier_names
-enum DeviceType { Phone, Tablet }
+
+import '../enum/device_type.dart';
+
 
 DeviceType getDeviceType() {
   final data = MediaQueryData.fromWindow(WidgetsBinding.instance.window);
-  return data.size.shortestSide < 550 ? DeviceType.Phone : DeviceType.Tablet;
+  return data.size.shortestSide < 550 ? DeviceType.phone : DeviceType.tablet;
 } 

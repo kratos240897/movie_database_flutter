@@ -2,20 +2,18 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get_instance/get_instance.dart';
 import 'package:get/get_navigation/src/extension_navigation.dart';
 import 'package:get/state_manager.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
-import 'package:movie_database/helpers/helpers.dart';
-import 'package:movie_database/helpers/styles.dart';
-import 'package:movie_database/helpers/utils.dart';
-import 'package:movie_database/helpers/constants.dart';
-import 'package:movie_database/routes/router.dart';
-import 'package:movie_database/screens/movie_detail/movie_detail_controller.dart';
-
+import 'package:movie_database/enum/snackbar_status.dart';
 import '../../data/models/movies_response.dart';
+import '../../helpers/constants.dart';
+import '../../routes/router.dart';
+import 'movie_detail_controller.dart';
 
 class MovieDetailScreen extends StatefulWidget {
   final Results movie;
@@ -29,7 +27,10 @@ class MovieDetailScreen extends StatefulWidget {
 class _MovieDetailScreenState extends State<MovieDetailScreen> {
   @override
   void initState() {
-    widget.controller.movieId = widget.movie.id.toString();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      widget.controller.movieId = widget.movie.id.toString();
+      widget.controller.init();
+    });
     super.initState();
   }
 
@@ -37,15 +38,26 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.movie.title),
+        leading: IconButton(
+          onPressed: () => Get.back(),
+          icon: Icon(
+            CupertinoIcons.back,
+            size: 20.h,
+            color: Theme.of(context).textTheme.headline6?.color,
+          ),
+        ),
+        title: Text(widget.movie.title,
+            style: Theme.of(context).textTheme.headline6?.copyWith(
+                fontSize: 22.sp,
+                fontFamily: GoogleFonts.josefinSans().copyWith().fontFamily)),
       ),
       body: SafeArea(child: Obx(() {
-        return widget.controller.isNetworkAvailable.value == true
-            ? widget.controller.isLoading.value
-                ? const Center(child: CupertinoActivityIndicator())
-                : ContentWidget(
-                    controller: widget.controller, movie: widget.movie)
-            : widget.controller.getNoInternetWidget;
+        if (!widget.controller.isNetworkAvailable.value) {
+          return widget.controller.getNoInternetWidget;
+        } else {
+          return ContentWidget(
+              controller: widget.controller, movie: widget.movie);
+        }
       })),
     );
   }
@@ -60,21 +72,37 @@ class ContentWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      child: Column(
-        children: [
-          Container(
-            margin: const EdgeInsets.symmetric(horizontal: 10.0),
-            height: mediaQuery.size.height * 0.3,
-            child: BackDropWidget(
-                controller: controller, movie: movie, mediaQuery: mediaQuery),
-          ),
-          const SizedBox(height: 12.0),
-          MovieDetailWidget(movie: movie),
-          const SizedBox(height: 15.0),
-          ReviewButton(controller: controller),
-          Cast(controller: controller)
-        ],
+    return NestedScrollView(
+      headerSliverBuilder: (context, innerBoxIsScrolled) {
+        return [
+          SliverOverlapAbsorber(
+            handle: NestedScrollView.sliverOverlapAbsorberHandleFor(context),
+            sliver: SliverAppBar(
+              expandedHeight: 0.3075.sh,
+              floating: false,
+              pinned: false,
+              automaticallyImplyLeading: false,
+              backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+              flexibleSpace: FlexibleSpaceBar(
+                background: BackDropWidget(
+                    controller: controller,
+                    movie: movie,
+                    mediaQuery: mediaQuery),
+              ),
+            ),
+          )
+        ];
+      },
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            const SizedBox(height: 12.0),
+            MovieDetailWidget(movie: movie),
+            const SizedBox(height: 15.0),
+            ReviewButton(controller: controller),
+            Cast(controller: controller)
+          ],
+        ),
       ),
     );
   }
@@ -136,6 +164,7 @@ class Cast extends StatelessWidget {
                               textAlign: TextAlign.center,
                               maxLines: 2,
                               overflow: TextOverflow.ellipsis,
+                              style: TextStyle(fontSize: 12.sp),
                             ))
                       ]),
                     ),
@@ -161,11 +190,21 @@ class ReviewButton extends StatelessWidget {
               onPressed: () {
                 Get.toNamed(PageRouter.REVIEWS, arguments: controller.reviews);
               },
-              style: ElevatedButton.styleFrom(shape: const StadiumBorder()),
-              icon: const Icon(Icons.reviews),
-              label: const Padding(
-                padding: EdgeInsets.symmetric(vertical: 12.0),
-                child: Text('Reviews', style: TextStyle(fontSize: 16.0)),
+              style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.deepOrange,
+                  shape: const StadiumBorder()),
+              icon: const Icon(
+                Icons.type_specimen,
+                color: Colors.white,
+              ),
+              label: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 12.0),
+                child: Text('Reviews',
+                    style: TextStyle(
+                        fontSize: 14.sp,
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontFamily: GoogleFonts.poppins().fontFamily)),
               ),
             ))
       ],
@@ -191,63 +230,80 @@ class BackDropWidget extends StatelessWidget {
         if (controller.videoId.isNotEmpty) {
           Get.toNamed(PageRouter.VIDEO, arguments: controller.videoId);
         } else {
-          Utils().showSnackBar(
-              'No videos found for movie', movie.originalTitle, false);
+          controller.utils.showSnackBar('No videos found for movie',
+              movie.originalTitle, SnackBarStatus.info);
         }
       },
-      child: Container(
-        margin: const EdgeInsets.only(left: 8.0, right: 8.0, top: 8.0),
-        width: double.infinity,
-        height: mediaQuery.size.height * 0.325,
-        child: Stack(
-          children: [
-            Positioned(
-              top: 0,
-              left: 0,
-              right: 0,
-              bottom: 0,
-              child: Card(
-                  elevation: 15.0,
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10.0)),
-                  clipBehavior: Clip.antiAliasWithSaveLayer),
-            ),
-            Positioned(
-              top: 0,
-              left: 0,
-              right: 0,
-              bottom: 0,
-              child: ClipRRect(
+      child: Column(
+        children: [
+          Container(
+            height: 0.25.sh,
+            decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(10.0),
-                child: CachedNetworkImage(
-                    imageUrl: movie.backdropPath != null
-                        ? Constants.BASE_IMAGE_URL +
-                            movie.backdropPath.toString()
-                        : Constants.BASE_IMAGE_URL +
-                            movie.posterPath.toString(),
-                    filterQuality: FilterQuality.high,
-                    fit: BoxFit.cover),
-              ),
-            ),
-            Positioned(
-                top: 0,
-                left: 0,
-                right: 0,
-                bottom: 0,
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(10.0),
-                  child: Container(
-                    decoration: const BoxDecoration(color: Colors.black26),
-                    child: const Center(
-                        child: FaIcon(
-                      FontAwesomeIcons.solidPlayCircle,
-                      size: 50.0,
-                      color: Colors.white70,
-                    )),
+                border: Border.all(color: Colors.white)),
+            margin: const EdgeInsets.only(left: 8.0, right: 8.0, top: 10.0),
+            width: double.infinity,
+            child: Stack(
+              children: [
+                Positioned(
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  bottom: 0,
+                  child: Card(
+                      elevation: 15.0,
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10.0)),
+                      clipBehavior: Clip.antiAliasWithSaveLayer),
+                ),
+                Positioned(
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  bottom: 0,
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(10.0),
+                    child: CachedNetworkImage(
+                        imageUrl: movie.backdropPath != null
+                            ? Constants.BASE_IMAGE_URL +
+                                movie.backdropPath.toString()
+                            : Constants.BASE_IMAGE_URL +
+                                movie.posterPath.toString(),
+                        filterQuality: FilterQuality.high,
+                        fit: BoxFit.cover),
                   ),
-                ))
-          ],
-        ),
+                ),
+                Positioned(
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(10.0),
+                      child: Container(
+                        decoration: const BoxDecoration(color: Colors.black26),
+                        child: const Center(
+                            child: FaIcon(
+                          FontAwesomeIcons.solidPlayCircle,
+                          size: 50.0,
+                          color: Colors.white70,
+                        )),
+                      ),
+                    ))
+              ],
+            ),
+          ),
+          12.verticalSpace,
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8.0),
+            child: Text(movie.title,
+                textAlign: TextAlign.start,
+                style: Theme.of(context).textTheme.headline6?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 18.sp,
+                    fontFamily: GoogleFonts.actor().fontFamily)),
+          ),
+        ],
       ),
     );
   }
@@ -263,24 +319,13 @@ class MovieDetailWidget extends StatelessWidget {
     final formattedDate = DateFormat.yMMMEd().format(dateTimeObj);
     return Column(
       children: [
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 8.0),
-          child: Text(movie.title,
-              textAlign: TextAlign.start,
-              style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 18,
-                  color: Styles.colors.themeColor,
-                  fontFamily: GoogleFonts.actor().fontFamily)),
-        ),
         const SizedBox(height: 5.0),
         Padding(
           padding: const EdgeInsets.only(top: 5.0),
           child: Text(
             formattedDate,
-            style: TextStyle(
-                color: Styles.colors.themeColor,
-                fontSize: 12.0,
+            style: Theme.of(context).textTheme.headline6?.copyWith(
+                fontSize: 12.sp,
                 fontWeight: FontWeight.bold,
                 letterSpacing: 1.2,
                 fontFamily: GoogleFonts.spartan().fontFamily),
@@ -292,10 +337,10 @@ class MovieDetailWidget extends StatelessWidget {
           padding: const EdgeInsets.only(top: 10.0, left: 12.0, right: 12.0),
           child: Text(movie.overview,
               textAlign: TextAlign.start,
-              style: TextStyle(
+              style: Theme.of(context).textTheme.headline6?.copyWith(
                   height: 1.2,
                   wordSpacing: 3.0,
-                  fontSize: 16,
+                  fontSize: 16.sp,
                   fontFamily: GoogleFonts.actor().fontFamily)),
         )
       ],
@@ -323,9 +368,8 @@ class RatingDetailWidget extends StatelessWidget {
                   color: Colors.amber,
                 )),
         Text((movie.voteAverage / 2).toStringAsFixed(1),
-            style: TextStyle(
-                fontSize: 14,
-                color: Colors.black,
+            style: Theme.of(context).textTheme.headline6?.copyWith(
+                fontSize: 14.sp,
                 fontWeight: FontWeight.bold,
                 fontFamily: GoogleFonts.nunito().copyWith().fontFamily)),
         Row(
@@ -336,8 +380,8 @@ class RatingDetailWidget extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.only(top: 5, right: 5),
               child: Text('${movie.voteCount} votes',
-                  style: TextStyle(
-                      fontSize: 12.0,
+                  style: Theme.of(context).textTheme.headline6?.copyWith(
+                      fontSize: 14.0.sp,
                       fontFamily: GoogleFonts.jost().fontFamily)),
             ),
             const Icon(Icons.volunteer_activism_sharp, color: Colors.red)

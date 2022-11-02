@@ -1,5 +1,4 @@
 import 'package:hive/hive.dart';
-
 part 'movie_model.g.dart';
 
 @HiveType(typeId: 0)

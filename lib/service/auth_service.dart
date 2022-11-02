@@ -2,51 +2,64 @@
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get/instance_manager.dart';
-import 'package:movie_database/helpers/constants.dart';
+import 'package:movie_database/helpers/auth_aware.dart';
+
+import '../enum/auth_status.dart';
 
 class AuthService {
   final FirebaseAuth _firebaseAuth = Get.find<FirebaseAuth>();
 
   Stream<User?> get authStateChanges => _firebaseAuth.authStateChanges();
 
-  Future<String> signIn(
+  Future<AuthStatus> signIn(
       {required String email, required String password}) async {
     try {
       await _firebaseAuth.signInWithEmailAndPassword(
           email: email, password: password);
-      return AuthStatus.loginSuccess.toString();
+      return AuthStatus(state: AuthState.loginSuccess, message: '');
     } on FirebaseAuthException catch (e) {
       if (e.code == 'user-not-found') {
-        return 'No user found for this email.';
+        return AuthStatus(
+            state: AuthState.loginFailed,
+            message: 'No user found for this email.');
       } else if (e.code == 'wrong-password') {
-        return 'Wrong password provided for this user.';
+        return AuthStatus(
+            state: AuthState.loginFailed,
+            message: 'Wrong password provided for this user.');
       }
     }
-    return 'Something went wrong';
+    return AuthStatus(
+        state: AuthState.loginFailed, message: 'Something went wrong');
   }
 
-  Future<String> signUp(
+  Future<AuthStatus> signUp(
       {required String email, required String password}) async {
     try {
       await _firebaseAuth.createUserWithEmailAndPassword(
           email: email, password: password);
-      return AuthStatus.registrationSuccess.toString();
+      return AuthStatus(state: AuthState.registrationSuccess, message: '');
     } on FirebaseAuthException catch (e) {
       if (e.code == 'weak-password') {
-        return 'The password provided is too weak.';
+        return AuthStatus(
+            state: AuthState.registrationFailed,
+            message: 'The password provided is too weak.');
       } else if (e.code == 'email-already-in-use') {
-        return 'This email already exists';
+        return AuthStatus(
+            state: AuthState.registrationFailed,
+            message: 'This email already exists');
       }
     }
-    return 'Something went wrong';
+    return AuthStatus(
+        state: AuthState.registrationFailed, message: 'Something went wrong');
   }
 
-  Future<String> signOut() async {
+  Future<AuthStatus> signOut() async {
     try {
       await _firebaseAuth.signOut();
-      return AuthStatus.signoutSuccess.toString();
+      return AuthStatus(state: AuthState.signoutSuccess, message: '');
     } on FirebaseAuthException catch (e) {
-      return e.message!;
+      return AuthStatus(
+          state: AuthState.signoutFailed, message: e.message.toString());
     }
   }
 

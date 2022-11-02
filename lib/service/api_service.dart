@@ -1,9 +1,8 @@
-// ignore_for_file: avoid_print
-
 import 'package:dio/dio.dart';
 import 'package:dio_http_cache/dio_http_cache.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_loggy_dio/flutter_loggy_dio.dart';
-import 'package:movie_database/helpers/constants.dart';
+import '../helpers/constants.dart';
 
 class ApiService {
   var dio = Dio(BaseOptions(
@@ -33,7 +32,9 @@ class ApiService {
               maxStale: const Duration(days: 10)));
       return response;
     } catch (e) {
-      print(e);
+      if (kDebugMode) {
+        print(e);
+      }
       return Future.error(e);
     }
   }

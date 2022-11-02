@@ -4,20 +4,22 @@ import 'package:badges/badges.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:focused_menu/focused_menu.dart';
 import 'package:focused_menu/modals.dart';
 import 'package:get/state_manager.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:group_button/group_button.dart';
-import 'package:movie_database/helpers/constants.dart';
-import 'package:movie_database/helpers/device_size.dart';
-import 'package:movie_database/helpers/styles.dart';
-import 'package:movie_database/routes/router.dart';
-import 'package:movie_database/screens/home/home_controller.dart';
 import 'package:get/get.dart';
+import 'package:movie_database/service/theme_service.dart';
 import 'package:share_plus/share_plus.dart';
-
 import '../../data/models/movies_response.dart';
+import '../../enum/device_type.dart';
+import '../../helpers/constants.dart';
+import '../../helpers/device_size.dart';
+import '../../helpers/styles.dart';
+import '../../routes/router.dart';
+import 'home_controller.dart';
 
 class Home extends GetView<HomeController> {
   Home({Key? key}) : super(key: key);
@@ -31,13 +33,14 @@ class Home extends GetView<HomeController> {
         title: Padding(
           padding: const EdgeInsets.only(top: 8.0),
           child: Text('Myth Flix',
-              style: TextStyle(
-                  fontSize: 22.0,
+              style: Theme.of(context).textTheme.headline6?.copyWith(
+                  fontSize: 22.sp,
                   fontFamily: GoogleFonts.josefinSans().copyWith().fontFamily)),
         ),
         actions: [
           SearchActionButton(controller: controller),
           FavoriteActionButton(controller: controller),
+          ThemeActionButton(controller: controller),
           LogoutActionButton(controller: controller)
         ],
       ),
@@ -75,7 +78,10 @@ class SearchActionButton extends StatelessWidget {
       child: Container(
         margin: const EdgeInsets.only(top: 10.0, bottom: 5.0),
         decoration: BoxDecoration(
-            shape: BoxShape.circle, color: Colors.grey[400]!.withOpacity(0.5)),
+            shape: BoxShape.circle,
+            color: ThemeService().isDarkMode()
+                ? Colors.grey[400]!.withOpacity(0.5)
+                : Colors.black45),
         child: const Padding(
           padding: EdgeInsets.all(4.0),
           child: Icon(Icons.search, color: Colors.white),
@@ -103,10 +109,49 @@ class LogoutActionButton extends StatelessWidget {
         margin: const EdgeInsets.only(
             top: 10.0, bottom: 5.0, left: 5.0, right: 8.0),
         decoration: BoxDecoration(
-            shape: BoxShape.circle, color: Colors.grey[400]!.withOpacity(0.5)),
+            shape: BoxShape.circle,
+            color: ThemeService().isDarkMode()
+                ? Colors.grey[400]!.withOpacity(0.5)
+                : Colors.black45),
         child: const Padding(
           padding: EdgeInsets.all(4.0),
-          child: Icon(Icons.logout_outlined, color: Colors.white),
+          child: Icon(Icons.logout_rounded, color: Colors.white),
+        ),
+      ),
+    );
+  }
+}
+
+class ThemeActionButton extends StatelessWidget {
+  final HomeController controller;
+  const ThemeActionButton({Key? key, required this.controller})
+      : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      splashFactory: NoSplash.splashFactory,
+      splashColor: Colors.transparent,
+      highlightColor: Colors.transparent,
+      onTap: () async {
+        await controller.changeTheme();
+      },
+      child: Container(
+        margin: const EdgeInsets.only(top: 10.0, bottom: 5.0, left: 5.0),
+        decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            color: ThemeService().isDarkMode()
+                ? Colors.grey[400]!.withOpacity(0.5)
+                : Colors.black45),
+        child: Padding(
+          padding: const EdgeInsets.all(4.0),
+          child: Obx(() {
+            return Icon(
+                controller.isDarkMode.value
+                    ? Icons.light_mode
+                    : Icons.dark_mode,
+                color: Colors.white);
+          }),
         ),
       ),
     );
@@ -136,7 +181,9 @@ class FavoriteActionButton extends StatelessWidget {
                     child: Container(
                       decoration: BoxDecoration(
                           shape: BoxShape.circle,
-                          color: Colors.grey[400]!.withOpacity(0.5)),
+                          color: ThemeService().isDarkMode()
+                              ? Colors.grey[400]!.withOpacity(0.5)
+                              : Colors.black45),
                       child: const Padding(
                         padding: EdgeInsets.all(4.0),
                         child: Icon(Icons.favorite),
@@ -152,7 +199,9 @@ class FavoriteActionButton extends StatelessWidget {
                 child: Container(
                   decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      color: Colors.grey[400]!.withOpacity(0.5)),
+                      color: ThemeService().isDarkMode()
+                          ? Colors.grey[400]!.withOpacity(0.5)
+                          : Colors.black45),
                   child: const Padding(
                     padding: EdgeInsets.all(4.0),
                     child: Icon(Icons.favorite),
@@ -190,7 +239,7 @@ class MoviesListWidget extends StatelessWidget {
                                 ? mediaQuery.size.height * 0.3
                                 : mediaQuery.size.height * 0.7,
                         crossAxisCount:
-                            getDeviceType() == DeviceType.Phone ? 2 : 3,
+                            getDeviceType() == DeviceType.phone ? 2 : 3,
                         crossAxisSpacing: 4.0,
                         mainAxisSpacing: 4.0),
                     itemBuilder: (ctx, index) {
@@ -201,8 +250,16 @@ class MoviesListWidget extends StatelessWidget {
                           menuWidth: mediaQuery.size.width * 0.5,
                           menuItems: [
                             FocusedMenuItem(
+                                backgroundColor:
+                                    Theme.of(context).cardTheme.color,
                                 title: Text('Favorite',
-                                    style: Styles.textStyles.f14Regular),
+                                    style:
+                                        Styles.textStyles.f14Regular?.copyWith(
+                                      color: Theme.of(context)
+                                          .textTheme
+                                          .headline6
+                                          ?.color,
+                                    )),
                                 trailingIcon: const Icon(Icons.favorite,
                                     color: Colors.red),
                                 onPressed: () async {
@@ -210,10 +267,18 @@ class MoviesListWidget extends StatelessWidget {
                                       .addFavorite(controller.movies[index]);
                                 }),
                             FocusedMenuItem(
+                                backgroundColor:
+                                    Theme.of(context).cardTheme.color,
                                 title: Text('Share',
-                                    style: Styles.textStyles.f14Regular),
-                                trailingIcon:
-                                    const Icon(Icons.share, color: Colors.blue),
+                                    style:
+                                        Styles.textStyles.f14Regular?.copyWith(
+                                      color: Theme.of(context)
+                                          .textTheme
+                                          .headline6
+                                          ?.color,
+                                    )),
+                                trailingIcon: const Icon(Icons.send,
+                                    color: Colors.orange),
                                 onPressed: () {
                                   Results movie = controller.movies[index];
                                   Share.share(
@@ -222,8 +287,16 @@ class MoviesListWidget extends StatelessWidget {
                                           'Check out this movie ${movie.title}');
                                 }),
                             FocusedMenuItem(
+                                backgroundColor:
+                                    Theme.of(context).cardTheme.color,
                                 title: Text('Vote',
-                                    style: Styles.textStyles.f14Regular),
+                                    style:
+                                        Styles.textStyles.f14Regular?.copyWith(
+                                      color: Theme.of(context)
+                                          .textTheme
+                                          .headline6
+                                          ?.color,
+                                    )),
                                 trailingIcon: const Icon(
                                     Icons.volunteer_activism,
                                     color: Colors.green),
@@ -245,7 +318,7 @@ class MoviesListWidget extends StatelessWidget {
                                 ? mediaQuery.size.height * 0.3
                                 : mediaQuery.size.height * 0.7,
                         crossAxisCount:
-                            getDeviceType() == DeviceType.Phone ? 2 : 3,
+                            getDeviceType() == DeviceType.phone ? 2 : 3,
                         crossAxisSpacing: 4.0,
                         mainAxisSpacing: 4.0),
                     itemBuilder: (ctx, index) {
@@ -278,9 +351,10 @@ class MovieListItem extends StatelessWidget {
       onTap: () => Get.toNamed(PageRouter.MOVIE_DETAIL, arguments: movie),
       child: LayoutBuilder(builder: (context, constraints) {
         return Card(
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-          elevation: 15,
+          shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10.0),
+              side: const BorderSide(color: Colors.white)),
+          elevation: 6.0,
           child: Column(
             children: [
               SizedBox(
@@ -293,8 +367,8 @@ class MovieListItem extends StatelessWidget {
                       right: 0,
                       child: ClipRRect(
                         borderRadius: const BorderRadius.only(
-                            topLeft: Radius.circular(15),
-                            topRight: Radius.circular(15)),
+                            topLeft: Radius.circular(10.0),
+                            topRight: Radius.circular(10.0)),
                         child: CachedNetworkImage(
                             imageUrl: movie.posterPath != null
                                 ? Constants.BASE_IMAGE_URL + movie.posterPath!
@@ -307,13 +381,14 @@ class MovieListItem extends StatelessWidget {
                       child: ElevatedButton(
                         onPressed: () {},
                         style: ElevatedButton.styleFrom(
-                            primary: Colors.amber,
+                            backgroundColor: Colors.amber,
                             splashFactory: NoSplash.splashFactory,
                             shape: const RoundedRectangleBorder(
                                 borderRadius: BorderRadius.only(
                                     topLeft: Radius.circular(10.0),
                                     bottomLeft: Radius.circular(10.0)))),
-                        child: Text(movie.voteAverage.toString() + ' 💜',
+                        child: Text(
+                            movie.voteAverage.toStringAsFixed(2) + ' 💜',
                             style: const TextStyle(
                                 color: Colors.black,
                                 fontWeight: FontWeight.bold),
@@ -331,9 +406,8 @@ class MovieListItem extends StatelessWidget {
                       vertical: constraints.maxHeight * 0.03),
                   child: Text(movie.originalTitle,
                       textAlign: TextAlign.center,
-                      style: TextStyle(
-                          fontSize: 16,
-                          color: Colors.black,
+                      style: Theme.of(context).textTheme.headline6?.copyWith(
+                          fontSize: 16.0,
                           overflow: TextOverflow.ellipsis,
                           fontFamily:
                               GoogleFonts.staatliches().copyWith().fontFamily)),
@@ -356,8 +430,7 @@ class CategoriesWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return AnimatedContainer(
         margin: const EdgeInsets.only(top: 5, left: 5),
-        height: 40.0,
-        color: Colors.white,
+        height: 50.0,
         duration: const Duration(milliseconds: 400),
         curve: Curves.bounceInOut,
         child: SingleChildScrollView(
@@ -366,19 +439,23 @@ class CategoriesWidget extends StatelessWidget {
             controller: categoryController,
             isRadio: true,
             options: GroupButtonOptions(
+                elevation: 4.0,
                 spacing: 3.0,
                 groupingType: GroupingType.row,
                 direction: Axis.horizontal,
                 selectedColor: Colors.amber,
-                unselectedTextStyle: TextStyle(
-                    color: Colors.black,
-                    fontWeight: FontWeight.w400,
-                    fontFamily: GoogleFonts.beVietnamPro().fontFamily),
+                unselectedTextStyle: Theme.of(context)
+                    .textTheme
+                    .headline6
+                    ?.copyWith(
+                        fontSize: 14.0,
+                        fontWeight: FontWeight.w400,
+                        fontFamily: GoogleFonts.beVietnamPro().fontFamily),
                 selectedTextStyle: TextStyle(
                     color: Colors.black,
                     fontWeight: FontWeight.w600,
                     fontFamily: GoogleFonts.beVietnamPro().fontFamily),
-                unselectedColor: Colors.grey[300],
+                unselectedColor: Theme.of(context).cardTheme.color,
                 borderRadius: BorderRadius.circular(15.0)),
             onSelected: (_, index, __) async {
               controller.setSelectedCategory(index);

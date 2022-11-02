@@ -1,7 +1,7 @@
 import 'package:get/get.dart';
-import 'package:movie_database/base/base_controller.dart';
-import 'package:movie_database/repo/movie_detail_repo.dart';
+import '../../base/base_controller.dart';
 import '../../data/models/profile_response.dart';
+import '../../repo/movie_detail_repo.dart';
 
 class PersonController extends BaseController {
   final isLoaded = false.obs;

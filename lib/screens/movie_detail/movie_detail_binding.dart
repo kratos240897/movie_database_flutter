@@ -1,6 +1,6 @@
 import 'package:get/instance_manager.dart';
-import 'package:movie_database/repo/movie_detail_repo.dart';
-import 'package:movie_database/screens/movie_detail/movie_detail_controller.dart';
+import '../../repo/movie_detail_repo.dart';
+import 'movie_detail_controller.dart';
 
 class MovieDetailBinding extends Bindings {
   @override

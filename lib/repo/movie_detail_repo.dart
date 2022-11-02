@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:get/instance_manager.dart';
 import '../data/models/credits_response.dart';
 import '../data/models/profile_response.dart';
@@ -16,7 +17,7 @@ class MovieDetailRepository {
       final reviews = ReviewResponse.fromJson(res.data).results;
       return reviews;
     } catch (e) {
-      print(e);
+      debugPrint(e.toString());
       return Future.error(e);
     }
   }
@@ -28,7 +29,7 @@ class MovieDetailRepository {
       final videos = VideoDetailsResponse.fromJson(res.data).results;
       return videos;
     } catch (e) {
-      print(e);
+      debugPrint(e.toString());
       return Future.error(e);
     }
   }
@@ -40,7 +41,7 @@ class MovieDetailRepository {
       final cast = CreditsResponse.fromJson(res.data).cast;
       return cast;
     } catch (e) {
-      print(e);
+      debugPrint(e.toString());
       return Future.error(e);
     }
   }
@@ -52,7 +53,7 @@ class MovieDetailRepository {
       final profile = ProfileResponse.fromJson(res.data);
       return profile;
     } catch (e) {
-      print(e);
+      debugPrint(e.toString());
       return Future.error(e);
     }
   }

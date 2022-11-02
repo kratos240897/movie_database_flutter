@@ -1,12 +1,11 @@
 import 'package:get/get.dart';
-import 'package:movie_database/base/base_controller.dart';
-import 'package:movie_database/helpers/boxes.dart';
-import 'package:movie_database/helpers/utils.dart';
-import 'package:movie_database/repo/home_repo.dart';
-import 'package:movie_database/repo/search_repo.dart';
-
+import 'package:movie_database/enum/snackbar_status.dart';
+import '../../base/base_controller.dart';
 import '../../data/models/movie_model.dart';
 import '../../data/models/movies_response.dart';
+import '../../helpers/boxes.dart';
+import '../../helpers/utils.dart';
+import '../../repo/search_repo.dart';
 
 class SearchController extends BaseController {
   RxList<Results> searchResults = RxList.empty();
@@ -43,6 +42,6 @@ class SearchController extends BaseController {
       ..originalTitle = result.originalTitle;
     final box = Boxes.getFavorites();
     box.add(movie);
-    Utils().showSnackBar('Added to Favorites', movie.title, true);
+    Utils().showSnackBar('Added to Favorites', movie.title, SnackBarStatus.info);
   }
 }

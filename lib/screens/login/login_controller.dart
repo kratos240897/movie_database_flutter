@@ -1,8 +1,9 @@
 import 'package:get/get.dart';
-import 'package:movie_database/base/base_controller.dart';
-import 'package:movie_database/helpers/constants.dart';
-import 'package:movie_database/routes/router.dart';
-import 'package:movie_database/service/auth_service.dart';
+import 'package:movie_database/enum/snackbar_status.dart';
+import '../../base/base_controller.dart';
+import '../../enum/auth_status.dart';
+import '../../routes/router.dart';
+import '../../service/auth_service.dart';
 
 class LoginController extends BaseController {
   final AuthService _authService = Get.find<AuthService>();
@@ -11,11 +12,11 @@ class LoginController extends BaseController {
     utils.showLoading();
     _authService.signIn(email: email, password: password).then((value) {
       utils.hideLoading();
-      if (value == AuthStatus.loginSuccess.toString()) {
-        utils.showSnackBar('Login', 'success', true);
+      if (value.state == AuthState.loginSuccess) {
+        utils.showSnackBar('Login', 'success', SnackBarStatus.success);
         Get.offAndToNamed(PageRouter.HOME);
       } else {
-        utils.showSnackBar('Login', value, false);
+        utils.showSnackBar('Login', value.message, SnackBarStatus.failure);
       }
     });
   }

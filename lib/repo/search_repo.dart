@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:get/instance_manager.dart';
 import '../data/models/movies_response.dart';
 import '../helpers/end_points.dart';
@@ -12,7 +13,7 @@ class SearchRepository {
       final movies = MoviesResponse.fromJson(res.data).results;
       return movies;
     } catch (e) {
-      print(e);
+      debugPrint(e.toString());
       return Future.error(e);
     }
   }

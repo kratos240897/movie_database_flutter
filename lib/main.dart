@@ -6,22 +6,20 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_loggy/flutter_loggy.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:loggy/loggy.dart';
-import 'package:movie_database/helpers/constants.dart';
-import 'package:movie_database/helpers/helpers.dart';
-import 'package:movie_database/helpers/styles.dart';
-import 'package:movie_database/routes/router.dart';
-import 'package:movie_database/service/auth_service.dart';
-
+import 'package:movie_database/myth_flix_app.dart';
 import 'data/models/movie_model.dart';
+import 'helpers/constants.dart';
 import 'service/api_service.dart';
+import 'service/auth_service.dart';
 
 void main() async {
   await init();
   await inject();
   FlutterNativeSplash.remove();
-  runApp(const MyApp());
+  runApp(const MythFlixApp());
 }
 
 Future<void> init() async {
@@ -33,11 +31,10 @@ Future<void> init() async {
   Loggy.initLoggy(
     logPrinter: const PrettyDeveloperPrinter(),
   );
+  await GetStorage.init();
 }
 
 Future<void> setSystemPreference() async {
-  SystemChrome.setSystemUIOverlayStyle(
-      SystemUiOverlayStyle(statusBarColor: Styles.colors.primaryColor));
   await SystemChrome.setPreferredOrientations(
       [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
 }
@@ -72,39 +69,4 @@ Future<void> inject() async {
   Get.lazyPut(() => ApiService(), fenix: true);
   Get.lazyPut(() => AuthService(), fenix: true);
   Get.lazyPut(() => FirebaseAuth.instance, fenix: true);
-}
-
-class MyApp extends StatefulWidget {
-  const MyApp({Key? key}) : super(key: key);
-
-  @override
-  State<MyApp> createState() => _MyAppState();
-}
-
-class _MyAppState extends State<MyApp> {
-  final AuthService _authService = Get.find<AuthService>();
-  var isLoggedIn = false;
-
-  @override
-  void initState() {
-    if (_authService.getUser() != null) {
-      isLoggedIn = true;
-    } else {
-      false;
-    }
-    super.initState();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return GetMaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'Myth Flix',
-      theme: ThemeData(
-        primarySwatch: Styles.colors.primaryColor,
-      ),
-      initialRoute: isLoggedIn == true ? PageRouter.HOME : PageRouter.LOGIN,
-      onGenerateRoute: PageRouter().generateRoutes,
-    );
-  }
 }

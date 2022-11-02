@@ -1,6 +1,6 @@
 import 'package:get/instance_manager.dart';
-import 'package:movie_database/repo/home_repo.dart';
-import 'package:movie_database/screens/login/login_controller.dart';
+import '../../repo/home_repo.dart';
+import 'login_controller.dart';
 
 class LoginBinding extends Bindings {
   @override

@@ -1,16 +1,25 @@
+import 'dart:async';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:lottie/lottie.dart';
-
+import 'package:movie_database/enum/auth_status.dart';
+import 'package:movie_database/enum/snackbar_status.dart';
+import '../enum/network_state.dart';
+import '../helpers/auth_aware.dart';
+import '../helpers/boxes.dart';
 import '../helpers/connection_aware.dart';
 import '../helpers/utils.dart';
+import '../routes/router.dart';
+import '../service/auth_service.dart';
 
-abstract class BaseController extends GetxController with ConnectionAware {
+abstract class BaseController extends GetxController
+    with ConnectionAware, AuthStateAware, WidgetsBindingObserver {
   final error = ''.obs;
   final utils = Utils();
   final isNetworkAvailable = false.obs;
-
+  final _authService = Get.find<AuthService>();
   get getNoInternetWidget => const NoInternetWidget();
 
   Future<bool> getIsInternetAvailable() async {
@@ -24,19 +33,49 @@ abstract class BaseController extends GetxController with ConnectionAware {
 
   @override
   void onInit() {
-    ConnectionAware awareObj = this;
-    awareObj.connectivitySubscription =
-        Connectivity().onConnectivityChanged.listen((event) {
-      if (event == ConnectivityResult.mobile ||
-          event == ConnectivityResult.wifi) {
-        awareObj.networkState = NetworkState.connected;
-        awareObj.onNetworkConnected();
-      } else if (event == ConnectivityResult.none) {
-        awareObj.networkState = NetworkState.disconnected;
-        awareObj.onNetworkDisconnected();
+    WidgetsBinding.instance.addObserver(this);
+    connectivitySubscription =
+        Connectivity().onConnectivityChanged.listen((result) {
+      if (result == ConnectivityResult.mobile ||
+          result == ConnectivityResult.wifi) {
+        networkState = NetworkState.connected;
+        if (isNetworkAvailable.value != true) {
+          onNetworkConnected();
+        }
+      } else if (result == ConnectivityResult.none) {
+        networkState = NetworkState.disconnected;
+        onNetworkDisconnected();
       }
     });
+    authStateSubscription = _authService.authStateChanges.listen((user) {
+      debugPrint('authState:' + user.toString());
+      // if (user == null) {
+      //   loggedOut();
+      // }
+    });
     super.onInit();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    switch (state) {
+      case AppLifecycleState.resumed:
+        debugPrint('AppLifecycleState: resumed');
+        connectivitySubscription?.resume();
+        authStateSubscription?.resume();
+        break;
+      case AppLifecycleState.paused:
+        debugPrint('AppLifecycleState: paused');
+        connectivitySubscription?.pause();
+        authStateSubscription?.pause();
+        break;
+      case AppLifecycleState.inactive:
+        debugPrint('AppLifecycleState: inactive');
+        break;
+      case AppLifecycleState.detached:
+        debugPrint('AppLifecycleState: detached');
+        break;
+    }
   }
 
   @override
@@ -47,6 +86,7 @@ abstract class BaseController extends GetxController with ConnectionAware {
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     connectivitySubscription?.cancel();
     super.dispose();
   }
@@ -54,13 +94,31 @@ abstract class BaseController extends GetxController with ConnectionAware {
   @override
   void onNetworkConnected() {
     isNetworkAvailable.value = true;
-    utils.showSnackBar('Internet Connection', 'Back Online', true);
+    utils.showSnackBar('Internet Connection', 'Back Online', SnackBarStatus.success);
   }
 
   @override
   void onNetworkDisconnected() {
     isNetworkAvailable.value = false;
-    utils.showSnackBar('Internet Connection', 'You\'re offline', false);
+    utils.showSnackBar('Internet Connection', 'You\'re offline', SnackBarStatus.failure);
+  }
+
+  @override
+  void prepareLogout() {
+    // since it is a local DB
+    Boxes.getFavorites().clear();
+    logout();
+  }
+
+  void logout() async {
+    utils.showLoading();
+    _authService.signOut().then((value) {
+      utils.hideLoading();
+      if (value.state == AuthState.signoutSuccess) {
+        Get.offAllNamed(PageRouter.LOGIN);
+        utils.showSnackBar('Logout', 'success', SnackBarStatus.info);
+      }
+    });
   }
 }
 
@@ -69,8 +127,21 @@ class NoInternetWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final deviceSize = MediaQuery.of(context).size;
     return Center(
-        child: Lottie.asset('assets/lottie/no_internet.json',
-            width: 400.0, height: 400.0));
+        child: Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Lottie.asset('assets/lottie/no_internet.json',
+            width: deviceSize.width * 0.4,
+            height: deviceSize.width * 0.4,
+            repeat: false),
+        const SizedBox(height: 15.0),
+        Text(
+          'No Internet Connection',
+          style: GoogleFonts.josefinSans().copyWith(fontSize: 18.0),
+        )
+      ],
+    ));
   }
 }

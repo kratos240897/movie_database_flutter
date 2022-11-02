@@ -1,8 +1,7 @@
-// ignore_for_file: avoid_print
-
-import 'dart:async';
-
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 
@@ -17,9 +16,9 @@ class Video extends StatefulWidget {
 class _VideoState extends State<Video> {
   late YoutubePlayerController _controller;
   int _currentPostiton = 0;
-  String title = '';
-  String author = '';
-  String duration = '';
+  String _title = '';
+  String _author = '';
+  String _duration = '';
 
   @override
   void initState() {
@@ -34,9 +33,28 @@ class _VideoState extends State<Video> {
           forceHD: true,
           enableCaption: true,
           controlsVisibleAtStart: true),
-    );
-    getVideoDetails();
+    )..addListener(_youtubePlayerListener);
     super.initState();
+  }
+
+  void _youtubePlayerListener() {
+    if (_controllerMetaDataIsNotEmpty() && _localMetaDataIsEmpty()) {
+      setState(() {
+        _author = _controller.metadata.author;
+        _title = _controller.metadata.title;
+        _duration = _controller.metadata.duration.inSeconds.toString();
+      });
+    }
+  }
+
+  bool _controllerMetaDataIsNotEmpty() {
+    return (_controller.metadata.author.isNotEmpty &&
+        _controller.metadata.title.isNotEmpty &&
+        _controller.metadata.duration.inSeconds != 0);
+  }
+
+  bool _localMetaDataIsEmpty() {
+    return (_author.isEmpty && _title.isEmpty && _duration.isEmpty);
   }
 
   @override
@@ -52,22 +70,6 @@ class _VideoState extends State<Video> {
     super.dispose();
   }
 
-  void getVideoDetails() {
-    Timer.periodic(const Duration(milliseconds: 500), (timer) {
-      print('timer running');
-      if (_controller.metadata.author.isNotEmpty &&
-          _controller.metadata.title.isNotEmpty &&
-          _controller.metadata.duration.inSeconds.toString().isNotEmpty) {
-        setState(() {
-          author = _controller.metadata.author;
-          title = _controller.metadata.title;
-          duration = _controller.metadata.duration.inSeconds.toString();
-        });
-        timer.cancel();
-      }
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     return YoutubePlayerBuilder(
@@ -77,18 +79,29 @@ class _VideoState extends State<Video> {
             if (_currentPostiton != widget.videoId.length) {
               _currentPostiton = _currentPostiton + 1;
               _controller.load(widget.videoId[_currentPostiton]);
-              author = '';
-              title = '';
-              duration = '';
-              getVideoDetails();
+              _author = '';
+              _title = '';
+              _duration = '';
             }
           },
         ),
         builder: (context, player) {
           return Scaffold(
             appBar: AppBar(
+              leading: IconButton(
+                onPressed: () => Get.back(),
+                icon: Icon(
+                  CupertinoIcons.back,
+                  size: 20.h,
+                  color: Theme.of(context).textTheme.headline6?.color,
+                ),
+              ),
               centerTitle: true,
-              title: const Text('Video'),
+              title: Text('Video',
+                  style: Theme.of(context).textTheme.headline6?.copyWith(
+                      fontSize: 22.sp,
+                      fontFamily:
+                          GoogleFonts.josefinSans().copyWith().fontFamily)),
             ),
             body: Column(
               children: [
@@ -99,9 +112,9 @@ class _VideoState extends State<Video> {
                       padding: const EdgeInsets.only(
                           top: 15.0, left: 20.0, right: 20.0),
                       child: Text(
-                        author,
+                        _author,
                         style: TextStyle(
-                            fontSize: 22.0,
+                            fontSize: 22.sp,
                             fontWeight: FontWeight.bold,
                             fontFamily: GoogleFonts.quicksand().fontFamily),
                       ),
@@ -114,11 +127,11 @@ class _VideoState extends State<Video> {
                       child: Padding(
                         padding: const EdgeInsets.only(
                             top: 8.0, left: 20.0, right: 20.0),
-                        child: Text(title,
+                        child: Text(_title,
                             maxLines: 4,
                             overflow: TextOverflow.ellipsis,
                             style: TextStyle(
-                                fontSize: 16.0,
+                                fontSize: 16.sp,
                                 fontWeight: FontWeight.normal,
                                 fontFamily: GoogleFonts.roboto().fontFamily)),
                       ),
@@ -127,9 +140,9 @@ class _VideoState extends State<Video> {
                 ),
                 Padding(
                   padding: const EdgeInsets.only(top: 8.0),
-                  child: Text(duration + ' Secs',
+                  child: Text(_duration + ' Secs',
                       style: TextStyle(
-                          fontSize: 17.0,
+                          fontSize: 17.0.sp,
                           fontWeight: FontWeight.normal,
                           fontFamily: GoogleFonts.roboto().fontFamily)),
                 )

@@ -1,15 +1,16 @@
 // ignore_for_file: unused_import
 
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get_navigation/src/extension_navigation.dart';
 import 'package:get/state_manager.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:movie_database/data/models/movies_response.dart';
-import 'package:movie_database/helpers/boxes.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:movie_database/helpers/constants.dart';
 import '../../data/models/movie_model.dart';
+import '../../helpers/boxes.dart';
+import '../../helpers/constants.dart';
 import './favorites_controller.dart';
 
 class Favorties extends GetView<FavoritesController> {
@@ -19,10 +20,18 @@ class Favorties extends GetView<FavoritesController> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+          leading: IconButton(
+            onPressed: () => Get.back(),
+            icon: Icon(
+              CupertinoIcons.back,
+              size: 20.h,
+              color: Theme.of(context).textTheme.headline6?.color,
+            ),
+          ),
           centerTitle: false,
           title: Text('Favorites',
-              style: TextStyle(
-                  fontSize: 22.0,
+              style: Theme.of(context).textTheme.headline6?.copyWith(
+                  fontSize: 22.sp,
                   fontFamily:
                       GoogleFonts.josefinSans().copyWith().fontFamily))),
       body: SafeArea(
@@ -65,6 +74,7 @@ class FavoritesItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
+      padding: const EdgeInsets.only(right: 8.0),
       margin: const EdgeInsets.symmetric(vertical: 8.0),
       child: Row(
         children: [
@@ -79,21 +89,21 @@ class FavoritesItem extends StatelessWidget {
               ),
             ),
           ),
-          const SizedBox(width: 10.0),
           Expanded(
-            flex: 7,
+            flex: 4,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(movie.title,
-                    style: TextStyle(
-                        fontSize: 16.0,
+                    style: Theme.of(context).textTheme.headline6?.copyWith(
+                        fontSize: 14.sp,
                         fontFamily: GoogleFonts.quicksand().fontFamily,
                         fontWeight: FontWeight.bold)),
                 Text(movie.overview,
-                    style: TextStyle(
-                      fontFamily: GoogleFonts.quicksand().fontFamily,
-                    ),
+                    style: Theme.of(context).textTheme.headline6?.copyWith(
+                          fontSize: 14.sp,
+                          fontFamily: GoogleFonts.quicksand().fontFamily,
+                        ),
                     maxLines: 4,
                     overflow: TextOverflow.ellipsis),
               ],
@@ -107,6 +117,10 @@ class FavoritesItem extends StatelessWidget {
               textAlign: TextAlign.start,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
+              style: Theme.of(context)
+                  .textTheme
+                  .headline6
+                  ?.copyWith(fontSize: 14.sp),
             ),
           ),
         ],

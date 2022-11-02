@@ -1,6 +1,5 @@
 import 'dart:collection';
-
-import 'package:movie_database/data/cache/cache.dart';
+import 'cache.dart';
 
 class AppCache extends Cache {
   AppCache._();

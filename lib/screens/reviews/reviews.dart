@@ -1,7 +1,9 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
-
 import '../../data/models/review_response.dart';
 
 class Review extends StatelessWidget {
@@ -13,9 +15,19 @@ class Review extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
           centerTitle: true,
-          title: const Text(
-            'Reviews',
-          )),
+          leading: IconButton(
+            onPressed: () => Get.back(),
+            icon: Icon(
+              CupertinoIcons.back,
+              size: 20.h,
+              color: Theme.of(context).textTheme.headline6?.color,
+            ),
+          ),
+          title: Text('Reviews',
+              style: Theme.of(context).textTheme.headline6?.copyWith(
+                  fontSize: 22.sp,
+                  fontFamily:
+                      GoogleFonts.josefinSans().copyWith().fontFamily))),
       body: SafeArea(
           child: reviews.isNotEmpty
               ? ListView.builder(
@@ -46,12 +58,15 @@ class Review extends StatelessWidget {
                             Expanded(
                               child: Text(
                                 reviews[index].author,
-                                style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 18.0,
-                                    overflow: TextOverflow.ellipsis,
-                                    fontFamily:
-                                        GoogleFonts.spartan().fontFamily),
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .headline6
+                                    ?.copyWith(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 14.sp,
+                                        overflow: TextOverflow.ellipsis,
+                                        fontFamily:
+                                            GoogleFonts.spartan().fontFamily),
                               ),
                             ),
                           ],
@@ -61,11 +76,14 @@ class Review extends StatelessWidget {
                               horizontal: 8.0, vertical: 10.0),
                           child: Text(
                             reviews[index].content,
-                            style: TextStyle(
-                                fontSize: 14.0,
-                                color: Colors.black,
-                                height: 1.5,
-                                fontFamily: GoogleFonts.spartan().fontFamily),
+                            style: Theme.of(context)
+                                .textTheme
+                                .headline6
+                                ?.copyWith(
+                                    fontSize: 14.0,
+                                    height: 1.5,
+                                    fontFamily:
+                                        GoogleFonts.spartan().fontFamily),
                           ),
                         ),
                       ),
@@ -76,17 +94,20 @@ class Review extends StatelessWidget {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       const FaIcon(
-                        FontAwesomeIcons.solidCommentDots,
+                        FontAwesomeIcons.commentDots,
                         size: 50.0,
+                        color: Colors.green,
                       ),
                       const SizedBox(height: 20.0),
-                      Text(
-                        'No reviews !',
-                        style: GoogleFonts.actor(
-                            fontWeight: FontWeight.w600,
-                            fontSize: 25.0,
-                            letterSpacing: 1.5),
-                      )
+                      Text('No reviews found !',
+                          style: Theme.of(context)
+                              .textTheme
+                              .headline6
+                              ?.copyWith(
+                                  fontFamily: GoogleFonts.spartan().fontFamily,
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 16.0,
+                                  letterSpacing: 0.2)),
                     ],
                   ),
                 )),

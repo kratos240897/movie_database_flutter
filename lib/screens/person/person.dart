@@ -1,11 +1,11 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get_instance/get_instance.dart';
 import 'package:get/get_navigation/get_navigation.dart';
 import 'package:get/state_manager.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:movie_database/helpers/styles.dart';
 import 'package:movie_database/screens/person/person_controller.dart';
 
 import '../../helpers/constants.dart';
@@ -115,7 +115,8 @@ class _PersonState extends State<Person> {
                     handle: NestedScrollView.sliverOverlapAbsorberHandleFor(
                         context),
                     sliver: SliverAppBar(
-                      backgroundColor: Styles.colors.primaryColor,
+                      backgroundColor:
+                          Theme.of(context).appBarTheme.backgroundColor,
                       expandedHeight: 400.0,
                       pinned: true,
                       primary: true,
@@ -166,38 +167,37 @@ class _PersonState extends State<Person> {
                         child: Column(
                       children: [
                         Wrap(
-                            spacing: 1.0,
+                            spacing: 8.0,
                             runSpacing: 1.0,
-                            alignment: WrapAlignment.spaceEvenly,
+                            alignment: WrapAlignment.center,
                             direction: Axis.horizontal,
                             children: List.generate(
                                 controller.profile.alsoKnownAs.length, (index) {
-                              return Container(
-                                margin:
-                                    const EdgeInsets.symmetric(horizontal: 5.0),
-                                child: ElevatedButton(
-                                    onPressed: () {},
-                                    style: ElevatedButton.styleFrom(
-                                        primary: Colors.amber,
-                                        splashFactory: NoSplash.splashFactory,
-                                        shape: const StadiumBorder()),
-                                    child: Text(
-                                        controller.profile.alsoKnownAs[index],
-                                        style: const TextStyle(
-                                            color: Colors.black))),
-                              );
+                              return ElevatedButton(
+                                  onPressed: () {},
+                                  style: ElevatedButton.styleFrom(
+                                      backgroundColor: Colors.amber,
+                                      splashFactory: NoSplash.splashFactory,
+                                      shape: const StadiumBorder()),
+                                  child: Text(
+                                      controller.profile.alsoKnownAs[index],
+                                      style: const TextStyle(
+                                          color: Colors.black)));
                             })),
                         Padding(
                           padding: const EdgeInsets.symmetric(
                               vertical: 8.0, horizontal: 12.0),
                           child: Text(
                             controller.profile.biography,
-                            style: TextStyle(
-                                color: Colors.black,
-                                fontSize: 15.0,
-                                wordSpacing: 1.0,
-                                height: 1.4,
-                                fontFamily: GoogleFonts.quicksand().fontFamily),
+                            style: Theme.of(context)
+                                .textTheme
+                                .headline6
+                                ?.copyWith(
+                                    fontSize: 15.sp,
+                                    wordSpacing: 1.0,
+                                    height: 1.4,
+                                    fontFamily:
+                                        GoogleFonts.quicksand().fontFamily),
                           ),
                         )
                       ],

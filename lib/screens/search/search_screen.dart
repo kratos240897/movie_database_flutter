@@ -1,22 +1,23 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:focused_menu/focused_menu.dart';
 import 'package:focused_menu/modals.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:movie_database/helpers/constants.dart';
-import 'package:movie_database/helpers/device_size.dart';
-import 'package:movie_database/helpers/styles.dart';
-import 'package:movie_database/helpers/utils.dart';
 import 'package:get/get.dart';
+import 'package:movie_database/enum/snackbar_status.dart';
 import 'dart:math' as math;
-
-import 'package:movie_database/screens/search/search_controller.dart';
 import 'package:share_plus/share_plus.dart';
-
 import '../../data/models/movies_response.dart';
+import '../../enum/device_type.dart';
+import '../../helpers/constants.dart';
+import '../../helpers/device_size.dart';
+import '../../helpers/styles.dart';
 import '../../routes/router.dart';
+import 'search_controller.dart';
 
 class SearchScreen extends GetView<SearchController> {
   SearchScreen(this.movies, {Key? key}) : super(key: key);
@@ -27,10 +28,18 @@ class SearchScreen extends GetView<SearchController> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(
+          onPressed: () => Get.back(),
+          icon: Icon(
+            CupertinoIcons.back,
+            size: 20.h,
+            color: Theme.of(context).textTheme.headline6?.color,
+          ),
+        ),
         centerTitle: false,
         title: Text('Search Movies',
-            style: TextStyle(
-                fontSize: 22.0,
+            style: Theme.of(context).textTheme.headline6?.copyWith(
+                fontSize: 22.sp,
                 fontFamily: GoogleFonts.josefinSans().copyWith().fontFamily)),
       ),
       body: SafeArea(
@@ -123,9 +132,9 @@ class SearchedMovieItem extends StatelessWidget {
             child: Row(
               children: [
                 Expanded(
-                  flex: 2,
+                  flex: 1,
                   child: AspectRatio(
-                    aspectRatio: 16 / 9,
+                    aspectRatio: 1 / 1,
                     child: CircleAvatar(
                       backgroundImage: CachedNetworkImageProvider(
                         Constants.BASE_IMAGE_URL + movie.posterPath.toString(),
@@ -135,32 +144,46 @@ class SearchedMovieItem extends StatelessWidget {
                 ),
                 const SizedBox(width: 10.0),
                 Expanded(
-                  flex: 7,
+                  flex: 4,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(movie.title,
-                          style: TextStyle(
-                              fontSize: 16.0,
-                              fontFamily: GoogleFonts.quicksand().fontFamily,
-                              fontWeight: FontWeight.bold)),
+                          style: Theme.of(context)
+                              .textTheme
+                              .headline6
+                              ?.copyWith(
+                                  fontSize: 16.sp,
+                                  fontFamily:
+                                      GoogleFonts.quicksand().fontFamily,
+                                  fontWeight: FontWeight.bold)),
                       Text(movie.overview,
-                          style: TextStyle(
-                            fontFamily: GoogleFonts.quicksand().fontFamily,
-                          ),
+                          style: Theme.of(context)
+                              .textTheme
+                              .headline6
+                              ?.copyWith(
+                                fontSize: 14.sp,
+                                fontFamily: GoogleFonts.quicksand().fontFamily,
+                              ),
                           maxLines: 4,
                           overflow: TextOverflow.ellipsis),
                     ],
                   ),
                 ),
-                const Spacer(),
                 Expanded(
                   flex: 1,
-                  child: Text(
-                    '⭐ ' + rating,
-                    textAlign: TextAlign.start,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
+                  child: Align(
+                    alignment: Alignment.centerRight,
+                    child: Text(
+                      '⭐ ' + rating,
+                      textAlign: TextAlign.start,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: Theme.of(context)
+                          .textTheme
+                          .headline6
+                          ?.copyWith(fontSize: 14.sp),
+                    ),
                   ),
                 ),
               ],
@@ -266,26 +289,27 @@ class MovieCard extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Container(
-              height: getDeviceType() == DeviceType.Phone
+              height: getDeviceType() == DeviceType.phone
                   ? constraints.maxHeight * 0.65
                   : constraints.maxHeight * 0.75,
               margin: EdgeInsets.all(
-                  getDeviceType() == DeviceType.Phone ? 15.0 : 30.0),
+                  getDeviceType() == DeviceType.phone ? 15.0 : 30.0),
               decoration: BoxDecoration(
+                  border: Border.all(color: Colors.white),
                   borderRadius: BorderRadius.circular(50.0),
                   image: DecorationImage(
                       fit: BoxFit.fill,
-                      image: CachedNetworkImageProvider(Constants.BASE_IMAGE_URL +
-                          movie.posterPath.toString()))),
+                      image: CachedNetworkImageProvider(
+                          Constants.BASE_IMAGE_URL +
+                              movie.posterPath.toString()))),
             ),
             Container(
               margin: const EdgeInsets.symmetric(vertical: 15.0),
               child: Text(movie.title,
                   textAlign: TextAlign.start,
-                  style: TextStyle(
+                  style: Theme.of(context).textTheme.headline6?.copyWith(
                       fontWeight: FontWeight.bold,
                       fontSize: 18,
-                      color: Styles.colors.themeColor,
                       overflow: TextOverflow.ellipsis,
                       fontFamily: GoogleFonts.actor().fontFamily)),
             ),
@@ -361,18 +385,25 @@ class _SearchBarWidgetState extends State<SearchBarWidget> {
                 padding: const EdgeInsets.symmetric(horizontal: 20.0),
                 child: TextField(
                   focusNode: _focus,
+                  style: Theme.of(context).textTheme.headline6?.copyWith(
+                      fontSize: 16.sp,
+                      fontFamily: GoogleFonts.raleway().fontFamily),
                   decoration: InputDecoration(
                       border: InputBorder.none,
                       hintText: 'Start searching movies',
-                      hintStyle: TextStyle(
-                          fontFamily: GoogleFonts.raleway().fontFamily)),
+                      hintStyle: Theme.of(context)
+                          .textTheme
+                          .headline6
+                          ?.copyWith(
+                              fontSize: 14.sp,
+                              fontFamily: GoogleFonts.raleway().fontFamily)),
                   controller: searchTextController,
                   onSubmitted: (value) async {
                     if (value.isNotEmpty) {
                       widget.controller.searchMovies(value.trim());
                     } else {
-                      Utils().showSnackBar('Invalid query',
-                          'Please enter a valid search query', false);
+                      widget.controller.utils.showSnackBar('Invalid query',
+                          'Please enter a valid search query', SnackBarStatus.failure);
                     }
                   },
                 ),
@@ -385,8 +416,8 @@ class _SearchBarWidgetState extends State<SearchBarWidget> {
                   widget.controller.searchMovies(
                       searchTextController.text.toString().trim());
                 } else {
-                  Utils().showSnackBar('Invalid query',
-                      'Please enter a valid search query', false);
+                  widget.controller.utils.showSnackBar('Invalid query',
+                      'Please enter a valid search query', SnackBarStatus.failure);
                 }
               },
               icon: const FaIcon(FontAwesomeIcons.arrowCircleRight))

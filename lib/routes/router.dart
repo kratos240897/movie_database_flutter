@@ -2,24 +2,26 @@
 
 import 'package:flutter/material.dart';
 import 'package:get/route_manager.dart';
-import 'package:movie_database/screens/favorites/favorites.dart';
-import 'package:movie_database/screens/favorites/favorties_binding.dart';
-import 'package:movie_database/screens/home/home_binding.dart';
-import 'package:movie_database/screens/login/login.dart';
-import 'package:movie_database/screens/login/login_binding.dart';
-import 'package:movie_database/screens/movie_detail/movie_detail_binding.dart';
-import 'package:movie_database/screens/person/person.dart';
-import 'package:movie_database/screens/person/person_binding.dart';
-import 'package:movie_database/screens/register/register.dart';
-import 'package:movie_database/screens/register/register_binding.dart';
-import 'package:movie_database/screens/reviews/reviews.dart';
-import 'package:movie_database/screens/reviews/reviews_binding.dart';
-import 'package:movie_database/screens/search/search_binding.dart';
-import 'package:movie_database/screens/video/video.dart';
-import 'package:movie_database/screens/video/video_binding.dart';
 import '../data/models/movies_response.dart';
 import '../data/models/review_response.dart';
-import '../screens/screens.dart';
+import '../screens/favorites/favorites.dart';
+import '../screens/favorites/favorties_binding.dart';
+import '../screens/home/home.dart';
+import '../screens/home/home_binding.dart';
+import '../screens/login/login.dart';
+import '../screens/login/login_binding.dart';
+import '../screens/movie_detail/movie_detail_binding.dart';
+import '../screens/movie_detail/movie_detail_screen.dart';
+import '../screens/person/person.dart';
+import '../screens/person/person_binding.dart';
+import '../screens/register/register.dart';
+import '../screens/register/register_binding.dart';
+import '../screens/reviews/reviews.dart';
+import '../screens/reviews/reviews_binding.dart';
+import '../screens/search/search_binding.dart';
+import '../screens/search/search_screen.dart';
+import '../screens/video/video.dart';
+import '../screens/video/video_binding.dart';
 
 class PageRouter {
   PageRouter._();

@@ -1,36 +1,42 @@
-// ignore: unused_import
-// ignore_for_file: unnecessary_import
-
 import 'dart:async';
+import 'package:flutter/material.dart';
 import 'package:flutter_app_badger/flutter_app_badger.dart';
-import 'package:movie_database/base/base_controller.dart';
-import 'package:movie_database/data/cache/cache_constants.dart';
-import 'package:movie_database/data/cache/cache_repository.dart';
-import 'package:movie_database/helpers/boxes.dart';
-import 'package:movie_database/helpers/constants.dart';
-import 'package:movie_database/helpers/helpers.dart';
-import 'package:movie_database/helpers/utils.dart';
-import 'package:movie_database/repo/home_repo.dart';
 import 'package:get/get.dart';
-import 'package:movie_database/routes/router.dart';
-import 'package:movie_database/service/auth_service.dart';
-
+import 'package:movie_database/enum/snackbar_status.dart';
+import 'package:movie_database/service/theme_service.dart';
+import '../../base/base_controller.dart';
+import '../../data/cache/cache_constants.dart';
+import '../../data/cache/cache_repository.dart';
 import '../../data/models/movie_model.dart';
 import '../../data/models/movies_response.dart';
+import '../../helpers/boxes.dart';
+import '../../helpers/end_points.dart';
+import '../../helpers/utils.dart';
+import '../../repo/home_repo.dart';
 
 class HomeController extends BaseController {
   final movies = RxList.empty();
   final HomeRepository _repo = Get.find<HomeRepository>();
-  final AuthService _authService = Get.find<AuthService>();
   final favoritesCount = 0.obs;
-
   final isLoading = false.obs;
   final selectedIndex = 0.obs;
+  RxBool isDarkMode = false.obs;
 
   @override
   void onInit() async {
+    isDarkMode.value = ThemeService().getThemeMode() == ThemeMode.dark;
     favoritesCount.value = Boxes.getFavorites().length;
     super.onInit();
+  }
+
+  Future<void> changeTheme() async {
+    ThemeService().changeThemeMode().then((_) {
+      isDarkMode.value = ThemeService().getThemeMode() == ThemeMode.dark;
+      utils.showSnackBar(
+          'Theme',
+          isDarkMode.value ? 'Switched to Dark Mode' : 'Switched to Light Mode',
+          SnackBarStatus.info);
+    });
   }
 
   @override
@@ -42,17 +48,6 @@ class HomeController extends BaseController {
     });
     FlutterAppBadger.updateBadgeCount(1);
     super.onReady();
-  }
-
-  void logout() async {
-    utils.showLoading();
-    _authService.signOut().then((value) {
-      utils.hideLoading();
-      if (value == AuthStatus.signoutSuccess.toString()) {
-        Get.offAllNamed(PageRouter.LOGIN);
-        utils.showSnackBar('Logout', 'success', true);
-      }
-    });
   }
 
   addFavorite(Results result) {
@@ -74,7 +69,7 @@ class HomeController extends BaseController {
       ..originalTitle = result.originalTitle;
     final box = Boxes.getFavorites();
     box.add(movie);
-    Utils().showSnackBar('Added to Favorites', movie.title, true);
+    Utils().showSnackBar('Added to Favorites', movie.title, SnackBarStatus.info);
   }
 
   setSelectedCategory(int index) async {

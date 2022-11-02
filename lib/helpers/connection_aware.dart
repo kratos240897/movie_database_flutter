@@ -1,6 +1,6 @@
 import 'dart:async';
 
-enum NetworkState { connected, disconnected }
+import '../enum/network_state.dart';
 
 abstract class ConnectionAware {
   NetworkState? networkState;
