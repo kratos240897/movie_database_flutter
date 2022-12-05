@@ -1,14 +1,14 @@
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:focused_menu/focused_menu.dart';
 import 'package:focused_menu/modals.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:get/get.dart';
 import 'package:movie_database/enum/snackbar_status.dart';
+import 'package:movie_database/service/theme_service.dart';
+import 'package:movie_database/widgets/custom_app_bar_widget.dart';
 import 'dart:math' as math;
 import 'package:share_plus/share_plus.dart';
 import '../../data/models/movies_response.dart';
@@ -27,25 +27,16 @@ class SearchScreen extends GetView<SearchController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        leading: IconButton(
-          onPressed: () => Get.back(),
-          icon: Icon(
-            CupertinoIcons.back,
-            size: 20.h,
-            color: Theme.of(context).textTheme.headline6?.color,
-          ),
-        ),
-        centerTitle: false,
-        title: Text('Search Movies',
-            style: Theme.of(context).textTheme.headline6?.copyWith(
-                fontSize: 22.sp,
-                fontFamily: GoogleFonts.josefinSans().copyWith().fontFamily)),
-      ),
       body: SafeArea(
         child: Obx(() {
           return Column(
             children: [
+              Padding(
+                  padding: EdgeInsets.only(left: 12.w, bottom: 8.h, top: 8.h),
+                  child: const CustomAppBar(
+                    isBackEnabled: true,
+                    title: 'Search Movies',
+                  )),
               SearchBarWidget(
                 controller: controller,
               ),
@@ -132,7 +123,7 @@ class SearchedMovieItem extends StatelessWidget {
             child: Row(
               children: [
                 Expanded(
-                  flex: 1,
+                flex: 1,
                   child: AspectRatio(
                     aspectRatio: 1 / 1,
                     child: CircleAvatar(
@@ -372,56 +363,62 @@ class _SearchBarWidgetState extends State<SearchBarWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.all(8.0),
-      child: Row(
-        children: [
-          Expanded(
-            child: Card(
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(20.0)),
-              elevation: 4.0,
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                child: TextField(
-                  focusNode: _focus,
-                  style: Theme.of(context).textTheme.headline6?.copyWith(
-                      fontSize: 16.sp,
-                      fontFamily: GoogleFonts.raleway().fontFamily),
-                  decoration: InputDecoration(
-                      border: InputBorder.none,
-                      hintText: 'Start searching movies',
-                      hintStyle: Theme.of(context)
-                          .textTheme
-                          .headline6
-                          ?.copyWith(
-                              fontSize: 14.sp,
-                              fontFamily: GoogleFonts.raleway().fontFamily)),
-                  controller: searchTextController,
-                  onSubmitted: (value) async {
-                    if (value.isNotEmpty) {
-                      widget.controller.searchMovies(value.trim());
-                    } else {
-                      widget.controller.utils.showSnackBar('Invalid query',
-                          'Please enter a valid search query', SnackBarStatus.failure);
-                    }
-                  },
-                ),
-              ),
-            ),
+    return SizedBox(
+      width: 0.75.sw,
+      child: Card(
+        margin: const EdgeInsets.all(8.0),
+        shape:
+            RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)),
+        elevation: 4.0,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20.0),
+          child: TextField(
+            focusNode: _focus,
+            style: Theme.of(context).textTheme.headline6?.copyWith(
+                fontSize: 16.sp, fontFamily: GoogleFonts.raleway().fontFamily),
+            decoration: InputDecoration(
+                border: InputBorder.none,
+                suffixIconConstraints:
+                    BoxConstraints(minWidth: 18.sp, minHeight: 18.sp),
+                suffixIcon: _focus.hasFocus
+                    ? InkWell(
+                        onTap: () {
+                          searchTextController.clear();
+                        },
+                        child: Container(
+                          width: 12.sp,
+                          decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: ThemeService().isDarkMode()
+                                  ? Styles.colors.white
+                                  : Styles.colors.backgroundGrey),
+                          child: Icon(
+                            Icons.close,
+                            color: ThemeService().isDarkMode()
+                                ? Styles.colors.backgroundGrey
+                                : Styles.colors.white,
+                            size: 12.sp,
+                          ),
+                        ),
+                      )
+                    : const SizedBox.shrink(),
+                hintText: 'Start typing...',
+                hintStyle: Theme.of(context).textTheme.headline6?.copyWith(
+                    fontSize: 14.sp,
+                    fontFamily: GoogleFonts.raleway().fontFamily)),
+            controller: searchTextController,
+            onSubmitted: (value) async {
+              if (value.isNotEmpty) {
+                widget.controller.searchMovies(value.trim());
+              } else {
+                widget.controller.utils.showSnackBar(
+                    'Invalid query',
+                    'Please enter a valid search query',
+                    SnackBarStatus.failure);
+              }
+            },
           ),
-          IconButton(
-              onPressed: () async {
-                if (searchTextController.text.isNotEmpty) {
-                  widget.controller.searchMovies(
-                      searchTextController.text.toString().trim());
-                } else {
-                  widget.controller.utils.showSnackBar('Invalid query',
-                      'Please enter a valid search query', SnackBarStatus.failure);
-                }
-              },
-              icon: const FaIcon(FontAwesomeIcons.arrowCircleRight))
-        ],
+        ),
       ),
     );
   }

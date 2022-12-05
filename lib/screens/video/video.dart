@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:movie_database/widgets/custom_app_bar_widget.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 
 class Video extends StatefulWidget {
@@ -87,66 +88,51 @@ class _VideoState extends State<Video> {
         ),
         builder: (context, player) {
           return Scaffold(
-            appBar: AppBar(
-              leading: IconButton(
-                onPressed: () => Get.back(),
-                icon: Icon(
-                  CupertinoIcons.back,
-                  size: 20.h,
-                  color: Theme.of(context).textTheme.headline6?.color,
-                ),
-              ),
-              centerTitle: true,
-              title: Text('Video',
-                  style: Theme.of(context).textTheme.headline6?.copyWith(
-                      fontSize: 22.sp,
-                      fontFamily:
-                          GoogleFonts.josefinSans().copyWith().fontFamily)),
-            ),
-            body: Column(
-              children: [
-                player,
-                Row(
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.only(
-                          top: 15.0, left: 20.0, right: 20.0),
-                      child: Text(
-                        _author,
-                        style: TextStyle(
-                            fontSize: 22.sp,
-                            fontWeight: FontWeight.bold,
-                            fontFamily: GoogleFonts.quicksand().fontFamily),
-                      ),
-                    ),
-                  ],
-                ),
-                Row(
-                  children: [
-                    Expanded(
-                      child: Padding(
-                        padding: const EdgeInsets.only(
-                            top: 8.0, left: 20.0, right: 20.0),
-                        child: Text(_title,
-                            maxLines: 4,
-                            overflow: TextOverflow.ellipsis,
-                            style: TextStyle(
-                                fontSize: 16.sp,
-                                fontWeight: FontWeight.normal,
-                                fontFamily: GoogleFonts.roboto().fontFamily)),
-                      ),
-                    ),
-                  ],
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(top: 8.0),
-                  child: Text(_duration + ' Secs',
+            body: SafeArea(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Padding(
+                    padding: EdgeInsets.only(left: 12.w, bottom: 8.h, top: 8.h),
+                    child: const CustomAppBar(
+                        title: 'Trailer and Others', isBackEnabled: true),
+                  ),
+                  8.verticalSpace,
+                  player,
+                  Padding(
+                    padding:
+                        EdgeInsets.only(top: 15.h, left: 20.w, right: 20.w),
+                    child: Text(
+                      _author,
                       style: TextStyle(
-                          fontSize: 17.0.sp,
-                          fontWeight: FontWeight.normal,
-                          fontFamily: GoogleFonts.roboto().fontFamily)),
-                )
-              ],
+                          fontSize: 22.sp,
+                          fontWeight: FontWeight.bold,
+                          fontFamily: GoogleFonts.quicksand().fontFamily),
+                    ),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.only(top: 8.h, left: 20.w, right: 20.w),
+                    child: Text(_title,
+                        maxLines: 4,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                            fontSize: 16.sp,
+                            fontWeight: FontWeight.normal,
+                            fontFamily: GoogleFonts.roboto().fontFamily)),
+                  ),
+                  Align(
+                    alignment: Alignment.center,
+                    child: Padding(
+                      padding: EdgeInsets.only(top: 8.h),
+                      child: Text(_duration + ' Secs',
+                          style: TextStyle(
+                              fontSize: 17.0.sp,
+                              fontWeight: FontWeight.normal,
+                              fontFamily: GoogleFonts.roboto().fontFamily)),
+                    ),
+                  )
+                ],
+              ),
             ),
           );
         });

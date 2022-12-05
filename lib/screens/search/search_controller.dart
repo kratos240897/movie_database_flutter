@@ -1,5 +1,6 @@
 import 'package:get/get.dart';
 import 'package:movie_database/enum/snackbar_status.dart';
+import 'package:movie_database/helpers/results_to_movie_extn.dart';
 import '../../base/base_controller.dart';
 import '../../data/models/movie_model.dart';
 import '../../data/models/movies_response.dart';
@@ -25,23 +26,9 @@ class SearchController extends BaseController {
   }
 
   addFavorite(Results result) {
-    final movie = Movie()
-      ..adult = result.adult
-      ..backdropPath = result.backdropPath
-      ..genreIds = result.genreIds
-      ..id = result.id
-      ..originalLanguage = result.originalLanguage
-      ..overview = result.overview
-      ..popularity = result.popularity
-      ..posterPath = result.posterPath
-      ..releaseDate = result.releaseDate
-      ..title = result.title
-      ..video = result.video
-      ..voteAverage = result.voteAverage
-      ..voteCount = result.voteCount
-      ..originalTitle = result.originalTitle;
-    final box = Boxes.getFavorites();
-    box.add(movie);
-    Utils().showSnackBar('Added to Favorites', movie.title, SnackBarStatus.info);
+    final movie = ResultsToMovie([result]).parseResults().first;
+    movie.save();
+    Utils()
+        .showSnackBar('Added to Favorites', movie.title, SnackBarStatus.info);
   }
 }

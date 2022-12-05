@@ -72,7 +72,7 @@ class HomeController extends BaseController {
     Utils().showSnackBar('Added to Favorites', movie.title, SnackBarStatus.info);
   }
 
-  setSelectedCategory(int index) async {
+  Future<void> setSelectedCategory(int index) async {
     selectedIndex.value = index;
     switch (selectedIndex.value) {
       case 0:

@@ -7,6 +7,7 @@ import 'package:get/get_navigation/get_navigation.dart';
 import 'package:get/state_manager.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:movie_database/screens/person/person_controller.dart';
+import 'package:movie_database/service/theme_service.dart';
 
 import '../../helpers/constants.dart';
 
@@ -116,8 +117,8 @@ class _PersonState extends State<Person> {
                         context),
                     sliver: SliverAppBar(
                       backgroundColor:
-                          Theme.of(context).appBarTheme.backgroundColor,
-                      expandedHeight: 400.0,
+                          Theme.of(context).scaffoldBackgroundColor,
+                      expandedHeight: 0.4.sh,
                       pinned: true,
                       primary: true,
                       flexibleSpace: FlexibleSpaceBar(
@@ -125,6 +126,8 @@ class _PersonState extends State<Person> {
                           widget.title,
                           style: TextStyle(
                               fontSize: 25.0,
+                              color:
+                                  Theme.of(context).textTheme.headline1?.color,
                               fontFamily: GoogleFonts.caveat().fontFamily),
                         ),
                         background: Stack(
@@ -137,7 +140,10 @@ class _PersonState extends State<Person> {
                               ),
                             ),
                             Positioned.fill(
-                                child: Container(color: Colors.black26)),
+                                child: Container(
+                                    color: ThemeService().isDarkMode()
+                                        ? Colors.black26
+                                        : Colors.white12)),
                           ],
                         ),
                       ),
@@ -145,13 +151,20 @@ class _PersonState extends State<Person> {
                         padding: const EdgeInsets.only(top: 5.0, left: 12.0),
                         child: InkWell(
                             onTap: () => Get.back(),
-                            child: const Icon(Icons.arrow_back_ios_new_sharp)),
+                            child: Icon(
+                              Icons.arrow_back_ios_new_sharp,
+                              color:
+                                  Theme.of(context).textTheme.headline1?.color,
+                            )),
                       ),
                       centerTitle: true,
-                      actions: const [
+                      actions: [
                         Padding(
-                          padding: EdgeInsets.only(top: 5.0, right: 15.0),
-                          child: Icon(FontAwesomeIcons.wikipediaW),
+                          padding: EdgeInsets.only(top: 5.h, right: 15.w),
+                          child: Icon(
+                            FontAwesomeIcons.wikipediaW,
+                            color: Theme.of(context).textTheme.headline1?.color,
+                          ),
                         )
                       ],
                     ),

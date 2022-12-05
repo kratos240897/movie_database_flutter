@@ -24,11 +24,15 @@ class Utils {
           child: Row(children: [
             Container(
               decoration: BoxDecoration(
-                  color: status == SnackBarStatus.success ? Colors.green : status == SnackBarStatus.failure ? Colors.red : Colors.blue,
+                  color: status == SnackBarStatus.success
+                      ? Colors.green
+                      : status == SnackBarStatus.failure
+                          ? Colors.red
+                          : Colors.blue,
                   borderRadius: BorderRadius.circular(5.r)),
               width: 0.02.sw,
             ),
-            SizedBox(width: 0.05.sw),
+            0.05.sw.horizontalSpace,
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -38,11 +42,13 @@ class Utils {
                       fontSize: 16.sp,
                       color: Theme.of(context).textTheme.headline6?.color),
                 ),
-                5.verticalSpace,
-                Text(message,
-                    style: Styles.textStyles.f14Bold?.copyWith(
-                        fontSize: 14.sp,
-                        color: Theme.of(context).textTheme.headline6?.color)),
+                4.verticalSpace,
+                Expanded(
+                  child: Text(message,
+                      style: Styles.textStyles.f14Bold?.copyWith(
+                          fontSize: 14.sp,
+                          color: Theme.of(context).textTheme.headline6?.color)),
+                ),
               ],
             ),
             const Spacer(),
@@ -55,7 +61,7 @@ class Utils {
                 ))
           ]),
         ));
-    await Future.delayed(const Duration(milliseconds: 500), () {});
+    await Future.delayed(const Duration(milliseconds: 5000), () {});
     ScaffoldMessenger.of(context).showSnackBar(snackBar);
   }
 

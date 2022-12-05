@@ -44,12 +44,32 @@ class _MythFlixAppState extends State<MythFlixApp> {
               ErrorWidget.builder = (details) {
                 return CustomErrorWidget(errorDetails: details);
               };
-              return child!;
+              return ScrollConfiguration(
+                behavior: const ScrollBehaviorModified(),
+                child: child!,
+              );
             },
             initialRoute:
                 isLoggedIn == true ? PageRouter.HOME : PageRouter.LOGIN,
             onGenerateRoute: PageRouter().generateRoutes,
           );
         });
+  }
+}
+
+class ScrollBehaviorModified extends ScrollBehavior {
+  const ScrollBehaviorModified();
+  @override
+  ScrollPhysics getScrollPhysics(BuildContext context) {
+    switch (getPlatform(context)) {
+      case TargetPlatform.iOS:
+      case TargetPlatform.macOS:
+      case TargetPlatform.android:
+        return const BouncingScrollPhysics();
+      case TargetPlatform.fuchsia:
+      case TargetPlatform.linux:
+      case TargetPlatform.windows:
+        return const BouncingScrollPhysics();
+    }
   }
 }

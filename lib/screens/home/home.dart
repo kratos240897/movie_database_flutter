@@ -12,6 +12,8 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:group_button/group_button.dart';
 import 'package:get/get.dart';
 import 'package:movie_database/service/theme_service.dart';
+import 'package:movie_database/widgets/custom_action_button.dart';
+import 'package:movie_database/widgets/custom_app_bar_widget.dart';
 import 'package:share_plus/share_plus.dart';
 import '../../data/models/movies_response.dart';
 import '../../enum/device_type.dart';
@@ -24,209 +26,85 @@ import 'home_controller.dart';
 class Home extends GetView<HomeController> {
   Home({Key? key}) : super(key: key);
   final mediaQuery = Get.mediaQuery;
+  final movieListScrollController = ScrollController();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        centerTitle: false,
-        title: Padding(
-          padding: const EdgeInsets.only(top: 8.0),
-          child: Text('Myth Flix',
-              style: Theme.of(context).textTheme.headline6?.copyWith(
-                  fontSize: 22.sp,
-                  fontFamily: GoogleFonts.josefinSans().copyWith().fontFamily)),
-        ),
-        actions: [
-          SearchActionButton(controller: controller),
-          FavoriteActionButton(controller: controller),
-          ThemeActionButton(controller: controller),
-          LogoutActionButton(controller: controller)
-        ],
-      ),
       body: SafeArea(child: Obx(() {
-        return Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            CategoriesWidget(controller: controller),
-            controller.isNetworkAvailable.value
-                ? MoviesListWidget(
-                    controller: controller, mediaQuery: mediaQuery)
-                : controller.getNoInternetWidget
-          ],
+        return Padding(
+          padding: EdgeInsets.symmetric(vertical: 8.sp),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Padding(
+                padding: EdgeInsets.only(right: 4.w),
+                child: CustomAppBar(
+                  title: 'Myth Flix',
+                  isBackEnabled: false,
+                  actions: [
+                    CustomActionButton(
+                        onTap: () => Get.toNamed(
+                              PageRouter.SEARCH,
+                              arguments:
+                                  controller.movies.value as List<Results>,
+                            ),
+                        icon: Icons.search_outlined),
+                    CustomActionButton(
+                      onTap: () => Get.toNamed(PageRouter.FAVORITES),
+                      icon: Icons.favorite_border,
+                      badgeCount: controller.favoritesCount.value,
+                    ),
+                    CustomActionButton(
+                        onTap: () async {
+                          await controller.changeTheme();
+                        },
+                        icon: controller.isDarkMode.value
+                            ? Icons.light_mode_outlined
+                            : Icons.dark_mode_outlined),
+                    CustomActionButton(
+                        onTap: () => controller.logout(),
+                        icon: Icons.logout_outlined)
+                  ],
+                ),
+              ),
+              CategoriesWidget(
+                controller: controller,
+                movieListScrollController: movieListScrollController,
+              ),
+              controller.isNetworkAvailable.value
+                  ? MoviesListWidget(
+                      controller: controller,
+                      scrollController: movieListScrollController,
+                      mediaQuery: mediaQuery)
+                  : controller.getNoInternetWidget
+            ],
+          ),
         );
       })),
     );
   }
 }
 
-class SearchActionButton extends StatelessWidget {
-  final HomeController controller;
-  const SearchActionButton({Key? key, required this.controller})
-      : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return InkWell(
-      splashFactory: NoSplash.splashFactory,
-      splashColor: Colors.transparent,
-      highlightColor: Colors.transparent,
-      onTap: () => Get.toNamed(
-        PageRouter.SEARCH,
-        arguments: controller.movies.value as List<Results>,
-      ),
-      child: Container(
-        margin: const EdgeInsets.only(top: 10.0, bottom: 5.0),
-        decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            color: ThemeService().isDarkMode()
-                ? Colors.grey[400]!.withOpacity(0.5)
-                : Colors.black45),
-        child: const Padding(
-          padding: EdgeInsets.all(4.0),
-          child: Icon(Icons.search, color: Colors.white),
-        ),
-      ),
-    );
-  }
-}
-
-class LogoutActionButton extends StatelessWidget {
-  final HomeController controller;
-  const LogoutActionButton({Key? key, required this.controller})
-      : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return InkWell(
-      splashFactory: NoSplash.splashFactory,
-      splashColor: Colors.transparent,
-      highlightColor: Colors.transparent,
-      onTap: () {
-        controller.logout();
-      },
-      child: Container(
-        margin: const EdgeInsets.only(
-            top: 10.0, bottom: 5.0, left: 5.0, right: 8.0),
-        decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            color: ThemeService().isDarkMode()
-                ? Colors.grey[400]!.withOpacity(0.5)
-                : Colors.black45),
-        child: const Padding(
-          padding: EdgeInsets.all(4.0),
-          child: Icon(Icons.logout_rounded, color: Colors.white),
-        ),
-      ),
-    );
-  }
-}
-
-class ThemeActionButton extends StatelessWidget {
-  final HomeController controller;
-  const ThemeActionButton({Key? key, required this.controller})
-      : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return InkWell(
-      splashFactory: NoSplash.splashFactory,
-      splashColor: Colors.transparent,
-      highlightColor: Colors.transparent,
-      onTap: () async {
-        await controller.changeTheme();
-      },
-      child: Container(
-        margin: const EdgeInsets.only(top: 10.0, bottom: 5.0, left: 5.0),
-        decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            color: ThemeService().isDarkMode()
-                ? Colors.grey[400]!.withOpacity(0.5)
-                : Colors.black45),
-        child: Padding(
-          padding: const EdgeInsets.all(4.0),
-          child: Obx(() {
-            return Icon(
-                controller.isDarkMode.value
-                    ? Icons.light_mode
-                    : Icons.dark_mode,
-                color: Colors.white);
-          }),
-        ),
-      ),
-    );
-  }
-}
-
-class FavoriteActionButton extends StatelessWidget {
-  final HomeController controller;
-  const FavoriteActionButton({Key? key, required this.controller})
-      : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Obx(() {
-      return controller.favoritesCount.value > 0
-          ? GestureDetector(
-              onTap: () => Get.toNamed(PageRouter.FAVORITES),
-              child: Container(
-                  margin:
-                      const EdgeInsets.only(left: 5.0, bottom: 5.0, top: 10.0),
-                  child: Badge(
-                    animationType: BadgeAnimationType.slide,
-                    badgeContent: Text(
-                        controller.favoritesCount.value.toString(),
-                        style:
-                            const TextStyle(fontSize: 10, color: Colors.white)),
-                    child: Container(
-                      decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: ThemeService().isDarkMode()
-                              ? Colors.grey[400]!.withOpacity(0.5)
-                              : Colors.black45),
-                      child: const Padding(
-                        padding: EdgeInsets.all(4.0),
-                        child: Icon(Icons.favorite),
-                      ),
-                    ),
-                  )),
-            )
-          : GestureDetector(
-              onTap: () => Get.toNamed(PageRouter.FAVORITES),
-              child: Container(
-                margin:
-                    const EdgeInsets.only(bottom: 5.0, top: 10.0, left: 5.0),
-                child: Container(
-                  decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: ThemeService().isDarkMode()
-                          ? Colors.grey[400]!.withOpacity(0.5)
-                          : Colors.black45),
-                  child: const Padding(
-                    padding: EdgeInsets.all(4.0),
-                    child: Icon(Icons.favorite),
-                  ),
-                ),
-              ),
-            );
-    });
-  }
-}
-
 class MoviesListWidget extends StatelessWidget {
   final HomeController controller;
+  final ScrollController scrollController;
   final MediaQueryData mediaQuery;
   const MoviesListWidget(
-      {Key? key, required this.controller, required this.mediaQuery})
+      {Key? key,
+      required this.controller,
+      required this.mediaQuery,
+      required this.scrollController})
       : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Obx(() {
       return Expanded(
-        child: Container(
-          margin: const EdgeInsets.all(8.0),
+        child: Padding(
+          padding: EdgeInsets.symmetric(horizontal: 8.w),
           child: SingleChildScrollView(
+            controller: scrollController,
             child: Visibility(
                 visible: controller.isLoading.value == true ? false : true,
                 child: GridView.builder(
@@ -376,21 +254,28 @@ class MovieListItem extends StatelessWidget {
                       ),
                     ),
                     Positioned(
-                      bottom: 0,
+                      bottom: 8.h,
                       right: 0,
                       child: ElevatedButton(
                         onPressed: () {},
                         style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.amber,
+                            backgroundColor: Theme.of(context).cardColor,
                             splashFactory: NoSplash.splashFactory,
-                            shape: const RoundedRectangleBorder(
-                                borderRadius: BorderRadius.only(
+                            shape: RoundedRectangleBorder(
+                                side: BorderSide(
+                                    color: Theme.of(context)
+                                        .textTheme
+                                        .headline1!
+                                        .color!),
+                                borderRadius: const BorderRadius.only(
                                     topLeft: Radius.circular(10.0),
                                     bottomLeft: Radius.circular(10.0)))),
-                        child: Text(
-                            movie.voteAverage.toStringAsFixed(2) + ' 💜',
-                            style: const TextStyle(
-                                color: Colors.black,
+                        child: Text(movie.voteAverage.toStringAsFixed(1) + ' ✨',
+                            style: TextStyle(
+                                color: Theme.of(context)
+                                    .textTheme
+                                    .headline1
+                                    ?.color,
                                 fontWeight: FontWeight.bold),
                             textAlign: TextAlign.end),
                       ),
@@ -423,51 +308,73 @@ class MovieListItem extends StatelessWidget {
 
 class CategoriesWidget extends StatelessWidget {
   final HomeController controller;
+  final ScrollController movieListScrollController;
   final categoryController = GroupButtonController(selectedIndex: 0);
-  CategoriesWidget({Key? key, required this.controller}) : super(key: key);
+  final categories = const [
+    'Now playing',
+    'New',
+    'Top rated',
+    'Upcoming',
+    'TV shows'
+  ];
+  CategoriesWidget(
+      {Key? key,
+      required this.controller,
+      required this.movieListScrollController})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return AnimatedContainer(
-        margin: const EdgeInsets.only(top: 5, left: 5),
-        height: 50.0,
+        margin: EdgeInsets.only(top: 12.h, left: 6.w, right: 6.w),
+        height: 45.h,
         duration: const Duration(milliseconds: 400),
         curve: Curves.bounceInOut,
         child: SingleChildScrollView(
           scrollDirection: Axis.horizontal,
           child: GroupButton(
-            controller: categoryController,
-            isRadio: true,
-            options: GroupButtonOptions(
-                elevation: 4.0,
-                spacing: 3.0,
-                groupingType: GroupingType.row,
-                direction: Axis.horizontal,
-                selectedColor: Colors.amber,
-                unselectedTextStyle: Theme.of(context)
-                    .textTheme
-                    .headline6
-                    ?.copyWith(
-                        fontSize: 14.0,
-                        fontWeight: FontWeight.w400,
-                        fontFamily: GoogleFonts.beVietnamPro().fontFamily),
-                selectedTextStyle: TextStyle(
-                    color: Colors.black,
-                    fontWeight: FontWeight.w600,
-                    fontFamily: GoogleFonts.beVietnamPro().fontFamily),
-                unselectedColor: Theme.of(context).cardTheme.color,
-                borderRadius: BorderRadius.circular(15.0)),
-            onSelected: (_, index, __) async {
-              controller.setSelectedCategory(index);
-            },
-            buttons: const [
-              'Now playing',
-              'New',
-              'Top rated',
-              'Upcoming',
-              'TV shows'
-            ],
-          ),
+              buttonIndexedBuilder: (selected, index, context) {
+                return Container(
+                  height: 45.h,
+                  padding: EdgeInsets.symmetric(horizontal: 6.sp),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        categories[index],
+                        style: Theme.of(context).textTheme.headline6?.copyWith(
+                            fontSize: selected ? 16.sp : 14.sp,
+                            fontWeight:
+                                selected ? FontWeight.w600 : FontWeight.w400,
+                            fontFamily: GoogleFonts.nunito().fontFamily),
+                      ),
+                      if (selected)
+                        Column(
+                          children: [
+                            6.verticalSpace,
+                            Container(
+                              width: 10.w,
+                              height: 10.h,
+                              decoration: const BoxDecoration(
+                                  color: Colors.amber, shape: BoxShape.circle),
+                            ),
+                          ],
+                        )
+                    ],
+                  ),
+                );
+              },
+              controller: categoryController,
+              isRadio: true,
+              onSelected: (_, index, __) async {
+                await controller.setSelectedCategory(index);
+                if (movieListScrollController.position.pixels != 0.0) {
+                  movieListScrollController.animateTo(0.0,
+                      duration: const Duration(milliseconds: 1000),
+                      curve: Curves.linearToEaseOut);
+                }
+              },
+              buttons: categories),
         ));
   }
 }

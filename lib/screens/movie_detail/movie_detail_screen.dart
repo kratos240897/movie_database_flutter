@@ -1,5 +1,4 @@
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -10,6 +9,8 @@ import 'package:get/state_manager.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:movie_database/enum/snackbar_status.dart';
+import 'package:movie_database/service/theme_service.dart';
+import 'package:movie_database/widgets/custom_app_bar_widget.dart';
 import '../../data/models/movies_response.dart';
 import '../../helpers/constants.dart';
 import '../../routes/router.dart';
@@ -37,28 +38,25 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        leading: IconButton(
-          onPressed: () => Get.back(),
-          icon: Icon(
-            CupertinoIcons.back,
-            size: 20.h,
-            color: Theme.of(context).textTheme.headline6?.color,
+      body: SafeArea(
+          child: Column(
+        children: [
+          Padding(
+            padding: EdgeInsets.only(left: 8.w, bottom: 8.h, top: 8.h),
+            child: CustomAppBar(title: widget.movie.title, isBackEnabled: true),
           ),
-        ),
-        title: Text(widget.movie.title,
-            style: Theme.of(context).textTheme.headline6?.copyWith(
-                fontSize: 22.sp,
-                fontFamily: GoogleFonts.josefinSans().copyWith().fontFamily)),
-      ),
-      body: SafeArea(child: Obx(() {
-        if (!widget.controller.isNetworkAvailable.value) {
-          return widget.controller.getNoInternetWidget;
-        } else {
-          return ContentWidget(
-              controller: widget.controller, movie: widget.movie);
-        }
-      })),
+          Expanded(
+            child: Obx(() {
+              if (!widget.controller.isNetworkAvailable.value) {
+                return widget.controller.getNoInternetWidget;
+              } else {
+                return ContentWidget(
+                    controller: widget.controller, movie: widget.movie);
+              }
+            }),
+          )
+        ],
+      )),
     );
   }
 }
@@ -78,7 +76,7 @@ class ContentWidget extends StatelessWidget {
           SliverOverlapAbsorber(
             handle: NestedScrollView.sliverOverlapAbsorberHandleFor(context),
             sliver: SliverAppBar(
-              expandedHeight: 0.3075.sh,
+              expandedHeight: 0.25.sh,
               floating: false,
               pinned: false,
               automaticallyImplyLeading: false,
@@ -96,10 +94,10 @@ class ContentWidget extends StatelessWidget {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            const SizedBox(height: 12.0),
             MovieDetailWidget(movie: movie),
-            const SizedBox(height: 15.0),
+            8.verticalSpace,
             ReviewButton(controller: controller),
+            8.verticalSpace,
             Cast(controller: controller)
           ],
         ),
@@ -134,25 +132,41 @@ class Cast extends StatelessWidget {
                       margin: const EdgeInsets.all(5.0),
                       child: Column(children: [
                         controller.cast[index].profilePath != null
-                            ? CircleAvatar(
-                                radius: constraints.maxHeight * 0.30,
-                                backgroundColor: Colors.amber,
-                                child: CircleAvatar(
-                                  radius: constraints.maxHeight * 0.28,
-                                  backgroundImage: CachedNetworkImageProvider(
-                                      Constants.BASE_IMAGE_URL +
-                                          controller.cast[index].profilePath
-                                              .toString()),
+                            ? Container(
+                                width: constraints.maxHeight * 0.60,
+                                height: constraints.maxHeight * 0.60,
+                                decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    border: Border.all(
+                                        width: 2.h,
+                                        color: Theme.of(context).primaryColor)),
+                                child: Padding(
+                                  padding: EdgeInsets.all(6.r),
+                                  child: CircleAvatar(
+                                    radius: constraints.maxHeight * 0.28,
+                                    backgroundImage: CachedNetworkImageProvider(
+                                        Constants.BASE_IMAGE_URL +
+                                            controller.cast[index].profilePath
+                                                .toString()),
+                                  ),
                                 ),
                               )
-                            : CircleAvatar(
-                                radius: constraints.maxHeight * 0.30,
-                                backgroundColor: Colors.amber,
-                                child: CircleAvatar(
-                                  radius: constraints.maxHeight * 0.28,
-                                  backgroundColor: Colors.white,
-                                  backgroundImage: const AssetImage(
-                                      'assets/images/actor.png'),
+                            : Container(
+                                width: constraints.maxHeight * 0.60,
+                                height: constraints.maxHeight * 0.60,
+                                decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    border: Border.all(
+                                        width: 2.h,
+                                        color: Theme.of(context).primaryColor)),
+                                child: Padding(
+                                  padding: EdgeInsets.all(6.r),
+                                  child: CircleAvatar(
+                                    radius: constraints.maxHeight * 0.28,
+                                    backgroundColor: Colors.white,
+                                    backgroundImage: const AssetImage(
+                                        'assets/images/actor.png'),
+                                  ),
                                 ),
                               ),
                         const SizedBox(height: 12.0),
@@ -164,7 +178,12 @@ class Cast extends StatelessWidget {
                               textAlign: TextAlign.center,
                               maxLines: 2,
                               overflow: TextOverflow.ellipsis,
-                              style: TextStyle(fontSize: 12.sp),
+                              style: TextStyle(
+                                  fontSize: 12.sp,
+                                  color: Theme.of(context)
+                                      .textTheme
+                                      .headline1
+                                      ?.color),
                             ))
                       ]),
                     ),
@@ -191,18 +210,21 @@ class ReviewButton extends StatelessWidget {
                 Get.toNamed(PageRouter.REVIEWS, arguments: controller.reviews);
               },
               style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.deepOrange,
+                  backgroundColor: Theme.of(context).primaryColor,
                   shape: const StadiumBorder()),
-              icon: const Icon(
+              icon: Icon(
                 Icons.type_specimen,
-                color: Colors.white,
+                color:
+                    ThemeService().isDarkMode() ? Colors.white : Colors.black,
               ),
               label: Padding(
                 padding: const EdgeInsets.symmetric(vertical: 12.0),
                 child: Text('Reviews',
                     style: TextStyle(
                         fontSize: 14.sp,
-                        color: Colors.white,
+                        color: ThemeService().isDarkMode()
+                            ? Colors.white
+                            : Colors.black,
                         fontWeight: FontWeight.bold,
                         fontFamily: GoogleFonts.poppins().fontFamily)),
               ),
@@ -225,15 +247,8 @@ class BackDropWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
-      onTap: () {
-        if (controller.videoId.isNotEmpty) {
-          Get.toNamed(PageRouter.VIDEO, arguments: controller.videoId);
-        } else {
-          controller.utils.showSnackBar('No videos found for movie',
-              movie.originalTitle, SnackBarStatus.info);
-        }
-      },
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: 12.w),
       child: Column(
         children: [
           Container(
@@ -241,67 +256,67 @@ class BackDropWidget extends StatelessWidget {
             decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(10.0),
                 border: Border.all(color: Colors.white)),
-            margin: const EdgeInsets.only(left: 8.0, right: 8.0, top: 10.0),
             width: double.infinity,
-            child: Stack(
-              children: [
-                Positioned(
-                  top: 0,
-                  left: 0,
-                  right: 0,
-                  bottom: 0,
-                  child: Card(
-                      elevation: 15.0,
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10.0)),
-                      clipBehavior: Clip.antiAliasWithSaveLayer),
-                ),
-                Positioned(
-                  top: 0,
-                  left: 0,
-                  right: 0,
-                  bottom: 0,
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(10.0),
-                    child: CachedNetworkImage(
-                        imageUrl: movie.backdropPath != null
-                            ? Constants.BASE_IMAGE_URL +
-                                movie.backdropPath.toString()
-                            : Constants.BASE_IMAGE_URL +
-                                movie.posterPath.toString(),
-                        filterQuality: FilterQuality.high,
-                        fit: BoxFit.cover),
+            child: InkWell(
+              onTap: () {
+                if (controller.videoId.isNotEmpty) {
+                  Get.toNamed(PageRouter.VIDEO, arguments: controller.videoId);
+                } else {
+                  controller.utils.showSnackBar('No videos found for movie',
+                      movie.originalTitle, SnackBarStatus.info);
+                }
+              },
+              child: Stack(
+                children: [
+                  Positioned(
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    child: Card(
+                        elevation: 15.sp,
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8.r)),
+                        clipBehavior: Clip.antiAliasWithSaveLayer),
                   ),
-                ),
-                Positioned(
+                  Positioned(
                     top: 0,
                     left: 0,
                     right: 0,
                     bottom: 0,
                     child: ClipRRect(
-                      borderRadius: BorderRadius.circular(10.0),
-                      child: Container(
-                        decoration: const BoxDecoration(color: Colors.black26),
-                        child: const Center(
-                            child: FaIcon(
-                          FontAwesomeIcons.solidPlayCircle,
-                          size: 50.0,
-                          color: Colors.white70,
-                        )),
-                      ),
-                    ))
-              ],
+                      borderRadius: BorderRadius.circular(8.r),
+                      child: CachedNetworkImage(
+                          imageUrl: movie.backdropPath != null
+                              ? Constants.BASE_IMAGE_URL +
+                                  movie.backdropPath.toString()
+                              : Constants.BASE_IMAGE_URL +
+                                  movie.posterPath.toString(),
+                          filterQuality: FilterQuality.high,
+                          fit: BoxFit.cover),
+                    ),
+                  ),
+                  Positioned(
+                      top: 0,
+                      left: 0,
+                      right: 0,
+                      bottom: 0,
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(8.r),
+                        child: Container(
+                          decoration:
+                              const BoxDecoration(color: Colors.black26),
+                          child: const Center(
+                              child: FaIcon(
+                            FontAwesomeIcons.solidPlayCircle,
+                            size: 50.0,
+                            color: Colors.white70,
+                          )),
+                        ),
+                      ))
+                ],
+              ),
             ),
-          ),
-          12.verticalSpace,
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8.0),
-            child: Text(movie.title,
-                textAlign: TextAlign.start,
-                style: Theme.of(context).textTheme.headline6?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 18.sp,
-                    fontFamily: GoogleFonts.actor().fontFamily)),
           ),
         ],
       ),
@@ -317,33 +332,31 @@ class MovieDetailWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final dateTimeObj = DateTime.parse(movie.releaseDate);
     final formattedDate = DateFormat.yMMMEd().format(dateTimeObj);
-    return Column(
-      children: [
-        const SizedBox(height: 5.0),
-        Padding(
-          padding: const EdgeInsets.only(top: 5.0),
-          child: Text(
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: 12.w),
+      child: Column(
+        children: [
+          16.verticalSpace,
+          Text(
             formattedDate,
             style: Theme.of(context).textTheme.headline6?.copyWith(
                 fontSize: 12.sp,
-                fontWeight: FontWeight.bold,
+                fontWeight: FontWeight.w400,
                 letterSpacing: 1.2,
                 fontFamily: GoogleFonts.spartan().fontFamily),
           ),
-        ),
-        const SizedBox(height: 8.0),
-        RatingDetailWidget(movie: movie),
-        Padding(
-          padding: const EdgeInsets.only(top: 10.0, left: 12.0, right: 12.0),
-          child: Text(movie.overview,
+          8.verticalSpace,
+          RatingDetailWidget(movie: movie),
+          8.verticalSpace,
+          Text(movie.overview,
               textAlign: TextAlign.start,
               style: Theme.of(context).textTheme.headline6?.copyWith(
                   height: 1.2,
                   wordSpacing: 3.0,
                   fontSize: 16.sp,
-                  fontFamily: GoogleFonts.actor().fontFamily)),
-        )
-      ],
+                  fontFamily: GoogleFonts.actor().fontFamily))
+        ],
+      ),
     );
   }
 }
@@ -367,6 +380,7 @@ class RatingDetailWidget extends StatelessWidget {
                   Icons.star,
                   color: Colors.amber,
                 )),
+        4.verticalSpace,
         Text((movie.voteAverage / 2).toStringAsFixed(1),
             style: Theme.of(context).textTheme.headline6?.copyWith(
                 fontSize: 14.sp,
