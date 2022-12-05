@@ -61,15 +61,16 @@ class SearchedMovies extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Expanded(
-      child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: ListView.builder(
-          itemCount: controller.searchResults.length,
-          shrinkWrap: true,
-          itemBuilder: (context, index) {
-            return SearchedMovieItem(controller: controller, index: index);
-          },
+      child: ListView.separated(
+        padding: EdgeInsets.symmetric(horizontal: 8.w),
+        separatorBuilder: (context, index) => Divider(
+          thickness: 0.4.h,
         ),
+        itemCount: controller.searchResults.length,
+        shrinkWrap: true,
+        itemBuilder: (context, index) {
+          return SearchedMovieItem(controller: controller, index: index);
+        },
       ),
     );
   }
@@ -118,28 +119,22 @@ class SearchedMovieItem extends StatelessWidget {
       child: InkWell(
           onTap: () => Get.toNamed(PageRouter.MOVIE_DETAIL,
               arguments: controller.searchResults[index]),
-          child: Container(
-            margin: const EdgeInsets.symmetric(vertical: 8.0),
+          child: Padding(
+            padding: EdgeInsets.symmetric(vertical: 8.h),
             child: Row(
               children: [
-                Expanded(
-                flex: 1,
-                  child: AspectRatio(
-                    aspectRatio: 1 / 1,
-                    child: CircleAvatar(
-                      backgroundImage: CachedNetworkImageProvider(
-                        Constants.BASE_IMAGE_URL + movie.posterPath.toString(),
-                      ),
-                    ),
+                CircleAvatar(
+                  radius: 30.r,
+                  backgroundImage: CachedNetworkImageProvider(
+                    Constants.BASE_IMAGE_URL + movie.posterPath.toString(),
                   ),
                 ),
-                const SizedBox(width: 10.0),
+                8.horizontalSpace,
                 Expanded(
-                  flex: 4,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(movie.title,
+                      Text(movie.title ?? '--',
                           style: Theme.of(context)
                               .textTheme
                               .headline6
@@ -148,7 +143,7 @@ class SearchedMovieItem extends StatelessWidget {
                                   fontFamily:
                                       GoogleFonts.quicksand().fontFamily,
                                   fontWeight: FontWeight.bold)),
-                      Text(movie.overview,
+                      Text(movie.overview ?? '--',
                           style: Theme.of(context)
                               .textTheme
                               .headline6
@@ -161,21 +156,16 @@ class SearchedMovieItem extends StatelessWidget {
                     ],
                   ),
                 ),
-                Expanded(
-                  flex: 1,
-                  child: Align(
-                    alignment: Alignment.centerRight,
-                    child: Text(
-                      '⭐ ' + rating,
-                      textAlign: TextAlign.start,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: Theme.of(context)
-                          .textTheme
-                          .headline6
-                          ?.copyWith(fontSize: 14.sp),
-                    ),
-                  ),
+                8.horizontalSpace,
+                Text(
+                  '⭐ ' + rating,
+                  textAlign: TextAlign.start,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: Theme.of(context)
+                      .textTheme
+                      .headline6
+                      ?.copyWith(fontSize: 14.sp),
                 ),
               ],
             ),
@@ -296,7 +286,7 @@ class MovieCard extends StatelessWidget {
             ),
             Container(
               margin: const EdgeInsets.symmetric(vertical: 15.0),
-              child: Text(movie.title,
+              child: Text(movie.title ?? '--',
                   textAlign: TextAlign.start,
                   style: Theme.of(context).textTheme.headline6?.copyWith(
                       fontWeight: FontWeight.bold,

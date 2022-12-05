@@ -6,20 +6,20 @@ extension ResultsToMovie on List<Results> {
     final List<Movie> movies = [];
     for (var element in this) {
       final movie = Movie()
-        ..adult = element.adult
+        ..adult = element.adult ?? false
         ..backdropPath = element.backdropPath
-        ..genreIds = element.genreIds
-        ..id = element.id
-        ..originalLanguage = element.originalLanguage
-        ..overview = element.overview
-        ..popularity = element.popularity
+        ..genreIds = element.genreIds ?? []
+        ..id = element.id ?? 0
+        ..originalLanguage = element.originalLanguage ?? '--'
+        ..overview = element.overview ?? '--'
+        ..popularity = element.popularity ?? 0.0
         ..posterPath = element.posterPath
-        ..releaseDate = element.releaseDate
-        ..title = element.title
-        ..video = element.video
-        ..voteAverage = element.voteAverage
-        ..voteCount = element.voteCount
-        ..originalTitle = element.originalTitle;
+        ..releaseDate = element.releaseDate ?? '--'
+        ..title = element.title ?? '--'
+        ..video = element.video ?? false
+        ..voteAverage = element.voteAverage ?? 0.0
+        ..voteCount = element.voteCount ?? 0
+        ..originalTitle = element.originalTitle ?? (element.title ?? '--');
       movies.add(movie);
     }
     return movies;

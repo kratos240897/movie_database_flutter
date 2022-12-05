@@ -259,18 +259,19 @@ class MovieListItem extends StatelessWidget {
                       child: ElevatedButton(
                         onPressed: () {},
                         style: ElevatedButton.styleFrom(
-                            backgroundColor: Theme.of(context).cardColor,
+                            backgroundColor: Theme.of(context).cardTheme.color,
                             splashFactory: NoSplash.splashFactory,
                             shape: RoundedRectangleBorder(
                                 side: BorderSide(
-                                    color: Theme.of(context)
-                                        .textTheme
-                                        .headline1!
-                                        .color!),
+                                    width: 0.8.sp,
+                                    color: ThemeService().isDarkMode()
+                                        ? Styles.colors.white
+                                        : Colors.transparent),
                                 borderRadius: const BorderRadius.only(
                                     topLeft: Radius.circular(10.0),
                                     bottomLeft: Radius.circular(10.0)))),
-                        child: Text(movie.voteAverage.toStringAsFixed(1) + ' ✨',
+                        child: Text(
+                            (movie.voteAverage / 2).toStringAsFixed(1) + ' ✨',
                             style: TextStyle(
                                 color: Theme.of(context)
                                     .textTheme
@@ -289,7 +290,7 @@ class MovieListItem extends StatelessWidget {
                   padding: EdgeInsets.symmetric(
                       horizontal: constraints.maxWidth * 0.02,
                       vertical: constraints.maxHeight * 0.03),
-                  child: Text(movie.originalTitle,
+                  child: Text(movie.originalTitle ?? (movie.title ?? '--'),
                       textAlign: TextAlign.center,
                       style: Theme.of(context).textTheme.headline6?.copyWith(
                           fontSize: 16.0,
@@ -309,8 +310,9 @@ class MovieListItem extends StatelessWidget {
 class CategoriesWidget extends StatelessWidget {
   final HomeController controller;
   final ScrollController movieListScrollController;
-  final categoryController = GroupButtonController(selectedIndex: 0);
-  final categories = const [
+  final _categoryScrollController = ScrollController();
+  final _categoryController = GroupButtonController(selectedIndex: 0);
+  final _categories = const [
     'Now playing',
     'New',
     'Top rated',
@@ -326,47 +328,65 @@ class CategoriesWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AnimatedContainer(
-        margin: EdgeInsets.only(top: 12.h, left: 6.w, right: 6.w),
-        height: 45.h,
+        margin: EdgeInsets.only(top: 8.h, left: 6.w, right: 6.w, bottom: 12.h),
         duration: const Duration(milliseconds: 400),
         curve: Curves.bounceInOut,
         child: SingleChildScrollView(
+          controller: _categoryScrollController,
           scrollDirection: Axis.horizontal,
           child: GroupButton(
               buttonIndexedBuilder: (selected, index, context) {
                 return Container(
-                  height: 45.h,
                   padding: EdgeInsets.symmetric(horizontal: 6.sp),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(
-                        categories[index],
-                        style: Theme.of(context).textTheme.headline6?.copyWith(
-                            fontSize: selected ? 16.sp : 14.sp,
-                            fontWeight:
-                                selected ? FontWeight.w600 : FontWeight.w400,
-                            fontFamily: GoogleFonts.nunito().fontFamily),
-                      ),
-                      if (selected)
+                  child: IntrinsicWidth(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          _categories[index],
+                          style: Theme.of(context)
+                              .textTheme
+                              .headline6
+                              ?.copyWith(
+                                  fontSize: selected ? 15.sp : 14.sp,
+                                  fontWeight: selected
+                                      ? FontWeight.w600
+                                      : FontWeight.w400,
+                                  fontFamily: GoogleFonts.nunito().fontFamily),
+                        ),
                         Column(
                           children: [
                             6.verticalSpace,
                             Container(
-                              width: 10.w,
-                              height: 10.h,
-                              decoration: const BoxDecoration(
-                                  color: Colors.amber, shape: BoxShape.circle),
+                              height: 2.h,
+                              decoration: BoxDecoration(
+                                  color: selected
+                                      ? Colors.amber
+                                      : Colors.transparent,
+                                  borderRadius: BorderRadius.circular(10.r)),
                             ),
                           ],
                         )
-                    ],
+                      ],
+                    ),
                   ),
                 );
               },
-              controller: categoryController,
+              controller: _categoryController,
               isRadio: true,
               onSelected: (_, index, __) async {
+                if (index == 0 &&
+                    _categoryScrollController.position.pixels != 0.0) {
+                  _categoryScrollController.animateTo(0.0,
+                      duration: const Duration(milliseconds: 1000),
+                      curve: Curves.linearToEaseOut);
+                } else if (index == _categories.length - 1) {
+                  _categoryScrollController.animateTo(
+                      _categoryScrollController.position.maxScrollExtent,
+                      duration: const Duration(milliseconds: 1000),
+                      curve: Curves.linearToEaseOut);
+                }
                 await controller.setSelectedCategory(index);
                 if (movieListScrollController.position.pixels != 0.0) {
                   movieListScrollController.animateTo(0.0,
@@ -374,7 +394,7 @@ class CategoriesWidget extends StatelessWidget {
                       curve: Curves.linearToEaseOut);
                 }
               },
-              buttons: categories),
+              buttons: _categories),
         ));
   }
 }

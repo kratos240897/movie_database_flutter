@@ -8,7 +8,8 @@ class Themes {
       appBarTheme: AppBarTheme(
           backgroundColor: Styles.colors.primaryColor,
           systemOverlayStyle: SystemUiOverlayStyle.dark),
-      dividerColor: Styles.colors.backgroundGrey,
+      cardTheme: CardTheme(color: Styles.colors.white),
+      dividerColor: Colors.grey,
       textTheme: const TextTheme(
           headline1: TextStyle(color: Colors.black),
           headline2: TextStyle(color: Colors.black),

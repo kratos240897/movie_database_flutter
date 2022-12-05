@@ -7,8 +7,10 @@ class AppCache extends Cache {
   factory AppCache() {
     if (_instance != null) {
       return _instance!;
+    } else {
+      _instance = AppCache._();
+      return _instance!;
     }
-    return AppCache._();
   }
   final _map = HashMap<String, dynamic>();
 
@@ -20,7 +22,7 @@ class AppCache extends Cache {
   @override
   void clearAll() {
     _map.clear();
-    _instance == null;
+    _instance = null;
   }
 
   @override

@@ -12,10 +12,11 @@ class Styles {
 
 class _Colors {
   final primaryColor = getMaterialColorFromColor(const Color(0xffADD8E6));
-  final primaryColorDark = getMaterialColorFromColor(const Color(0XFF1d2438));
+  final primaryColorDark = getMaterialColorFromColor(const Color(0xff1d2438));
+  final purple = getMaterialColorFromColor(const Color(0xff261757));
   final black = Colors.black;
   final white = Colors.white;
-  final backgroundGrey = Colors.grey.shade800;
+  final backgroundGrey = const Color(0xff212121);
 
   static Color getShade(Color color, {bool darker = false, double value = .1}) {
     assert(value >= 0 && value <= 1);

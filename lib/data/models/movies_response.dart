@@ -45,20 +45,20 @@ class Results {
     required this.voteAverage,
     required this.voteCount,
   });
-  late final bool adult;
+  late final bool? adult;
   late final String? backdropPath;
-  late final List<int> genreIds;
-  late final int id;
-  late final String originalLanguage;
-  late final String originalTitle;
-  late final String overview;
-  late final double popularity;
+  late final List<int>? genreIds;
+  late final int? id;
+  late final String? originalLanguage;
+  late final String? originalTitle;
+  late final String? overview;
+  late final double? popularity;
   late final String? posterPath;
-  late final String releaseDate;
-  late final String title;
-  late final bool video;
+  late final String? releaseDate;
+  late final String? title;
+  late final bool? video;
   late final dynamic voteAverage;
-  late final int voteCount;
+  late final int? voteCount;
 
   Results.fromJson(Map<String, dynamic> json) {
     adult = json['adult'];

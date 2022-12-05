@@ -43,7 +43,8 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
         children: [
           Padding(
             padding: EdgeInsets.only(left: 8.w, bottom: 8.h, top: 8.h),
-            child: CustomAppBar(title: widget.movie.title, isBackEnabled: true),
+            child: CustomAppBar(
+                title: widget.movie.title ?? '--', isBackEnabled: true),
           ),
           Expanded(
             child: Obx(() {
@@ -139,7 +140,7 @@ class Cast extends StatelessWidget {
                                     shape: BoxShape.circle,
                                     border: Border.all(
                                         width: 2.h,
-                                        color: Theme.of(context).primaryColor)),
+                                        color: Colors.amber.shade400)),
                                 child: Padding(
                                   padding: EdgeInsets.all(6.r),
                                   child: CircleAvatar(
@@ -158,7 +159,7 @@ class Cast extends StatelessWidget {
                                     shape: BoxShape.circle,
                                     border: Border.all(
                                         width: 2.h,
-                                        color: Theme.of(context).primaryColor)),
+                                        color: Colors.amber.shade400)),
                                 child: Padding(
                                   padding: EdgeInsets.all(6.r),
                                   child: CircleAvatar(
@@ -262,8 +263,10 @@ class BackDropWidget extends StatelessWidget {
                 if (controller.videoId.isNotEmpty) {
                   Get.toNamed(PageRouter.VIDEO, arguments: controller.videoId);
                 } else {
-                  controller.utils.showSnackBar('No videos found for movie',
-                      movie.originalTitle, SnackBarStatus.info);
+                  controller.utils.showSnackBar(
+                      'No videos found for movie',
+                      movie.originalTitle ?? (movie.title ?? '--'),
+                      SnackBarStatus.info);
                 }
               },
               child: Stack(
@@ -330,8 +333,10 @@ class MovieDetailWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final dateTimeObj = DateTime.parse(movie.releaseDate);
-    final formattedDate = DateFormat.yMMMEd().format(dateTimeObj);
+    final dateTimeObj =
+        movie.releaseDate != null ? DateTime.parse(movie.releaseDate!) : null;
+    final formattedDate =
+        dateTimeObj != null ? DateFormat.yMMMEd().format(dateTimeObj) : '--';
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 12.w),
       child: Column(
@@ -348,7 +353,7 @@ class MovieDetailWidget extends StatelessWidget {
           8.verticalSpace,
           RatingDetailWidget(movie: movie),
           8.verticalSpace,
-          Text(movie.overview,
+          Text(movie.overview ?? '--',
               textAlign: TextAlign.start,
               style: Theme.of(context).textTheme.headline6?.copyWith(
                   height: 1.2,

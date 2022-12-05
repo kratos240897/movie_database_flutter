@@ -15,7 +15,7 @@ class MovieListWidget extends StatelessWidget {
         separatorBuilder: (context, index) => Padding(
               padding: EdgeInsets.symmetric(horizontal: 12.w),
               child: Divider(
-                thickness: 0.1.h,
+                thickness: 0.4.h,
               ),
             ),
         padding: const EdgeInsets.symmetric(vertical: 8.0),
@@ -39,8 +39,8 @@ class MovieItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: EdgeInsets.fromLTRB(12.w, 8.h, 12.w, 8.h),
+    return Padding(
+      padding: EdgeInsets.fromLTRB(12.w, 8.h, 12.w, 8.h),
       child: Row(
         children: [
           CircleAvatar(

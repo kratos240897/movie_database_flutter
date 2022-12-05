@@ -53,23 +53,24 @@ class HomeController extends BaseController {
   addFavorite(Results result) {
     favoritesCount.value++;
     final movie = Movie()
-      ..adult = result.adult
+      ..adult = result.adult ?? false
       ..backdropPath = result.backdropPath
-      ..genreIds = result.genreIds
-      ..id = result.id
-      ..originalLanguage = result.originalLanguage
-      ..overview = result.overview
-      ..popularity = result.popularity
+      ..genreIds = result.genreIds ?? []
+      ..id = result.id ?? 0
+      ..originalLanguage = result.originalLanguage ?? '--'
+      ..overview = result.overview ?? '--'
+      ..popularity = result.popularity ?? 0.0
       ..posterPath = result.posterPath
-      ..releaseDate = result.releaseDate
-      ..title = result.title
-      ..video = result.video
-      ..voteAverage = result.voteAverage
-      ..voteCount = result.voteCount
-      ..originalTitle = result.originalTitle;
+      ..releaseDate = result.releaseDate ?? '--'
+      ..title = result.title ?? '--'
+      ..video = result.video ?? false
+      ..voteAverage = result.voteAverage ?? 0.0
+      ..voteCount = result.voteCount ?? 0
+      ..originalTitle = result.originalTitle ?? (result.title ?? '--');
     final box = Boxes.getFavorites();
     box.add(movie);
-    Utils().showSnackBar('Added to Favorites', movie.title, SnackBarStatus.info);
+    Utils()
+        .showSnackBar('Added to Favorites', movie.title, SnackBarStatus.info);
   }
 
   Future<void> setSelectedCategory(int index) async {
@@ -103,17 +104,17 @@ class HomeController extends BaseController {
         }
         break;
       case 3:
-        if (CacheRepo.homeCache.get(CacheConstants.KEY_TV_SHOWS) != null) {
+        if (CacheRepo.homeCache.get(CacheConstants.KEY_UPCOMING) != null) {
           movies.value = await CacheRepo.homeCache
-              .get(CacheConstants.KEY_TV_SHOWS) as List<Results>;
+              .get(CacheConstants.KEY_UPCOMING) as List<Results>;
         } else {
           getMovies(EndPoints.upcoming, {});
         }
         break;
       case 4:
-        if (CacheRepo.homeCache.get(CacheConstants.KEY_UPCOMING) != null) {
+        if (CacheRepo.homeCache.get(CacheConstants.KEY_TV_SHOWS) != null) {
           movies.value = await CacheRepo.homeCache
-              .get(CacheConstants.KEY_UPCOMING) as List<Results>;
+              .get(CacheConstants.KEY_TV_SHOWS) as List<Results>;
         } else {
           getMovies(EndPoints.tvShows, {});
         }
