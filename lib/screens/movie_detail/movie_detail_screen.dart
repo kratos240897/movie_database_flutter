@@ -311,7 +311,7 @@ class BackDropWidget extends StatelessWidget {
                               const BoxDecoration(color: Colors.black26),
                           child: const Center(
                               child: FaIcon(
-                            FontAwesomeIcons.solidPlayCircle,
+                            FontAwesomeIcons.solidCirclePlay,
                             size: 50.0,
                             color: Colors.white70,
                           )),
@@ -348,7 +348,7 @@ class MovieDetailWidget extends StatelessWidget {
                 fontSize: 12.sp,
                 fontWeight: FontWeight.w400,
                 letterSpacing: 1.2,
-                fontFamily: GoogleFonts.spartan().fontFamily),
+                fontFamily: GoogleFonts.leagueSpartan().fontFamily),
           ),
           8.verticalSpace,
           RatingDetailWidget(movie: movie),

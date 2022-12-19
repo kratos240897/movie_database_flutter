@@ -2,9 +2,7 @@ import 'package:get/get.dart';
 import 'package:movie_database/enum/snackbar_status.dart';
 import 'package:movie_database/helpers/results_to_movie_extn.dart';
 import '../../base/base_controller.dart';
-import '../../data/models/movie_model.dart';
 import '../../data/models/movies_response.dart';
-import '../../helpers/boxes.dart';
 import '../../helpers/utils.dart';
 import '../../repo/search_repo.dart';
 

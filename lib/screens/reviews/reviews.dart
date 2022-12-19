@@ -57,7 +57,7 @@ class Review extends StatelessWidget {
                                             fontWeight: FontWeight.bold,
                                             fontSize: 14.sp,
                                             overflow: TextOverflow.ellipsis,
-                                            fontFamily: GoogleFonts.spartan()
+                                            fontFamily: GoogleFonts.leagueSpartan()
                                                 .fontFamily),
                                   ),
                                 ),
@@ -75,7 +75,7 @@ class Review extends StatelessWidget {
                                         fontSize: 14.0,
                                         height: 1.5,
                                         fontFamily:
-                                            GoogleFonts.spartan().fontFamily),
+                                            GoogleFonts.leagueSpartan().fontFamily),
                               ),
                             ),
                           ),
@@ -97,7 +97,7 @@ class Review extends StatelessWidget {
                                   .headline6
                                   ?.copyWith(
                                       fontFamily:
-                                          GoogleFonts.spartan().fontFamily,
+                                          GoogleFonts.leagueSpartan().fontFamily,
                                       fontWeight: FontWeight.w600,
                                       fontSize: 16.0,
                                       letterSpacing: 0.2)),

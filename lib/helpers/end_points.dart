@@ -5,10 +5,10 @@ class EndPoints {
   static const discover = '/discover/movie';
   static const upcoming = '/movie/upcoming';
   static const search = '/search/movie';
-  static const reviews = '/movie/{movie_id}/reviews';
-  static const videos = '/movie/{movie_id}/videos';
-  static const credits = '/movie/{movie_id}/credits';
-  static const person = '/person/{person_id}';
-  static const providers = '/movie/{movie_id}/watch/providers';
-  static const details = '/movie/{movie_id}';
+  static reviews(String movieId) => '/movie/$movieId/reviews';
+  static videos(String movieId) => '/movie/$movieId/videos';
+  static credits(String movieId) => '/movie/$movieId/credits';
+  static person(String personId) => '/person/$personId';
+  static providers(String movieId) => '/movie/$movieId/watch/providers';
+  static details(String movieId) => '/movie/$movieId';
 }

@@ -1,13 +1,9 @@
-// ignore_for_file: unnecessary_import, invalid_use_of_protected_member
-
-import 'package:badges/badges.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:focused_menu/focused_menu.dart';
 import 'package:focused_menu/modals.dart';
-import 'package:get/state_manager.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:group_button/group_button.dart';
 import 'package:get/get.dart';
@@ -47,7 +43,7 @@ class Home extends GetView<HomeController> {
                         onTap: () => Get.toNamed(
                               PageRouter.SEARCH,
                               arguments:
-                                  controller.movies.value as List<Results>,
+                                  controller.movies,
                             ),
                         icon: Icons.search_outlined),
                     CustomActionButton(
@@ -379,12 +375,12 @@ class CategoriesWidget extends StatelessWidget {
                 if (index == 0 &&
                     _categoryScrollController.position.pixels != 0.0) {
                   _categoryScrollController.animateTo(0.0,
-                      duration: const Duration(milliseconds: 1000),
+                      duration: const Duration(milliseconds: 500),
                       curve: Curves.linearToEaseOut);
                 } else if (index == _categories.length - 1) {
                   _categoryScrollController.animateTo(
                       _categoryScrollController.position.maxScrollExtent,
-                      duration: const Duration(milliseconds: 1000),
+                      duration: const Duration(milliseconds: 500),
                       curve: Curves.linearToEaseOut);
                 }
                 await controller.setSelectedCategory(index);

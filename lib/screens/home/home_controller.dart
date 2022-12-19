@@ -15,7 +15,7 @@ import '../../helpers/utils.dart';
 import '../../repo/home_repo.dart';
 
 class HomeController extends BaseController {
-  final movies = RxList.empty();
+  final RxList<Results> movies = RxList.empty();
   final HomeRepository _repo = Get.find<HomeRepository>();
   final favoritesCount = 0.obs;
   final isLoading = false.obs;

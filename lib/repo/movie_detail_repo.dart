@@ -12,8 +12,7 @@ class MovieDetailRepository {
 
   Future<List<ReviewResults>> getMovieReviews(String id) async {
     try {
-      final res = await _apiService
-          .getRequest(EndPoints.reviews.replaceAll('{movie_id}', id), {});
+      final res = await _apiService.getRequest(EndPoints.reviews(id), {});
       final reviews = ReviewResponse.fromJson(res.data).results;
       return reviews;
     } catch (e) {
@@ -24,8 +23,7 @@ class MovieDetailRepository {
 
   Future<List<VideoResults>> getVideoDetails(String id) async {
     try {
-      final res = await _apiService
-          .getRequest(EndPoints.videos.replaceAll('{movie_id}', id), {});
+      final res = await _apiService.getRequest(EndPoints.videos(id), {});
       final videos = VideoDetailsResponse.fromJson(res.data).results;
       return videos;
     } catch (e) {
@@ -36,8 +34,7 @@ class MovieDetailRepository {
 
   Future<List<Cast>> getCredits(String id) async {
     try {
-      final res = await _apiService
-          .getRequest(EndPoints.credits.replaceAll('{movie_id}', id), {});
+      final res = await _apiService.getRequest(EndPoints.credits(id), {});
       final cast = CreditsResponse.fromJson(res.data).cast;
       return cast;
     } catch (e) {
@@ -46,10 +43,9 @@ class MovieDetailRepository {
     }
   }
 
-    Future<ProfileResponse> getPerson(String id) async {
+  Future<ProfileResponse> getPerson(String id) async {
     try {
-      final res = await _apiService
-          .getRequest(EndPoints.person.replaceAll('{person_id}', id), {});
+      final res = await _apiService.getRequest(EndPoints.person(id), {});
       final profile = ProfileResponse.fromJson(res.data);
       return profile;
     } catch (e) {
