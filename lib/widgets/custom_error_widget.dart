@@ -22,14 +22,14 @@ class CustomErrorWidget extends StatelessWidget {
               style: Theme.of(context).textTheme.headline6?.copyWith(
                   letterSpacing: 2.0,
                   fontFamily: GoogleFonts.raleway().fontFamily,
-                  fontSize: 22.sp,
+                  fontSize: 20.sp,
                   fontWeight: FontWeight.bold),
             ),
             8.verticalSpace,
             Text(
               'Something went wrong.',
               style: Theme.of(context).textTheme.headline6?.copyWith(
-                  fontSize: 20.sp,
+                  fontSize: 16.sp,
                   fontFamily: GoogleFonts.poppins().fontFamily),
             ),
             12.verticalSpace,
@@ -46,7 +46,7 @@ class CustomErrorWidget extends StatelessWidget {
                 child: Text(
                   'Go Back',
                   style: Theme.of(context).textTheme.headline6?.copyWith(
-                      fontSize: 16.sp,
+                      fontSize: 14.sp,
                       color: ThemeService().isDarkMode()
                           ? Colors.black
                           : Colors.white,

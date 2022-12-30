@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:movie_database/widgets/custom_app_bar_widget.dart';
 import '../../data/models/review_response.dart';
+import '../../widgets/custom_app_bar_widget.dart';
 
 class Review extends StatelessWidget {
   final List<ReviewResults> reviews;
@@ -57,8 +57,9 @@ class Review extends StatelessWidget {
                                             fontWeight: FontWeight.bold,
                                             fontSize: 14.sp,
                                             overflow: TextOverflow.ellipsis,
-                                            fontFamily: GoogleFonts.leagueSpartan()
-                                                .fontFamily),
+                                            fontFamily:
+                                                GoogleFonts.leagueSpartan()
+                                                    .fontFamily),
                                   ),
                                 ),
                               ],
@@ -72,10 +73,10 @@ class Review extends StatelessWidget {
                                     .textTheme
                                     .headline6
                                     ?.copyWith(
-                                        fontSize: 14.0,
+                                        fontSize: 14.sp,
                                         height: 1.5,
                                         fontFamily:
-                                            GoogleFonts.leagueSpartan().fontFamily),
+                                            GoogleFonts.quicksand().fontFamily),
                               ),
                             ),
                           ),
@@ -96,8 +97,8 @@ class Review extends StatelessWidget {
                                   .textTheme
                                   .headline6
                                   ?.copyWith(
-                                      fontFamily:
-                                          GoogleFonts.leagueSpartan().fontFamily,
+                                      fontFamily: GoogleFonts.leagueSpartan()
+                                          .fontFamily,
                                       fontWeight: FontWeight.w600,
                                       fontSize: 16.0,
                                       letterSpacing: 0.2)),

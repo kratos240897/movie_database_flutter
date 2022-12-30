@@ -5,9 +5,9 @@ import 'package:get/get_instance/src/extension_instance.dart';
 import 'package:get/get_navigation/src/extension_navigation.dart';
 import 'package:get/utils.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:movie_database/service/theme_service.dart';
-import 'package:movie_database/widgets/custom_textformfield.dart';
 import '../../routes/router.dart';
+import '../../service/theme_service.dart';
+import '../../widgets/custom_textformfield.dart';
 import 'login_controller.dart';
 
 class Login extends StatefulWidget {
@@ -23,6 +23,13 @@ class _LoginState extends State<Login> {
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
   final LoginController _controller = Get.find<LoginController>();
+
+  @override
+  void dispose() {
+    emailController.dispose();
+    passwordController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {

@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get_navigation/src/root/get_material_app.dart';
 import 'package:get/instance_manager.dart';
-import 'package:movie_database/widgets/custom_error_widget.dart';
 import 'helpers/themes.dart';
 import 'routes/router.dart';
 import 'service/auth_service.dart';
 import 'service/theme_service.dart';
+import 'widgets/custom_error_widget.dart';
 
 class MythFlixApp extends StatefulWidget {
   const MythFlixApp({Key? key}) : super(key: key);

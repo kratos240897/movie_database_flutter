@@ -1,13 +1,10 @@
 import 'dart:async';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:lottie/lottie.dart';
-import 'package:movie_database/enum/auth_status.dart';
-import 'package:movie_database/enum/snackbar_status.dart';
+import '../enum/auth_status.dart';
 import '../enum/network_state.dart';
+import '../enum/snackbar_status.dart';
 import '../helpers/auth_aware.dart';
 import '../helpers/boxes.dart';
 import '../helpers/connection_aware.dart';
@@ -21,7 +18,14 @@ abstract class BaseController extends GetxController
   final utils = Utils();
   final isNetworkAvailable = false.obs;
   final _authService = Get.find<AuthService>();
-  get getNoInternetWidget => const NoInternetWidget();
+
+  showLoading() {
+    utils.showLoading();
+  }
+
+  hideLoading() {
+    utils.hideLoading();
+  }
 
   Future<bool> getIsInternetAvailable() async {
     final value = await Connectivity().checkConnectivity();
@@ -114,9 +118,9 @@ abstract class BaseController extends GetxController
   }
 
   void logout() async {
-    utils.showLoading();
+    showLoading();
     _authService.signOut().then((value) {
-      utils.hideLoading();
+      hideLoading();
       if (value.state == AuthState.signoutSuccess) {
         Get.offAllNamed(PageRouter.LOGIN);
         utils.showSnackBar('Logout', 'success', SnackBarStatus.info);
@@ -125,29 +129,4 @@ abstract class BaseController extends GetxController
   }
 }
 
-class NoInternetWidget extends StatelessWidget {
-  const NoInternetWidget({Key? key}) : super(key: key);
 
-  @override
-  Widget build(BuildContext context) {
-    final deviceSize = MediaQuery.of(context).size;
-    return Expanded(
-      child: Center(
-          child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Lottie.asset('assets/lottie/no_internet.json',
-              width: deviceSize.width * 0.4,
-              height: deviceSize.width * 0.4,
-              repeat: false),
-          30.verticalSpace,
-          Text(
-            'No Internet Connection',
-            style: GoogleFonts.josefinSans()
-                .copyWith(fontSize: 18.sp, fontWeight: FontWeight.w600),
-          )
-        ],
-      )),
-    );
-  }
-}

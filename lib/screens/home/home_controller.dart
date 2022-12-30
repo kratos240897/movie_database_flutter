@@ -2,17 +2,17 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_app_badger/flutter_app_badger.dart';
 import 'package:get/get.dart';
-import 'package:movie_database/enum/snackbar_status.dart';
-import 'package:movie_database/service/theme_service.dart';
+import 'package:intl/intl.dart';
 import '../../base/base_controller.dart';
 import '../../data/cache/cache_constants.dart';
 import '../../data/cache/cache_repository.dart';
 import '../../data/models/movie_model.dart';
 import '../../data/models/movies_response.dart';
+import '../../enum/snackbar_status.dart';
 import '../../helpers/boxes.dart';
 import '../../helpers/end_points.dart';
-import '../../helpers/utils.dart';
 import '../../repo/home_repo.dart';
+import '../../service/theme_service.dart';
 
 class HomeController extends BaseController {
   final RxList<Results> movies = RxList.empty();
@@ -21,11 +21,16 @@ class HomeController extends BaseController {
   final isLoading = false.obs;
   final selectedIndex = 0.obs;
   RxBool isDarkMode = false.obs;
+  late String _startDate;
+  late String _endDate;
 
   @override
   void onInit() async {
     isDarkMode.value = ThemeService().getThemeMode() == ThemeMode.dark;
     favoritesCount.value = Boxes.getFavorites().length;
+    _startDate = DateFormat('yyyy-MM-dd')
+        .format(DateTime.now().subtract(const Duration(days: 30)));
+    _endDate = DateFormat('yyyy-MM-dd').format(DateTime.now());
     super.onInit();
   }
 
@@ -69,8 +74,7 @@ class HomeController extends BaseController {
       ..originalTitle = result.originalTitle ?? (result.title ?? '--');
     final box = Boxes.getFavorites();
     box.add(movie);
-    Utils()
-        .showSnackBar('Added to Favorites', movie.title, SnackBarStatus.info);
+    utils.showSnackBar('Added to Favorites', movie.title, SnackBarStatus.info);
   }
 
   Future<void> setSelectedCategory(int index) async {
@@ -90,8 +94,8 @@ class HomeController extends BaseController {
               as List<Results>;
         } else {
           getMovies(EndPoints.discover, {
-            'primary_release_date.gte': '2022-07-01',
-            'primary_release_date.lte': '2022-08-09'
+            'primary_release_date.gte': _startDate,
+            'primary_release_date.lte': _endDate
           });
         }
         break;

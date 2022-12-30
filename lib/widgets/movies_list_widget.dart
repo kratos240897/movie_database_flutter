@@ -15,7 +15,7 @@ class MovieListWidget extends StatelessWidget {
         separatorBuilder: (context, index) => Padding(
               padding: EdgeInsets.symmetric(horizontal: 12.w),
               child: Divider(
-                thickness: 0.4.h,
+                thickness: 0.2.h,
               ),
             ),
         padding: const EdgeInsets.symmetric(vertical: 8.0),

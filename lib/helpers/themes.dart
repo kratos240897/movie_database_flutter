@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:movie_database/helpers/styles.dart';
+import 'styles.dart';
 
 class Themes {
   final lightTheme = ThemeData.light().copyWith(

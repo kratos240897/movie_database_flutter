@@ -1,9 +1,9 @@
 import 'dart:io';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:movie_database/enum/auth_status.dart';
-import 'package:movie_database/enum/snackbar_status.dart';
 import '../../base/base_controller.dart';
+import '../../enum/auth_status.dart';
+import '../../enum/snackbar_status.dart';
 import '../../routes/router.dart';
 import '../../service/auth_service.dart';
 

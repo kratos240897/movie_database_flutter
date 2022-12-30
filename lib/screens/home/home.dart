@@ -7,9 +7,6 @@ import 'package:focused_menu/modals.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:group_button/group_button.dart';
 import 'package:get/get.dart';
-import 'package:movie_database/service/theme_service.dart';
-import 'package:movie_database/widgets/custom_action_button.dart';
-import 'package:movie_database/widgets/custom_app_bar_widget.dart';
 import 'package:share_plus/share_plus.dart';
 import '../../data/models/movies_response.dart';
 import '../../enum/device_type.dart';
@@ -17,6 +14,10 @@ import '../../helpers/constants.dart';
 import '../../helpers/device_size.dart';
 import '../../helpers/styles.dart';
 import '../../routes/router.dart';
+import '../../service/theme_service.dart';
+import '../../widgets/custom_action_button.dart';
+import '../../widgets/custom_app_bar_widget.dart';
+import '../../widgets/no_internet_widget.dart';
 import 'home_controller.dart';
 
 class Home extends GetView<HomeController> {
@@ -42,8 +43,7 @@ class Home extends GetView<HomeController> {
                     CustomActionButton(
                         onTap: () => Get.toNamed(
                               PageRouter.SEARCH,
-                              arguments:
-                                  controller.movies,
+                              arguments: controller.movies,
                             ),
                         icon: Icons.search_outlined),
                     CustomActionButton(
@@ -59,7 +59,7 @@ class Home extends GetView<HomeController> {
                             ? Icons.light_mode_outlined
                             : Icons.dark_mode_outlined),
                     CustomActionButton(
-                        onTap: () => controller.logout(),
+                        onTap: () => controller.prepareLogout(),
                         icon: Icons.logout_outlined)
                   ],
                 ),
@@ -73,7 +73,7 @@ class Home extends GetView<HomeController> {
                       controller: controller,
                       scrollController: movieListScrollController,
                       mediaQuery: mediaQuery)
-                  : controller.getNoInternetWidget
+                  : const NoInternetWidget()
             ],
           ),
         );

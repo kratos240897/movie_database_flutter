@@ -9,9 +9,9 @@ import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:loggy/loggy.dart';
-import 'package:movie_database/myth_flix_app.dart';
 import 'data/models/movie_model.dart';
 import 'helpers/constants.dart';
+import 'myth_flix_app.dart';
 import 'service/api_service.dart';
 import 'service/auth_service.dart';
 

@@ -10,18 +10,13 @@ class MovieDetailController extends BaseController {
   final RxList<ReviewResults> reviews = RxList.empty();
   final RxList<Cast> cast = RxList.empty();
   var movieId = '';
-  final backDropWidgetHeight = 0.0.obs;
 
   init() async {
     utils.showLoading();
-    getVideoDetails(movieId).then((_) {
-      getCredits(movieId).then((_) {
-        getMovieReviews(movieId).then((_) {
-          Future.delayed(
-              const Duration(milliseconds: 400), () => utils.hideLoading());
-        });
-      });
-    });
+    await getVideoDetails(movieId);
+    await getCredits(movieId);
+    await getMovieReviews(movieId);
+    utils.hideLoading();
   }
 
   Future<void> getCredits(String id) async {

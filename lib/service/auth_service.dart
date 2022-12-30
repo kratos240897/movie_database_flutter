@@ -2,9 +2,8 @@
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get/instance_manager.dart';
-import 'package:movie_database/helpers/auth_aware.dart';
-
 import '../enum/auth_status.dart';
+import '../helpers/auth_aware.dart';
 
 class AuthService {
   final FirebaseAuth _firebaseAuth = Get.find<FirebaseAuth>();

@@ -69,7 +69,8 @@ class PageRouter {
             routeName: MOVIE_DETAIL,
             page: () => MovieDetailScreen(movie: args as Results),
             transition: Transition.downToUp,
-            binding: MovieDetailBinding());
+            binding: MovieDetailBinding(),
+            );
       case REVIEWS:
         return GetPageRoute(
             routeName: REVIEWS,

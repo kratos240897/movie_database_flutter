@@ -8,12 +8,13 @@ import 'package:get/get_navigation/src/extension_navigation.dart';
 import 'package:get/state_manager.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
-import 'package:movie_database/enum/snackbar_status.dart';
-import 'package:movie_database/service/theme_service.dart';
-import 'package:movie_database/widgets/custom_app_bar_widget.dart';
 import '../../data/models/movies_response.dart';
+import '../../enum/snackbar_status.dart';
 import '../../helpers/constants.dart';
 import '../../routes/router.dart';
+import '../../service/theme_service.dart';
+import '../../widgets/custom_app_bar_widget.dart';
+import '../../widgets/no_internet_widget.dart';
 import 'movie_detail_controller.dart';
 
 class MovieDetailScreen extends StatefulWidget {
@@ -26,8 +27,18 @@ class MovieDetailScreen extends StatefulWidget {
 }
 
 class _MovieDetailScreenState extends State<MovieDetailScreen> {
+  late DateTime? _dateTimeObj;
+  late String _formattedDate;
+  late bool _upcoming;
   @override
   void initState() {
+    _dateTimeObj = widget.movie.releaseDate != null
+        ? DateTime.parse(widget.movie.releaseDate!)
+        : null;
+    _formattedDate =
+        _dateTimeObj != null ? DateFormat.yMMMEd().format(_dateTimeObj!) : '--';
+    _upcoming =
+        _dateTimeObj == null ? false : _dateTimeObj!.isAfter(DateTime.now());
     WidgetsBinding.instance.addPostFrameCallback((_) {
       widget.controller.movieId = widget.movie.id.toString();
       widget.controller.init();
@@ -49,10 +60,14 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
           Expanded(
             child: Obx(() {
               if (!widget.controller.isNetworkAvailable.value) {
-                return widget.controller.getNoInternetWidget;
+                return const NoInternetWidget();
               } else {
                 return ContentWidget(
-                    controller: widget.controller, movie: widget.movie);
+                  controller: widget.controller,
+                  movie: widget.movie,
+                  formattedDate: _formattedDate,
+                  upcoming: _upcoming,
+                );
               }
             }),
           )
@@ -63,10 +78,17 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
 }
 
 class ContentWidget extends StatelessWidget {
-  ContentWidget({Key? key, required this.controller, required this.movie})
+  ContentWidget(
+      {Key? key,
+      required this.controller,
+      required this.movie,
+      required this.formattedDate,
+      required this.upcoming})
       : super(key: key);
   final MovieDetailController controller;
   final Results movie;
+  final String formattedDate;
+  final bool upcoming;
   final mediaQuery = Get.mediaQuery;
 
   @override
@@ -95,7 +117,8 @@ class ContentWidget extends StatelessWidget {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            MovieDetailWidget(movie: movie),
+            MovieDetailWidget(
+                movie: movie, formattedDate: formattedDate, upcoming: upcoming),
             8.verticalSpace,
             ReviewButton(controller: controller),
             8.verticalSpace,
@@ -329,14 +352,17 @@ class BackDropWidget extends StatelessWidget {
 
 class MovieDetailWidget extends StatelessWidget {
   final Results movie;
-  const MovieDetailWidget({Key? key, required this.movie}) : super(key: key);
+  final String formattedDate;
+  final bool upcoming;
+  const MovieDetailWidget(
+      {Key? key,
+      required this.movie,
+      required this.formattedDate,
+      required this.upcoming})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    final dateTimeObj =
-        movie.releaseDate != null ? DateTime.parse(movie.releaseDate!) : null;
-    final formattedDate =
-        dateTimeObj != null ? DateFormat.yMMMEd().format(dateTimeObj) : '--';
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 12.w),
       child: Column(
@@ -351,15 +377,15 @@ class MovieDetailWidget extends StatelessWidget {
                 fontFamily: GoogleFonts.leagueSpartan().fontFamily),
           ),
           8.verticalSpace,
-          RatingDetailWidget(movie: movie),
+          RatingDetailWidget(movie: movie, upcoming: upcoming),
           8.verticalSpace,
           Text(movie.overview ?? '--',
               textAlign: TextAlign.start,
               style: Theme.of(context).textTheme.headline6?.copyWith(
-                  height: 1.2,
-                  wordSpacing: 3.0,
-                  fontSize: 16.sp,
-                  fontFamily: GoogleFonts.actor().fontFamily))
+                  height: 1.5,
+                  wordSpacing: 1.0,
+                  fontSize: 14.sp,
+                  fontFamily: GoogleFonts.quicksand().fontFamily))
         ],
       ),
     );
@@ -368,44 +394,57 @@ class MovieDetailWidget extends StatelessWidget {
 
 class RatingDetailWidget extends StatelessWidget {
   final Results movie;
-  const RatingDetailWidget({Key? key, required this.movie}) : super(key: key);
+  final bool upcoming;
+  const RatingDetailWidget(
+      {Key? key, required this.movie, required this.upcoming})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        RatingBarIndicator(
-            rating: (movie.voteAverage / 2).toDouble(),
-            direction: Axis.horizontal,
-            itemCount: 5,
-            itemSize: 25.0,
-            itemPadding: const EdgeInsets.symmetric(horizontal: 2.0),
-            itemBuilder: (ctx, index) => const Icon(
-                  Icons.star,
-                  color: Colors.amber,
-                )),
+        if (!upcoming)
+          RatingBarIndicator(
+              rating: (movie.voteAverage / 2).toDouble(),
+              direction: Axis.horizontal,
+              itemCount: 5,
+              itemSize: 25.0,
+              itemPadding: const EdgeInsets.symmetric(horizontal: 2.0),
+              itemBuilder: (ctx, index) => const Icon(
+                    Icons.star,
+                    color: Colors.amber,
+                  )),
         4.verticalSpace,
-        Text((movie.voteAverage / 2).toStringAsFixed(1),
-            style: Theme.of(context).textTheme.headline6?.copyWith(
-                fontSize: 14.sp,
-                fontWeight: FontWeight.bold,
-                fontFamily: GoogleFonts.nunito().copyWith().fontFamily)),
-        Row(
-          mainAxisSize: MainAxisSize.min,
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Padding(
-              padding: const EdgeInsets.only(top: 5, right: 5),
-              child: Text('${movie.voteCount} votes',
-                  style: Theme.of(context).textTheme.headline6?.copyWith(
-                      fontSize: 14.0.sp,
-                      fontFamily: GoogleFonts.jost().fontFamily)),
-            ),
-            const Icon(Icons.volunteer_activism_sharp, color: Colors.red)
-          ],
-        ),
+        if (upcoming)
+          Text('UPCOMING',
+              style: Theme.of(context).textTheme.headline6?.copyWith(
+                  fontSize: 14.sp,
+                  fontWeight: FontWeight.bold,
+                  letterSpacing: 1.5,
+                  fontFamily: GoogleFonts.nunito().copyWith().fontFamily))
+        else
+          Text((movie.voteAverage / 2).toStringAsFixed(1),
+              style: Theme.of(context).textTheme.headline6?.copyWith(
+                  fontSize: 14.sp,
+                  fontWeight: FontWeight.bold,
+                  fontFamily: GoogleFonts.nunito().copyWith().fontFamily)),
+        if (!upcoming)
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(top: 5, right: 5),
+                child: Text('${movie.voteCount} votes',
+                    style: Theme.of(context).textTheme.headline6?.copyWith(
+                        fontSize: 14.0.sp,
+                        fontFamily: GoogleFonts.jost().fontFamily)),
+              ),
+              const Icon(Icons.volunteer_activism_sharp, color: Colors.red)
+            ],
+          ),
       ],
     );
   }

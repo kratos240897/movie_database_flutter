@@ -1,5 +1,3 @@
-import 'package:movie_database/base/base_controller.dart';
+import '../../base/base_controller.dart';
 
-class ReviewsController extends BaseController {
-  
-}
+class ReviewsController extends BaseController {}

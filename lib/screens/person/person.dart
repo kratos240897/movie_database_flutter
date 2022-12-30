@@ -6,10 +6,8 @@ import 'package:get/get_instance/get_instance.dart';
 import 'package:get/get_navigation/get_navigation.dart';
 import 'package:get/state_manager.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:movie_database/screens/person/person_controller.dart';
-import 'package:movie_database/service/theme_service.dart';
-
 import '../../helpers/constants.dart';
+import 'person_controller.dart';
 
 class Person extends StatefulWidget {
   final String title;
@@ -23,13 +21,25 @@ class Person extends StatefulWidget {
 
 class _PersonState extends State<Person> {
   PersonController controller = Get.find<PersonController>();
+  final _scrollController = ScrollController();
+  final _expandedHeight = 0.4.sh;
 
   @override
   void initState() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      _scrollController.addListener(() {
+        controller.isAppBarExtended.value = _scrollController.hasClients &&
+            _scrollController.offset > (_expandedHeight - kToolbarHeight);
+      });
       controller.getPerson(widget.id);
     });
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
   }
 
   // previously used CustomScrollView with SliverAppBar and slivers[]
@@ -108,118 +118,157 @@ class _PersonState extends State<Person> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Obx(() {
-        return controller.isLoaded.value == true
+        return controller.profile.isInitialized
             ? NestedScrollView(
+                controller: _scrollController,
                 headerSliverBuilder: ((context, innerBoxIsScrolled) {
-                return [
-                  SliverOverlapAbsorber(
-                    handle: NestedScrollView.sliverOverlapAbsorberHandleFor(
-                        context),
-                    sliver: SliverAppBar(
-                      backgroundColor:
-                          Theme.of(context).scaffoldBackgroundColor,
-                      expandedHeight: 0.4.sh,
-                      pinned: true,
-                      primary: true,
-                      flexibleSpace: FlexibleSpaceBar(
-                        title: Text(
-                          widget.title,
-                          style: TextStyle(
-                              fontSize: 25.0,
-                              color:
-                                  Theme.of(context).textTheme.headline1?.color,
-                              fontFamily: GoogleFonts.caveat().fontFamily),
-                        ),
-                        background: Stack(
-                          children: [
-                            Positioned.fill(
+                  return [
+                    SliverOverlapAbsorber(
+                      handle: NestedScrollView.sliverOverlapAbsorberHandleFor(
+                          context),
+                      sliver: SliverAppBar(
+                        backgroundColor:
+                            Theme.of(context).scaffoldBackgroundColor,
+                        expandedHeight: _expandedHeight,
+                        pinned: true,
+                        primary: true,
+                        flexibleSpace:
+                            LayoutBuilder(builder: (context, constraints) {
+                          return FlexibleSpaceBar(
+                            title: Text(
+                              widget.title,
+                              style: TextStyle(
+                                  fontSize: 22.sp,
+                                  color: !controller.isAppBarExtended.value
+                                      ? Colors.white
+                                      : Theme.of(context)
+                                          .textTheme
+                                          .headline1
+                                          ?.color,
+                                  fontFamily: GoogleFonts.caveat().fontFamily),
+                            ),
+                            background: Positioned.fill(
                               child: CachedNetworkImage(
                                 imageUrl: Constants.BASE_IMAGE_URL +
-                                    controller.profile.profilePath,
+                                    controller
+                                        .profile.observable.value!.profilePath,
                                 fit: BoxFit.cover,
                               ),
                             ),
-                            Positioned.fill(
-                                child: Container(
-                                    color: ThemeService().isDarkMode()
-                                        ? Colors.black26
-                                        : Colors.white12)),
-                          ],
+                          );
+                        }),
+                        leading: Padding(
+                          padding: const EdgeInsets.only(top: 5.0, left: 12.0),
+                          child: InkWell(
+                              onTap: () => Get.back(),
+                              child: Icon(
+                                Icons.arrow_back_ios_new_sharp,
+                                color: !controller.isAppBarExtended.value
+                                    ? Colors.white
+                                    : Theme.of(context)
+                                        .textTheme
+                                        .headline1
+                                        ?.color,
+                              )),
                         ),
-                      ),
-                      leading: Padding(
-                        padding: const EdgeInsets.only(top: 5.0, left: 12.0),
-                        child: InkWell(
-                            onTap: () => Get.back(),
+                        centerTitle: true,
+                        actions: [
+                          Padding(
+                            padding: EdgeInsets.only(top: 5.h, right: 15.w),
                             child: Icon(
-                              Icons.arrow_back_ios_new_sharp,
-                              color:
-                                  Theme.of(context).textTheme.headline1?.color,
-                            )),
+                              FontAwesomeIcons.google,
+                              color: !controller.isAppBarExtended.value
+                                  ? Colors.white
+                                  : Theme.of(context)
+                                      .textTheme
+                                      .headline1
+                                      ?.color,
+                            ),
+                          )
+                        ],
                       ),
-                      centerTitle: true,
-                      actions: [
-                        Padding(
-                          padding: EdgeInsets.only(top: 5.h, right: 15.w),
-                          child: Icon(
-                            FontAwesomeIcons.wikipediaW,
-                            color: Theme.of(context).textTheme.headline1?.color,
-                          ),
-                        )
-                      ],
-                    ),
-                  )
-                ];
-              }), body: SafeArea(child: Builder(builder: ((context) {
-                return CustomScrollView(
-                  slivers: [
-                    SliverOverlapInjector(
-                        handle: NestedScrollView.sliverOverlapAbsorberHandleFor(
-                            context)),
-                    SliverToBoxAdapter(
-                        child: Column(
-                      children: [
-                        Wrap(
-                            spacing: 8.0,
-                            runSpacing: 1.0,
-                            alignment: WrapAlignment.center,
-                            direction: Axis.horizontal,
-                            children: List.generate(
-                                controller.profile.alsoKnownAs.length, (index) {
-                              return ElevatedButton(
-                                  onPressed: () {},
-                                  style: ElevatedButton.styleFrom(
-                                      backgroundColor: Colors.amber,
-                                      splashFactory: NoSplash.splashFactory,
-                                      shape: const StadiumBorder()),
-                                  child: Text(
-                                      controller.profile.alsoKnownAs[index],
-                                      style: const TextStyle(
-                                          color: Colors.black)));
-                            })),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(
-                              vertical: 8.0, horizontal: 12.0),
-                          child: Text(
-                            controller.profile.biography,
-                            style: Theme.of(context)
-                                .textTheme
-                                .headline6
-                                ?.copyWith(
-                                    fontSize: 15.sp,
-                                    wordSpacing: 1.0,
-                                    height: 1.4,
-                                    fontFamily:
-                                        GoogleFonts.quicksand().fontFamily),
-                          ),
-                        )
-                      ],
-                    ))
-                  ],
-                );
-              }))))
+                    )
+                  ];
+                }),
+                body: SafeArea(
+                    top: false,
+                    child: Builder(builder: ((context) {
+                      return CustomScrollView(
+                        slivers: [
+                          SliverOverlapInjector(
+                              handle: NestedScrollView
+                                  .sliverOverlapAbsorberHandleFor(context)),
+                          SliverToBoxAdapter(
+                              child: Column(
+                            children: [
+                              8.verticalSpace,
+                              Padding(
+                                padding: EdgeInsets.symmetric(horizontal: 6.w),
+                                child: Wrap(
+                                    spacing: 8.0,
+                                    runSpacing: 1.0,
+                                    alignment: WrapAlignment.center,
+                                    direction: Axis.horizontal,
+                                    children: List.generate(
+                                        controller.profile.observable.value!
+                                            .alsoKnownAs.length, (index) {
+                                      return Container(
+                                          margin: EdgeInsets.all(5.sp),
+                                          padding: EdgeInsets.symmetric(
+                                              horizontal: 10.w, vertical: 8.h),
+                                          decoration: BoxDecoration(
+                                              borderRadius:
+                                                  BorderRadius.circular(10.r),
+                                              gradient: getRandomGradient(
+                                                  ([...Colors.primaries]
+                                                        ..shuffle())
+                                                      .first,
+                                                  ([...Colors.primaries]
+                                                        ..shuffle())
+                                                      .last)),
+                                          child: Text(
+                                              '# ' +
+                                                  controller
+                                                      .profile
+                                                      .observable
+                                                      .value!
+                                                      .alsoKnownAs[index],
+                                              style: const TextStyle(
+                                                  color: Colors.white)));
+                                    })),
+                              ),
+                              Padding(
+                                padding: EdgeInsets.symmetric(
+                                    vertical: 8.h, horizontal: 12.w),
+                                child: Text(
+                                  controller
+                                      .profile.observable.value!.biography,
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .headline6
+                                      ?.copyWith(
+                                          fontSize: 14.sp,
+                                          wordSpacing: 1.0,
+                                          height: 1.4,
+                                          fontFamily: GoogleFonts.quicksand()
+                                              .fontFamily),
+                                ),
+                              )
+                            ],
+                          ))
+                        ],
+                      );
+                    }))))
             : Container();
       }),
+    );
+  }
+
+  LinearGradient getRandomGradient(Color startColor, Color endColor) {
+    return LinearGradient(
+      colors: [startColor, endColor],
+      begin: Alignment.topLeft,
+      end: Alignment.bottomRight,
     );
   }
 }

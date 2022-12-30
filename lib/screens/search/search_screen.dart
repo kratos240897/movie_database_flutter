@@ -6,17 +6,17 @@ import 'package:focused_menu/focused_menu.dart';
 import 'package:focused_menu/modals.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:get/get.dart';
-import 'package:movie_database/enum/snackbar_status.dart';
-import 'package:movie_database/service/theme_service.dart';
-import 'package:movie_database/widgets/custom_app_bar_widget.dart';
 import 'dart:math' as math;
 import 'package:share_plus/share_plus.dart';
 import '../../data/models/movies_response.dart';
 import '../../enum/device_type.dart';
+import '../../enum/snackbar_status.dart';
 import '../../helpers/constants.dart';
 import '../../helpers/device_size.dart';
 import '../../helpers/styles.dart';
 import '../../routes/router.dart';
+import '../../service/theme_service.dart';
+import '../../widgets/custom_app_bar_widget.dart';
 import 'search_controller.dart';
 
 class SearchScreen extends GetView<SearchController> {
@@ -64,7 +64,7 @@ class SearchedMovies extends StatelessWidget {
       child: ListView.separated(
         padding: EdgeInsets.symmetric(horizontal: 8.w),
         separatorBuilder: (context, index) => Divider(
-          thickness: 0.4.h,
+          thickness: 0.2.h,
         ),
         itemCount: controller.searchResults.length,
         shrinkWrap: true,
@@ -184,7 +184,7 @@ class CarouselMovieSlider extends StatefulWidget {
 
 class _CarouselMovieSliderState extends State<CarouselMovieSlider> {
   int _initalPage = 1;
-  PageController? _pageController;
+  late PageController _pageController;
 
   @override
   void initState() {
@@ -198,12 +198,12 @@ class _CarouselMovieSliderState extends State<CarouselMovieSlider> {
 
   void _animateSlider() {
     Future.delayed(const Duration(seconds: 3)).then((_) {
-      if (_pageController!.hasClients) {
-        int nextPage = _pageController!.page!.round() + 1;
+      if (_pageController.hasClients) {
+        int nextPage = _pageController.page!.round() + 1;
         if (nextPage == widget.movies.length) {
           nextPage = 0;
         }
-        _pageController!
+        _pageController
             .animateToPage(nextPage,
                 duration: const Duration(milliseconds: 400),
                 curve: Curves.linear)
@@ -216,7 +216,7 @@ class _CarouselMovieSliderState extends State<CarouselMovieSlider> {
 
   @override
   void dispose() {
-    _pageController?.dispose();
+    _pageController.dispose();
     super.dispose();
   }
 
@@ -236,11 +236,11 @@ class _CarouselMovieSliderState extends State<CarouselMovieSlider> {
                   itemCount: widget.movies.length,
                   itemBuilder: (context, index) {
                     return AnimatedBuilder(
-                      animation: _pageController!,
+                      animation: _pageController,
                       builder: (context, child) {
                         double value = 0;
-                        if (_pageController!.position.haveDimensions) {
-                          value = index - _pageController!.page!.toDouble();
+                        if (_pageController.position.haveDimensions) {
+                          value = index - _pageController.page!.toDouble();
                           value = (value * 0.038).clamp(-1, 1);
                         }
                         return AnimatedOpacity(
@@ -325,8 +325,7 @@ class SearchBarWidget extends StatefulWidget {
 
 class _SearchBarWidgetState extends State<SearchBarWidget> {
   final FocusNode _focus = FocusNode();
-
-  final TextEditingController searchTextController = TextEditingController();
+  final TextEditingController _searchTextController = TextEditingController();
 
   @override
   void initState() {
@@ -348,6 +347,7 @@ class _SearchBarWidgetState extends State<SearchBarWidget> {
   void dispose() {
     _focus.removeListener(_focusListener);
     _focus.dispose();
+    _searchTextController.dispose();
     super.dispose();
   }
 
@@ -373,7 +373,7 @@ class _SearchBarWidgetState extends State<SearchBarWidget> {
                 suffixIcon: _focus.hasFocus
                     ? InkWell(
                         onTap: () {
-                          searchTextController.clear();
+                          _searchTextController.clear();
                         },
                         child: Container(
                           width: 12.sp,
@@ -396,7 +396,7 @@ class _SearchBarWidgetState extends State<SearchBarWidget> {
                 hintStyle: Theme.of(context).textTheme.headline6?.copyWith(
                     fontSize: 14.sp,
                     fontFamily: GoogleFonts.raleway().fontFamily)),
-            controller: searchTextController,
+            controller: _searchTextController,
             onSubmitted: (value) async {
               if (value.isNotEmpty) {
                 widget.controller.searchMovies(value.trim());

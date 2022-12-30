@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/route_manager.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:movie_database/enum/snackbar_status.dart';
-import 'package:movie_database/helpers/styles.dart';
+import '../enum/snackbar_status.dart';
+import 'styles.dart';
 
 class Utils {
   final context = Get.context!;

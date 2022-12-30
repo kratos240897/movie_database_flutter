@@ -7,11 +7,11 @@ import 'package:get/get_navigation/src/extension_navigation.dart';
 import 'package:get/state_manager.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:movie_database/widgets/custom_app_bar_widget.dart';
-import 'package:movie_database/widgets/movies_list_widget.dart';
 import '../../data/models/movie_model.dart';
 import '../../helpers/boxes.dart';
 import '../../helpers/constants.dart';
+import '../../widgets/custom_app_bar_widget.dart';
+import '../../widgets/movies_list_widget.dart';
 import './favorites_controller.dart';
 
 class Favorties extends GetView<FavoritesController> {

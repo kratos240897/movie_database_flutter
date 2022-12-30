@@ -1,10 +1,10 @@
 import 'package:get/get.dart';
-import 'package:movie_database/enum/snackbar_status.dart';
-import 'package:movie_database/helpers/results_to_movie_extn.dart';
 import '../../base/base_controller.dart';
 import '../../data/models/movies_response.dart';
+import '../../enum/snackbar_status.dart';
 import '../../helpers/utils.dart';
 import '../../repo/search_repo.dart';
+import '../../helpers/results_to_movie_extn.dart';
 
 class SearchController extends BaseController {
   RxList<Results> searchResults = RxList.empty();
@@ -24,7 +24,7 @@ class SearchController extends BaseController {
   }
 
   addFavorite(Results result) {
-    final movie = ResultsToMovie([result]).parseResults().first;
+    final movie = [result].parseResults().first;
     movie.save();
     Utils()
         .showSnackBar('Added to Favorites', movie.title, SnackBarStatus.info);

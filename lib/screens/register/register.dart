@@ -25,6 +25,15 @@ class _RegisterState extends State<Register> {
   final passwordController = TextEditingController();
 
   @override
+  void dispose() {
+    nameController.dispose();
+    phoneController.dispose();
+    emailController.dispose();
+    passwordController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
@@ -170,7 +179,9 @@ class _RegisterState extends State<Register> {
                               final isFormValid =
                                   formKey.currentState!.validate();
                               if (isFormValid) {
-                                _controller.register(emailController.text.trim(), passwordController.text.trim());
+                                _controller.register(
+                                    emailController.text.trim(),
+                                    passwordController.text.trim());
                               }
                             },
                             style: ElevatedButton.styleFrom(
