@@ -9,17 +9,21 @@ import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:loggy/loggy.dart';
-import 'data/models/movie_model.dart';
-import 'helpers/constants.dart';
-import 'myth_flix_app.dart';
-import 'service/api_service.dart';
-import 'service/auth_service.dart';
+import 'core/app/app_flavor.dart';
+import 'core/base/service_locator.dart';
+import 'core/data/models/movie_model.dart';
+import 'core/constants/app/app_constants.dart';
+import 'core/app/myth_flix_app.dart';
+import 'core/service/api_service.dart';
+import 'core/service/auth_service.dart';
 
 void main() async {
   await init();
   await inject();
+  await setUpServiceLocator();
   FlutterNativeSplash.remove();
-  runApp(const MythFlixApp());
+  // runApp(const MythFlixApp());
+  bootstrap(() => const MythFlixApp());
 }
 
 Future<void> init() async {
@@ -62,7 +66,7 @@ Future<void> initFirebase() async {
 Future<void> initHive() async {
   await Hive.initFlutter();
   Hive.registerAdapter(MovieAdapter());
-  await Hive.openBox<Movie>(Constants.DB_NAME);
+  await Hive.openBox<Movie>(AppConstants.DB_NAME);
 }
 
 Future<void> inject() async {
