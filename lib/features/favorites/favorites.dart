@@ -23,10 +23,7 @@ class Favorties extends GetView<FavoritesController> {
       body: SafeArea(
           child: Column(
         children: [
-          Padding(
-            padding: EdgeInsets.only(left: 12.w, bottom: 8.h, top: 8.h),
-            child: const CustomAppBar(title: 'Favorites', isBackEnabled: true),
-          ),
+          const CustomAppBar(title: 'Favorites', isBackEnabled: true),
           Expanded(
             child: ValueListenableBuilder(
                 valueListenable: Boxes.getFavorites().listenable(),

@@ -1,20 +1,17 @@
+import 'package:evolvex_lib/evolvex_lib.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:flutter_loggy/flutter_loggy.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:loggy/loggy.dart';
-import 'core/app/app_flavor.dart';
+import 'package:movie_database/core/app/myth_flix_app.dart';
 import 'core/base/service_locator.dart';
 import 'core/data/models/movie_model.dart';
 import 'core/constants/app/app_constants.dart';
-import 'core/app/myth_flix_app.dart';
-import 'core/service/api_service.dart';
 import 'core/service/auth_service.dart';
 
 void main() async {
@@ -22,8 +19,7 @@ void main() async {
   await inject();
   await setUpServiceLocator();
   FlutterNativeSplash.remove();
-  // runApp(const MythFlixApp());
-  bootstrap(() => const MythFlixApp());
+  runApp(const MythFlixApp());
 }
 
 Future<void> init() async {
@@ -32,9 +28,7 @@ Future<void> init() async {
   await dotenv.load(fileName: ".env");
   await initFirebase();
   await initHive();
-  Loggy.initLoggy(
-    logPrinter: const PrettyDeveloperPrinter(),
-  );
+  EvolveX.init();
   await GetStorage.init();
 }
 
@@ -70,7 +64,7 @@ Future<void> initHive() async {
 }
 
 Future<void> inject() async {
-  Get.lazyPut(() => ApiService(), fenix: true);
+  Get.lazyPut(() => ApiService(baseUrl: AppConstants.BASE_URLm), fenix: true);
   Get.lazyPut(() => AuthService(), fenix: true);
   Get.lazyPut(() => FirebaseAuth.instance, fenix: true);
 }

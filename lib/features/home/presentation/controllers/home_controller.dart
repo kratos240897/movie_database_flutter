@@ -20,7 +20,12 @@ import '../../domain/usecases/put_movies_to_cache.dart';
 class HomeController extends BaseController {
   final _getCacheUsecase = serviceLocator<GetMoviesFromCache>();
   final _putCacheUsecase = serviceLocator<PutMoviesToCache>();
-  final RxList<Results> movies = RxList.empty();
+  final List<List<Results>> allMoviesList = [];
+  final RxList<Results> nowPlaying = RxList.empty();
+  final RxList<Results> newMovies = RxList.empty();
+  final RxList<Results> topRated = RxList.empty();
+  final RxList<Results> upcoming = RxList.empty();
+  final RxList<Results> tvShows = RxList.empty();
   final favoritesCount = 0.obs;
   final isLoading = false.obs;
   final selectedIndex = 0.obs;
@@ -50,9 +55,22 @@ class HomeController extends BaseController {
 
   @override
   void onReady() async {
-    Future.delayed(const Duration(seconds: 3), () async {
+    utils.showLoading();
+    Future.delayed(const Duration(milliseconds: 500), () async {
       if (isNetworkAvailable.value == true) {
-        getMovies(EndPoints.trending, {});
+        await Future.wait([
+          fetchMovies(EndPoints.trending, {}, nowPlaying),
+          fetchMovies(
+              EndPoints.discover,
+              {
+                'primary_release_date.gte': _startDate,
+                'primary_release_date.lte': _endDate
+              },
+              newMovies),
+          fetchMovies(EndPoints.topRated, {}, topRated),
+          fetchMovies(EndPoints.upcoming, {}, upcoming),
+          fetchMovies(EndPoints.tvShows, {}, tvShows)
+        ]).then((value) => utils.hideLoading());
       }
     });
     FlutterAppBadger.updateBadgeCount(1);
@@ -89,7 +107,7 @@ class HomeController extends BaseController {
             .getMoviesFromCache(CacheConstants.KEY_NOW_PLAYING)
             .then((value) {
           value.fold((_) => getMovies(EndPoints.trending, {}),
-              (data) => movies.value = data);
+              (data) => nowPlaying.value = data);
         });
         break;
       case 1:
@@ -101,7 +119,7 @@ class HomeController extends BaseController {
                     'primary_release_date.gte': _startDate,
                     'primary_release_date.lte': _endDate
                   }),
-              (data) => movies.value = data);
+              (data) => nowPlaying.value = data);
         });
         break;
       case 2:
@@ -109,7 +127,7 @@ class HomeController extends BaseController {
             .getMoviesFromCache(CacheConstants.KEY_TOP_RATED)
             .then((value) {
           value.fold((_) => getMovies(EndPoints.topRated, {}),
-              (data) => movies.value = data);
+              (data) => nowPlaying.value = data);
         });
         break;
       case 3:
@@ -117,7 +135,7 @@ class HomeController extends BaseController {
             .getMoviesFromCache(CacheConstants.KEY_UPCOMING)
             .then((value) {
           value.fold((_) => getMovies(EndPoints.upcoming, {}),
-              (data) => movies.value = data);
+              (data) => nowPlaying.value = data);
         });
         break;
       case 4:
@@ -125,7 +143,7 @@ class HomeController extends BaseController {
             .getMoviesFromCache(CacheConstants.KEY_TV_SHOWS)
             .then((value) {
           value.fold((_) => getMovies(EndPoints.tvShows, {}),
-              (data) => movies.value = data);
+              (data) => nowPlaying.value = data);
         });
         break;
     }
@@ -141,7 +159,19 @@ class HomeController extends BaseController {
     }, (data) {
       isLoading.value = false;
       cacheResponse(data);
-      movies.value = data;
+      nowPlaying.value = data;
+    });
+  }
+
+  Future<void> fetchMovies(
+      String url, Map<String, dynamic> query, RxList<Results> movielist) async {
+    final result = await serviceLocator<GetMoviesFromServer>()
+        .getMoviesFromServer(url, query);
+    result.fold((failure) {
+      utils.showSnackBar('Failure', failure.message, SnackBarStatus.failure);
+    }, (data) {
+      movielist.value = data;
+      allMoviesList.add(data);
     });
   }
 

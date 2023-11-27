@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:movie_database/core/service/theme_service.dart';
 
 class Styles {
   static final colors = _Colors();
@@ -42,10 +42,89 @@ class _Colors {
 }
 
 class _TextStyles {
-  final f14Regular = Theme.of(Get.context!).textTheme.titleLarge?.copyWith(
-      fontSize: 14, fontFamily: GoogleFonts.nunito().copyWith().fontFamily);
-  final f14Bold = Theme.of(Get.context!).textTheme.titleLarge?.copyWith(
-      fontSize: 14,
-      fontWeight: FontWeight.bold,
-      fontFamily: GoogleFonts.nunito().copyWith().fontFamily);
+  TextStyle f10Regular({String? fontFamily, Color? color}) => TextStyle(
+      fontWeight: FontWeight.normal,
+      fontSize: 10.sp,
+      color:
+          color ?? (ThemeService().isDarkMode() ? Colors.white : Colors.black));
+
+  TextStyle f10SemiBold({String? fontFamily, Color? color}) =>
+      TextStyle(fontSize: 10.sp, fontWeight: FontWeight.w600, color:
+          color ?? (ThemeService().isDarkMode() ? Colors.white : Colors.black));
+
+  TextStyle f10Bold({String? fontFamily, Color? color}) =>
+      TextStyle(fontSize: 10.sp, fontWeight: FontWeight.bold, color:
+          color ?? (ThemeService().isDarkMode() ? Colors.white : Colors.black));
+
+  TextStyle f12Regular({String? fontFamily, Color? color}) =>
+      TextStyle(fontWeight: FontWeight.normal, fontSize: 12.sp, color:
+          color ?? (ThemeService().isDarkMode() ? Colors.white : Colors.black));
+
+  TextStyle f12SemiBold({String? fontFamily, Color? color}) =>
+      TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w600, color:
+          color ?? (ThemeService().isDarkMode() ? Colors.white : Colors.black));
+
+  TextStyle f12Bold({String? fontFamily, Color? color}) =>
+      TextStyle(fontSize: 12.sp, fontWeight: FontWeight.bold, color:
+          color ?? (ThemeService().isDarkMode() ? Colors.white : Colors.black));
+
+  TextStyle f14Regular({String? fontFamily, Color? color}) =>
+      TextStyle(fontWeight: FontWeight.normal, fontSize: 14.sp, color:
+          color ?? (ThemeService().isDarkMode() ? Colors.white : Colors.black));
+
+  TextStyle f14SemiBold({String? fontFamily, Color? color}) =>
+      TextStyle(fontSize: 14.sp, fontWeight: FontWeight.w600, color:
+          color ?? (ThemeService().isDarkMode() ? Colors.white : Colors.black));
+
+  TextStyle f14Bold({String? fontFamily, Color? color}) =>
+      TextStyle(fontSize: 14.sp, fontWeight: FontWeight.bold, color:
+          color ?? (ThemeService().isDarkMode() ? Colors.white : Colors.black));
+
+  TextStyle f16Regular({String? fontFamily, Color? color}) =>
+      TextStyle(fontWeight: FontWeight.normal, fontSize: 16.sp, color:
+          color ?? (ThemeService().isDarkMode() ? Colors.white : Colors.black));
+
+  TextStyle f16SemiBold({String? fontFamily, Color? color}) =>
+      TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w600, color:
+          color ?? (ThemeService().isDarkMode() ? Colors.white : Colors.black));
+
+  TextStyle f16Bold({String? fontFamily, Color? color}) =>
+      TextStyle(fontSize: 16.sp, fontWeight: FontWeight.bold, color:
+          color ?? (ThemeService().isDarkMode() ? Colors.white : Colors.black));
+
+  TextStyle f18Regular({String? fontFamily, Color? color}) =>
+      TextStyle(fontWeight: FontWeight.normal, fontSize: 18.sp, color:
+          color ?? (ThemeService().isDarkMode() ? Colors.white : Colors.black));
+
+  TextStyle f18SemiBold({String? fontFamily, Color? color}) =>
+      TextStyle(fontSize: 18.sp, fontWeight: FontWeight.w600, color:
+          color ?? (ThemeService().isDarkMode() ? Colors.white : Colors.black));
+
+  TextStyle f18Bold({String? fontFamily, Color? color}) =>
+      TextStyle(fontSize: 18.sp, fontWeight: FontWeight.bold, color:
+          color ?? (ThemeService().isDarkMode() ? Colors.white : Colors.black));
+
+  TextStyle f20Regular({String? fontFamily, Color? color}) =>
+      TextStyle(fontWeight: FontWeight.normal, fontSize: 20.sp, color:
+          color ?? (ThemeService().isDarkMode() ? Colors.white : Colors.black));
+
+  TextStyle f20SemiBold({String? fontFamily, Color? color}) =>
+      TextStyle(fontSize: 20.sp, fontWeight: FontWeight.w600, color:
+          color ?? (ThemeService().isDarkMode() ? Colors.white : Colors.black));
+
+  TextStyle f20Bold({String? fontFamily, Color? color}) =>
+      TextStyle(fontSize: 20.sp, fontWeight: FontWeight.bold, color:
+          color ?? (ThemeService().isDarkMode() ? Colors.white : Colors.black));
+
+  TextStyle f22Regular({String? fontFamily, Color? color}) =>
+      TextStyle(fontWeight: FontWeight.normal, fontSize: 22.sp, color:
+          color ?? (ThemeService().isDarkMode() ? Colors.white : Colors.black));
+
+  TextStyle f22SemiBold({String? fontFamily, Color? color}) =>
+      TextStyle(fontSize: 22.sp, fontWeight: FontWeight.w600, color:
+          color ?? (ThemeService().isDarkMode() ? Colors.white : Colors.black));
+
+  TextStyle f22Bold({String? fontFamily, Color? color}) =>
+      TextStyle(fontSize: 22.sp, fontWeight: FontWeight.bold, color:
+          color ?? (ThemeService().isDarkMode() ? Colors.white : Colors.black));
 }

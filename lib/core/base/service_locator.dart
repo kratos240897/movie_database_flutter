@@ -34,7 +34,8 @@ Future<void> setUpServiceLocator() async {
   serviceLocator.registerFactory(() => GetMovieReviews());
   serviceLocator.registerFactory(() => GetPerson());
 
-  // repositories
+  
+  
   // HOME
   serviceLocator.registerFactory<HomeRepository>(() => HomeRepositoryImpl());
 

@@ -15,10 +15,7 @@ class Review extends StatelessWidget {
       body: SafeArea(
           child: Column(
         children: [
-          Padding(
-            padding: EdgeInsets.only(left: 12.w, bottom: 8.h, top: 8.h),
-            child: const CustomAppBar(title: 'Reviews', isBackEnabled: true),
-          ),
+          const CustomAppBar(title: 'Reviews', isBackEnabled: true),
           Expanded(
               child: reviews.isNotEmpty
                   ? ListView.builder(

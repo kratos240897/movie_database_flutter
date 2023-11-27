@@ -2,6 +2,7 @@ import 'dart:math' as math;
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:focused_menu/focused_menu.dart';
@@ -18,36 +19,64 @@ import '../home/data/models/movies_response.dart';
 import '../../core/init/routes/router.dart';
 import '../../core/init/utils/utils.dart';
 import '../../core/service/theme_service.dart';
-import 'search_controller.dart';
+import 'search_controller.dart' as search_controller;
 
-class SearchScreen extends GetView<SearchController> {
+class SearchScreen extends HookWidget {
   SearchScreen(this.movies, {Key? key}) : super(key: key);
   final List<Results> movies;
   final mediaQuery = Get.mediaQuery;
+  final controller = Get.find<search_controller.SearchController>();
 
   @override
   Widget build(BuildContext context) {
+    final currentIndex = useState(0);
     return Scaffold(
       body: SafeArea(
         bottom: false,
         child: Obx(() {
           return Column(
             children: [
-              Padding(
-                  padding: EdgeInsets.only(left: 12.w, bottom: 8.h, top: 8.h),
-                  child: const CustomAppBar(
-                    isBackEnabled: true,
-                    title: 'Search Movies',
-                  )),
-              SearchBarWidget(
-                controller: controller,
+              const CustomAppBar(
+                isBackEnabled: true,
+                title: 'Search Movies',
               ),
-              controller.searchResults.isEmpty
-                  ? Visibility(
-                      visible: !controller.isSearchHasFocus.value,
-                      child: CarouselMovieSlider(movies: movies),
-                      replacement: Container())
-                  : SearchedMovies(controller: controller)
+              Expanded(
+                child: Stack(
+                  children: [
+                    if (controller.isSearchHasFocus.isFalse)
+                      CachedNetworkImage(
+                          height: double.infinity,
+                          width: double.infinity,
+                          fit: BoxFit.fitHeight,
+                          imageUrl: AppConstants.BASE_IMAGE_URL +
+                              movies[currentIndex.value]
+                                  .backdropPath
+                                  .toString()),
+                    if (controller.isSearchHasFocus.isFalse)
+                      Container(
+                        color: Colors.black54,
+                      ),
+                    Column(
+                      children: [
+                        8.verticalSpace,
+                        SearchBarWidget(
+                          controller: controller,
+                        ),
+                        controller.searchResults.isEmpty
+                            ? Visibility(
+                                visible: !controller.isSearchHasFocus.value,
+                                child: CarouselMovieSlider(
+                                  movies: movies,
+                                  onChange: (value) =>
+                                      currentIndex.value = value,
+                                ),
+                                replacement: Container())
+                            : SearchedMovies(controller: controller),
+                      ],
+                    ),
+                  ],
+                ),
+              )
             ],
           );
         }),
@@ -57,7 +86,7 @@ class SearchScreen extends GetView<SearchController> {
 }
 
 class SearchedMovies extends StatelessWidget {
-  final SearchController controller;
+  final search_controller.SearchController controller;
   const SearchedMovies({Key? key, required this.controller}) : super(key: key);
 
   @override
@@ -79,7 +108,7 @@ class SearchedMovies extends StatelessWidget {
 }
 
 class SearchedMovieItem extends StatelessWidget {
-  final SearchController controller;
+  final search_controller.SearchController controller;
   final int index;
   final mediaQuery = Get.mediaQuery;
   SearchedMovieItem({Key? key, required this.controller, required this.index})
@@ -97,13 +126,13 @@ class SearchedMovieItem extends StatelessWidget {
       menuWidth: mediaQuery.size.width * 0.5,
       menuItems: [
         FocusedMenuItem(
-            title: Text('Favorite', style: Styles.textStyles.f14Regular),
+            title: Text('Favorite', style: Styles.textStyles.f14Regular()),
             trailingIcon: const Icon(Icons.favorite, color: Colors.red),
             onPressed: () async {
               controller.addFavorite(movie);
             }),
         FocusedMenuItem(
-            title: Text('Share', style: Styles.textStyles.f14Regular),
+            title: Text('Share', style: Styles.textStyles.f14Regular()),
             trailingIcon: const Icon(Icons.share, color: Colors.blue),
             onPressed: () {
               Results movie = controller.searchResults[index];
@@ -112,7 +141,7 @@ class SearchedMovieItem extends StatelessWidget {
                   subject: 'Check out this movie ${movie.title}');
             }),
         FocusedMenuItem(
-            title: Text('Vote', style: Styles.textStyles.f14Regular),
+            title: Text('Vote', style: Styles.textStyles.f14Regular()),
             trailingIcon:
                 const Icon(Icons.volunteer_activism, color: Colors.green),
             onPressed: () {})
@@ -178,14 +207,17 @@ class SearchedMovieItem extends StatelessWidget {
 
 class CarouselMovieSlider extends StatefulWidget {
   final List<Results> movies;
-  const CarouselMovieSlider({Key? key, required this.movies}) : super(key: key);
+  final Function(int currentIndex) onChange;
+  const CarouselMovieSlider(
+      {Key? key, required this.movies, required this.onChange})
+      : super(key: key);
 
   @override
   State<CarouselMovieSlider> createState() => _CarouselMovieSliderState();
 }
 
 class _CarouselMovieSliderState extends State<CarouselMovieSlider> {
-  int _initalPage = 1;
+  int _initalPage = 0;
   late PageController _pageController;
 
   @override
@@ -199,7 +231,7 @@ class _CarouselMovieSliderState extends State<CarouselMovieSlider> {
   }
 
   void _animateSlider() {
-    Future.delayed(const Duration(seconds: 3)).then((_) {
+    Future.delayed(const Duration(seconds: 6)).then((_) {
       if (_pageController.hasClients) {
         int nextPage = _pageController.page!.round() + 1;
         if (nextPage == widget.movies.length) {
@@ -225,36 +257,33 @@ class _CarouselMovieSliderState extends State<CarouselMovieSlider> {
   @override
   Widget build(BuildContext context) {
     return Expanded(
-      child: Padding(
-          padding: const EdgeInsets.all(15.0),
-          child: AspectRatio(
-              aspectRatio: 0.75,
-              child: PageView.builder(
-                  controller: _pageController,
-                  onPageChanged: (value) => setState(() {
-                        _initalPage = value;
-                      }),
-                  physics: const ClampingScrollPhysics(),
-                  itemCount: widget.movies.length,
-                  itemBuilder: (context, index) {
-                    return AnimatedBuilder(
-                      animation: _pageController,
-                      builder: (context, child) {
-                        double value = 0;
-                        if (_pageController.position.haveDimensions) {
-                          value = index - _pageController.page!.toDouble();
-                          value = (value * 0.038).clamp(-1, 1);
-                        }
-                        return AnimatedOpacity(
-                          duration: const Duration(milliseconds: 350),
-                          opacity: _initalPage == index ? 1 : 0.4,
-                          child: Transform.rotate(
-                              angle: math.pi * value,
-                              child: MovieCard(movie: widget.movies[index])),
-                        );
-                      },
-                    );
-                  }))),
+      child: PageView.builder(
+          controller: _pageController,
+          onPageChanged: (value) => setState(() {
+                _initalPage = value;
+                widget.onChange(value);
+              }),
+          physics: const ClampingScrollPhysics(),
+          itemCount: widget.movies.length,
+          itemBuilder: (context, index) {
+            return AnimatedBuilder(
+              animation: _pageController,
+              builder: (context, child) {
+                double value = 0;
+                if (_pageController.position.haveDimensions) {
+                  value = index - _pageController.page!.toDouble();
+                  value = (value * 0.038).clamp(-1, 1);
+                }
+                return AnimatedOpacity(
+                  duration: const Duration(milliseconds: 350),
+                  opacity: _initalPage == index ? 1 : 0.4,
+                  child: Transform.rotate(
+                      angle: math.pi * value,
+                      child: MovieCard(movie: widget.movies[index])),
+                );
+              },
+            );
+          }),
     );
   }
 }
@@ -269,14 +298,15 @@ class MovieCard extends StatelessWidget {
       onTap: () => Get.toNamed(PageRouter.MOVIE_DETAIL, arguments: movie),
       child: LayoutBuilder(builder: (context, constraints) {
         return Column(
-          mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Container(
-              height: Utils.getDeviceType() == DeviceType.phone
+              height: Utils.getDeviceType(context) == DeviceType.phone
                   ? constraints.maxHeight * 0.65
                   : constraints.maxHeight * 0.75,
               margin: EdgeInsets.all(
-                  Utils.getDeviceType() == DeviceType.phone ? 15.0 : 30.0),
+                  Utils.getDeviceType(context) == DeviceType.phone
+                      ? 15.spMin
+                      : 30.spMin),
               decoration: BoxDecoration(
                   border: Border.all(color: Colors.white),
                   borderRadius: BorderRadius.circular(50.0),
@@ -286,26 +316,37 @@ class MovieCard extends StatelessWidget {
                           AppConstants.BASE_IMAGE_URL +
                               movie.posterPath.toString()))),
             ),
-            Container(
-              margin: const EdgeInsets.symmetric(vertical: 15.0),
-              child: Text(movie.title ?? '--',
-                  textAlign: TextAlign.start,
-                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 18,
-                      overflow: TextOverflow.ellipsis,
-                      fontFamily: GoogleFonts.actor().fontFamily)),
-            ),
-            RatingBarIndicator(
-                rating: (movie.voteAverage / 2).toDouble(),
-                direction: Axis.horizontal,
-                itemCount: 5,
-                itemSize: 30.0,
-                itemPadding: const EdgeInsets.symmetric(horizontal: 2.0),
-                itemBuilder: (ctx, index) => const Icon(
-                      Icons.star,
-                      color: Colors.amber,
-                    ))
+            Card(
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12.r)),
+              child: Padding(
+                padding: EdgeInsets.all(8.spMin),
+                child: Column(
+                  children: [
+                    Text(movie.title ?? '--',
+                        textAlign: TextAlign.center,
+                        maxLines: 2,
+                        style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 18,
+                            overflow: TextOverflow.ellipsis,
+                            fontFamily: GoogleFonts.actor().fontFamily)),
+                    4.verticalSpace,
+                    RatingBarIndicator(
+                        rating: (movie.voteAverage / 2).toDouble(),
+                        direction: Axis.horizontal,
+                        itemCount: 5,
+                        itemSize: 30.0,
+                        itemPadding:
+                            const EdgeInsets.symmetric(horizontal: 2.0),
+                        itemBuilder: (ctx, index) => const Icon(
+                              Icons.star,
+                              color: Colors.amber,
+                            )),
+                  ],
+                ),
+              ),
+            )
           ],
         );
       }),
@@ -314,7 +355,7 @@ class MovieCard extends StatelessWidget {
 }
 
 class SearchBarWidget extends StatefulWidget {
-  final SearchController controller;
+  final search_controller.SearchController controller;
 
   const SearchBarWidget({
     Key? key,

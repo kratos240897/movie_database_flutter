@@ -16,9 +16,11 @@ class MovieDetailController extends BaseController {
 
   init() async {
     utils.showLoading();
-    await getVideoDetails(movieId);
-    await getCredits(movieId);
-    await getMovieReviews(movieId);
+    final List<Future> futures = [];
+    futures.add(getVideoDetails(movieId));
+    futures.add(getCredits(movieId));
+    futures.add(getMovieReviews(movieId));
+    await Future.wait(futures);
     utils.hideLoading();
   }
 

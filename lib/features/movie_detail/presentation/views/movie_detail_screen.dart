@@ -53,11 +53,8 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
           bottom: false,
           child: Column(
             children: [
-              Padding(
-                padding: EdgeInsets.only(left: 8.w, bottom: 8.h, top: 8.h),
-                child: CustomAppBar(
-                    title: widget.movie.title ?? '--', isBackEnabled: true),
-              ),
+              CustomAppBar(
+                  title: widget.movie.title ?? '--', isBackEnabled: true),
               Expanded(
                 child: Obx(() {
                   if (!widget.controller.isNetworkAvailable.value) {
@@ -100,7 +97,7 @@ class ContentWidget extends StatelessWidget {
           SliverOverlapAbsorber(
             handle: NestedScrollView.sliverOverlapAbsorberHandleFor(context),
             sliver: SliverAppBar(
-              expandedHeight: 0.25.sh,
+              expandedHeight: 0.25.sh + 6.h,
               floating: false,
               pinned: false,
               automaticallyImplyLeading: false,
@@ -276,6 +273,7 @@ class BackDropWidget extends StatelessWidget {
       padding: EdgeInsets.symmetric(horizontal: 12.w),
       child: Column(
         children: [
+          6.verticalSpace,
           Container(
             height: 0.25.sh,
             decoration: BoxDecoration(

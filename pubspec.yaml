@@ -35,18 +35,13 @@ dependencies:
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.2
   get: ^4.6.1
-  google_fonts: ^3.0.1
+  google_fonts: 4.0.4
   flutter_rating_bar: ^4.0.0
   focused_menu: ^1.0.5
   cached_network_image: ^3.2.3
   intl: ^0.17.0
   connectivity_plus: ^3.0.2
   badges: ^2.0.2
-  logger: ^1.1.0
-  dio: ^4.0.4
-  flutter_loggy_dio: ^2.0.0+3
-  loggy: ^2.0.1+1
-  flutter_loggy: ^2.0.1
   font_awesome_flutter: ^10.3.0
   share_plus: ^6.3.0
   hive: ^2.0.5
@@ -66,6 +61,10 @@ dependencies:
   equatable: ^2.0.5
   get_it: ^7.2.0
   dartz: ^0.10.1
+  flutter_hooks: ^0.20.0
+  evolvex_lib:
+   git: https://github.com/kratos240897/evolvex_lib.git
+  palette_generator: ^0.3.3+3
 
 dependency_overrides:
   flutter_inappwebview: 5.3.0

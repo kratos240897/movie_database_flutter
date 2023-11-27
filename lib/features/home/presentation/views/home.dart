@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -31,20 +33,78 @@ class Home extends GetView<HomeController> {
     return Scaffold(
       body: SafeArea(
           bottom: false,
-          child: Obx(() {
-            return Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Padding(
-                  padding: EdgeInsets.only(right: 4.w, top: 12.h),
-                  child: CustomAppBar(
+          child: Obx(() => Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Padding(
+                    padding: EdgeInsets.only(right: 4.w, top: 12.h),
+                    child: CustomAppBar(
+                      title: 'Myth Flix',
+                      isBackEnabled: false,
+                      actions: [
+                        CustomActionButton(
+                            onTap: () => Get.toNamed(
+                                  PageRouter.SEARCH,
+                                  arguments: controller.allMoviesList[Random()
+                                      .nextInt(
+                                          controller.allMoviesList.length)],
+                                ),
+                            icon: Icons.search_outlined),
+                        CustomActionButton(
+                          onTap: () => Get.toNamed(PageRouter.FAVORITES),
+                          icon: Icons.favorite_rounded,
+                        ),
+                        CustomActionButton(
+                            onTap: () async {
+                              await controller.changeTheme();
+                            },
+                            icon: controller.isDarkMode.value
+                                ? Icons.light_mode_outlined
+                                : Icons.dark_mode_outlined),
+                        CustomActionButton(
+                            onTap: () => controller.prepareLogout(),
+                            icon: Icons.logout_outlined)
+                      ],
+                    ),
+                  ),
+                  CategoriesWidget(
+                    controller: controller,
+                    movieListScrollController: movieListScrollController,
+                  ),
+                  controller.isNetworkAvailable.value
+                      ? MoviesListWidget(
+                          controller: controller,
+                          scrollController: movieListScrollController,
+                          mediaQuery: mediaQuery)
+                      : const CustomNoInternetWidget()
+                ],
+              ))),
+    );
+  }
+}
+
+class HomeV2 extends GetView<HomeController> {
+  HomeV2({Key? key}) : super(key: key);
+  final mediaQuery = Get.mediaQuery;
+  final movieListScrollController = ScrollController();
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: SafeArea(
+          bottom: false,
+          child: Obx(() => Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  CustomAppBar(
                     title: 'Myth Flix',
                     isBackEnabled: false,
                     actions: [
                       CustomActionButton(
                           onTap: () => Get.toNamed(
                                 PageRouter.SEARCH,
-                                arguments: controller.movies,
+                                arguments: controller.allMoviesList[Random()
+                                    .nextInt(controller.allMoviesList.length)],
                               ),
                           icon: Icons.search_outlined),
                       CustomActionButton(
@@ -63,21 +123,110 @@ class Home extends GetView<HomeController> {
                           icon: Icons.logout_outlined)
                     ],
                   ),
-                ),
-                CategoriesWidget(
-                  controller: controller,
-                  movieListScrollController: movieListScrollController,
-                ),
-                controller.isNetworkAvailable.value
-                    ? MoviesListWidget(
-                        controller: controller,
-                        scrollController: movieListScrollController,
-                        mediaQuery: mediaQuery)
-                    : const CustomNoInternetWidget()
-              ],
-            );
-          })),
+                  controller.isNetworkAvailable.value
+                      ? Expanded(
+                          child: Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 12.w),
+                          child: SingleChildScrollView(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                8.verticalSpace,
+                                MovieCategoryList(
+                                    icon: Icons.movie_outlined,
+                                    categoryTitle: 'Now Playing',
+                                    movies: controller.nowPlaying,
+                                    mediaQuery: mediaQuery),
+                                8.verticalSpace,
+                                MovieCategoryList(
+                                    icon: Icons.new_label_outlined,
+                                    categoryTitle: 'New',
+                                    movies: controller.newMovies,
+                                    mediaQuery: mediaQuery),
+                                8.verticalSpace,
+                                MovieCategoryList(
+                                    icon: Icons.upcoming_outlined,
+                                    categoryTitle: 'Upcoming',
+                                    movies: controller.upcoming,
+                                    mediaQuery: mediaQuery),
+                                8.verticalSpace,
+                                MovieCategoryList(
+                                    icon: Icons.star_border_outlined,
+                                    categoryTitle: 'Top rated',
+                                    movies: controller.topRated,
+                                    mediaQuery: mediaQuery),
+                                8.verticalSpace,
+                                MovieCategoryList(
+                                    icon: Icons.tv_outlined,
+                                    categoryTitle: 'TV Shows',
+                                    movies: controller.tvShows,
+                                    mediaQuery: mediaQuery)
+                              ],
+                            ),
+                          ),
+                        ))
+                      : const CustomNoInternetWidget()
+                ],
+              ))),
     );
+  }
+}
+
+class MovieCategoryList extends StatelessWidget {
+  const MovieCategoryList(
+      {Key? key,
+      required this.categoryTitle,
+      required this.movies,
+      required this.mediaQuery,
+      required this.icon})
+      : super(key: key);
+
+  final String categoryTitle;
+  final List<Results> movies;
+  final MediaQueryData mediaQuery;
+  final IconData icon;
+
+  @override
+  Widget build(BuildContext context) {
+    return Obx(() => Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Icon(
+                  icon,
+                  size: 24.spMin,
+                ),
+                4.horizontalSpace,
+                Text(
+                  categoryTitle,
+                  style: Styles.textStyles
+                      .f16Regular(fontFamily: GoogleFonts.poppins().fontFamily),
+                ),
+                Icon(
+                  Icons.chevron_right,
+                  size: 24.spMin,
+                )
+              ],
+            ),
+            4.verticalSpace,
+            SizedBox(
+              height: 0.25.sh,
+              child: ListView.builder(
+                itemCount: movies.length,
+                scrollDirection: Axis.horizontal,
+                itemBuilder: (context, index) {
+                  final movie = movies[index];
+                  return MovieListItem(
+                    mediaQuery: mediaQuery,
+                    movie: movie,
+                  );
+                },
+              ),
+            ),
+          ],
+        ));
   }
 }
 
@@ -94,204 +243,260 @@ class MoviesListWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Obx(() {
-      return Expanded(
-        child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 8.w),
-          child: SingleChildScrollView(
-            controller: scrollController,
-            child: Visibility(
-                visible: controller.isLoading.value == true ? false : true,
-                child: GridView.builder(
-                    itemCount: controller.movies.length,
-                    physics: const NeverScrollableScrollPhysics(),
-                    shrinkWrap: true,
-                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                        mainAxisExtent:
-                            mediaQuery.orientation == Orientation.portrait
-                                ? mediaQuery.size.height * 0.3
-                                : mediaQuery.size.height * 0.7,
-                        crossAxisCount:
-                            Utils.getDeviceType() == DeviceType.phone ? 2 : 3,
-                        crossAxisSpacing: 4.0,
-                        mainAxisSpacing: 4.0),
-                    itemBuilder: (ctx, index) {
-                      return FocusedMenuHolder(
-                          blurBackgroundColor:
-                              Theme.of(context).scaffoldBackgroundColor,
-                          menuOffset: 8.0,
-                          animateMenuItems: true,
-                          menuWidth: mediaQuery.size.width * 0.5,
-                          menuItems: [
-                            FocusedMenuItem(
-                                backgroundColor:
-                                    Theme.of(context).cardTheme.color,
-                                title: Text(
-                                  'Favorite',
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .titleLarge
-                                      ?.copyWith(fontSize: 14.sp),
-                                ),
-                                trailingIcon: const Icon(Icons.favorite,
-                                    color: Colors.red),
-                                onPressed: () async {
-                                  controller
-                                      .addFavorite(controller.movies[index]);
-                                }),
-                            FocusedMenuItem(
-                                backgroundColor:
-                                    Theme.of(context).cardTheme.color,
-                                title: Text('Share',
+    return Obx(() => Expanded(
+          child: Padding(
+            padding: EdgeInsets.symmetric(horizontal: 8.w),
+            child: SingleChildScrollView(
+              controller: scrollController,
+              child: Visibility(
+                  visible: controller.isLoading.value == true ? false : true,
+                  child: GridView.builder(
+                      itemCount: controller.nowPlaying.length,
+                      physics: const NeverScrollableScrollPhysics(),
+                      shrinkWrap: true,
+                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                          mainAxisExtent:
+                              mediaQuery.orientation == Orientation.portrait
+                                  ? mediaQuery.size.height * 0.3
+                                  : mediaQuery.size.height * 0.7,
+                          crossAxisCount:
+                              Utils.getDeviceType(context) == DeviceType.phone
+                                  ? 2
+                                  : 3,
+                          crossAxisSpacing: 4.0,
+                          mainAxisSpacing: 4.0),
+                      itemBuilder: (ctx, index) {
+                        return FocusedMenuHolder(
+                            blurBackgroundColor:
+                                Theme.of(context).scaffoldBackgroundColor,
+                            menuOffset: 8.0,
+                            animateMenuItems: true,
+                            menuWidth: mediaQuery.size.width * 0.5,
+                            menuItems: [
+                              FocusedMenuItem(
+                                  backgroundColor:
+                                      Theme.of(context).cardTheme.color,
+                                  title: Text(
+                                    'Favorite',
                                     style: Theme.of(context)
                                         .textTheme
                                         .titleLarge
-                                        ?.copyWith(fontSize: 14.sp)),
-                                trailingIcon: const Icon(Icons.send,
-                                    color: Colors.orange),
-                                onPressed: () {
-                                  Results movie = controller.movies[index];
-                                  Share.share(
-                                      'Check out my website https://hardcore-meninsky-e3f55f.netlify.app/#/',
-                                      subject:
-                                          'Check out this movie ${movie.title}');
-                                }),
-                            FocusedMenuItem(
-                                backgroundColor:
-                                    Theme.of(context).cardTheme.color,
-                                title: Text(
-                                  'Vote',
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .titleLarge
-                                      ?.copyWith(fontSize: 14.sp),
-                                ),
-                                trailingIcon: const Icon(
-                                    Icons.volunteer_activism,
-                                    color: Colors.green),
-                                onPressed: () {})
-                          ],
-                          onPressed: () {},
-                          child: MovieListItem(
-                            movie: controller.movies[index],
-                            mediaQuery: mediaQuery,
-                          ));
-                    }),
-                replacement: GridView.builder(
-                    itemCount: 10,
-                    physics: const NeverScrollableScrollPhysics(),
-                    shrinkWrap: true,
-                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                        mainAxisExtent:
-                            mediaQuery.orientation == Orientation.portrait
-                                ? mediaQuery.size.height * 0.3
-                                : mediaQuery.size.height * 0.7,
-                        crossAxisCount:
-                            Utils.getDeviceType() == DeviceType.phone ? 2 : 3,
-                        crossAxisSpacing: 4.0,
-                        mainAxisSpacing: 4.0),
-                    itemBuilder: (ctx, index) {
-                      return Card(
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(15)),
-                        elevation: 4,
-                        child: const Center(
-                          child: CupertinoActivityIndicator(
-                              animating: true, radius: 12.0),
-                        ),
-                      );
-                    })),
+                                        ?.copyWith(fontSize: 14.sp),
+                                  ),
+                                  trailingIcon: const Icon(Icons.favorite,
+                                      color: Colors.red),
+                                  onPressed: () async {
+                                    controller.addFavorite(
+                                        controller.nowPlaying[index]);
+                                  }),
+                              FocusedMenuItem(
+                                  backgroundColor:
+                                      Theme.of(context).cardTheme.color,
+                                  title: Text('Share',
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .titleLarge
+                                          ?.copyWith(fontSize: 14.sp)),
+                                  trailingIcon: const Icon(Icons.send,
+                                      color: Colors.orange),
+                                  onPressed: () {
+                                    Results movie =
+                                        controller.nowPlaying[index];
+                                    Share.share(
+                                        'Check out my website https://hardcore-meninsky-e3f55f.netlify.app/#/',
+                                        subject:
+                                            'Check out this movie ${movie.title}');
+                                  }),
+                              FocusedMenuItem(
+                                  backgroundColor:
+                                      Theme.of(context).cardTheme.color,
+                                  title: Text(
+                                    'Vote',
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .titleLarge
+                                        ?.copyWith(fontSize: 14.sp),
+                                  ),
+                                  trailingIcon: const Icon(
+                                      Icons.volunteer_activism,
+                                      color: Colors.green),
+                                  onPressed: () {})
+                            ],
+                            onPressed: () {},
+                            child: MovieListItem(
+                              movie: controller.nowPlaying[index],
+                              mediaQuery: mediaQuery,
+                            ));
+                      }),
+                  replacement: GridView.builder(
+                      itemCount: 10,
+                      physics: const NeverScrollableScrollPhysics(),
+                      shrinkWrap: true,
+                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                          mainAxisExtent:
+                              mediaQuery.orientation == Orientation.portrait
+                                  ? mediaQuery.size.height * 0.3
+                                  : mediaQuery.size.height * 0.7,
+                          crossAxisCount:
+                              Utils.getDeviceType(context) == DeviceType.phone
+                                  ? 2
+                                  : 3,
+                          crossAxisSpacing: 4.0,
+                          mainAxisSpacing: 4.0),
+                      itemBuilder: (ctx, index) {
+                        return Card(
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(15)),
+                          elevation: 4,
+                          child: const Center(
+                            child: CupertinoActivityIndicator(
+                                animating: true, radius: 12.0),
+                          ),
+                        );
+                      })),
+            ),
           ),
-        ),
-      );
-    });
+        ));
   }
 }
 
 class MovieListItem extends StatelessWidget {
+  late HomeController controller;
   final Results movie;
   final MediaQueryData mediaQuery;
-  const MovieListItem({Key? key, required this.movie, required this.mediaQuery})
+  MovieListItem({Key? key, required this.movie, required this.mediaQuery})
       : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    controller = Get.find();
     return InkWell(
       onTap: () => Get.toNamed(PageRouter.MOVIE_DETAIL, arguments: movie),
       child: LayoutBuilder(builder: (context, constraints) {
-        return Card(
-          shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10.0),
-              side: const BorderSide(color: Colors.white)),
-          elevation: 6.0,
-          child: Column(
-            children: [
-              SizedBox(
-                height: constraints.maxHeight * 0.8,
-                child: Stack(
-                  children: [
-                    Positioned(
-                      top: 0,
-                      left: 0,
-                      right: 0,
-                      child: ClipRRect(
-                        borderRadius: const BorderRadius.only(
-                            topLeft: Radius.circular(10.0),
-                            topRight: Radius.circular(10.0)),
-                        child: CachedNetworkImage(
-                            imageUrl: movie.posterPath != null
-                                ? AppConstants.BASE_IMAGE_URL +
-                                    movie.posterPath!
-                                : 'https://globalnews.ca/wp-content/uploads/2020/06/jfj50169012-2.jpg?quality=85&strip=all'),
+        return FocusedMenuHolder(
+          blurBackgroundColor: Theme.of(context).scaffoldBackgroundColor,
+          menuOffset: 8.0,
+          animateMenuItems: true,
+          menuWidth: mediaQuery.size.width * 0.5,
+          menuItems: [
+            FocusedMenuItem(
+                backgroundColor: Theme.of(context).cardTheme.color,
+                title: Text(
+                  'Favorite',
+                  style: Theme.of(context)
+                      .textTheme
+                      .titleLarge
+                      ?.copyWith(fontSize: 14.sp),
+                ),
+                trailingIcon: const Icon(Icons.favorite, color: Colors.red),
+                onPressed: () async {
+                  controller.addFavorite(movie);
+                }),
+            FocusedMenuItem(
+                backgroundColor: Theme.of(context).cardTheme.color,
+                title: Text('Share',
+                    style: Theme.of(context)
+                        .textTheme
+                        .titleLarge
+                        ?.copyWith(fontSize: 14.sp)),
+                trailingIcon: const Icon(Icons.send, color: Colors.orange),
+                onPressed: () {
+                  Share.share(
+                      'Check out my website https://hardcore-meninsky-e3f55f.netlify.app/#/',
+                      subject: 'Check out this movie ${movie.title}');
+                }),
+            FocusedMenuItem(
+                backgroundColor: Theme.of(context).cardTheme.color,
+                title: Text(
+                  'Vote',
+                  style: Theme.of(context)
+                      .textTheme
+                      .titleLarge
+                      ?.copyWith(fontSize: 14.sp),
+                ),
+                trailingIcon:
+                    const Icon(Icons.volunteer_activism, color: Colors.green),
+                onPressed: () {})
+          ],
+          onPressed: () {},
+          child: SizedBox(
+            width: 0.45.sw,
+            child: Card(
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(22.r),
+                  side: const BorderSide(color: Colors.white)),
+              child: Column(
+                children: [
+                  SizedBox(
+                    height: constraints.maxHeight * 0.8,
+                    child: Stack(
+                      children: [
+                        Positioned(
+                          top: 0,
+                          left: 0,
+                          right: 0,
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.only(
+                                topLeft: Radius.circular(22.r),
+                                topRight: Radius.circular(22.r)),
+                            child: CachedNetworkImage(
+                                imageUrl: movie.posterPath != null
+                                    ? AppConstants.BASE_IMAGE_URL +
+                                        movie.posterPath!
+                                    : 'https://globalnews.ca/wp-content/uploads/2020/06/jfj50169012-2.jpg?quality=85&strip=all'),
+                          ),
+                        ),
+                        Positioned(
+                          bottom: 8.h,
+                          right: 0,
+                          child: ElevatedButton(
+                            onPressed: () {},
+                            style: ElevatedButton.styleFrom(
+                                backgroundColor:
+                                    Theme.of(context).cardTheme.color,
+                                splashFactory: NoSplash.splashFactory,
+                                shape: RoundedRectangleBorder(
+                                    side: BorderSide(
+                                        width: 0.8.sp,
+                                        color: ThemeService().isDarkMode()
+                                            ? Styles.colors.white
+                                            : Colors.transparent),
+                                    borderRadius: const BorderRadius.only(
+                                        topLeft: Radius.circular(10.0),
+                                        bottomLeft: Radius.circular(10.0)))),
+                            child: Text(
+                                (movie.voteAverage / 2).toStringAsFixed(1) +
+                                    ' ✨',
+                                style: TextStyle(
+                                    color: Theme.of(context)
+                                        .textTheme
+                                        .displayLarge
+                                        ?.color,
+                                    fontWeight: FontWeight.bold),
+                                textAlign: TextAlign.end),
+                          ),
+                        )
+                      ],
+                    ),
+                  ),
+                  Expanded(
+                    child: Center(
+                      child: Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 8.w),
+                        child: Text(
+                            movie.originalTitle ?? (movie.title ?? '--'),
+                            textAlign: TextAlign.center,
+                            style: Styles.textStyles
+                                .f14Regular(
+                                    fontFamily:
+                                        GoogleFonts.staatliches().fontFamily)
+                                .copyWith(overflow: TextOverflow.ellipsis)),
                       ),
                     ),
-                    Positioned(
-                      bottom: 8.h,
-                      right: 0,
-                      child: ElevatedButton(
-                        onPressed: () {},
-                        style: ElevatedButton.styleFrom(
-                            backgroundColor: Theme.of(context).cardTheme.color,
-                            splashFactory: NoSplash.splashFactory,
-                            shape: RoundedRectangleBorder(
-                                side: BorderSide(
-                                    width: 0.8.sp,
-                                    color: ThemeService().isDarkMode()
-                                        ? Styles.colors.white
-                                        : Colors.transparent),
-                                borderRadius: const BorderRadius.only(
-                                    topLeft: Radius.circular(10.0),
-                                    bottomLeft: Radius.circular(10.0)))),
-                        child: Text(
-                            (movie.voteAverage / 2).toStringAsFixed(1) + ' ✨',
-                            style: TextStyle(
-                                color: Theme.of(context)
-                                    .textTheme
-                                    .displayLarge
-                                    ?.color,
-                                fontWeight: FontWeight.bold),
-                            textAlign: TextAlign.end),
-                      ),
-                    )
-                  ],
-                ),
+                  )
+                ],
               ),
-              SizedBox(height: constraints.maxHeight * 0.01),
-              Expanded(
-                child: Padding(
-                  padding: EdgeInsets.symmetric(
-                      horizontal: constraints.maxWidth * 0.02,
-                      vertical: constraints.maxHeight * 0.03),
-                  child: Text(movie.originalTitle ?? (movie.title ?? '--'),
-                      textAlign: TextAlign.center,
-                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                          fontSize: 16.0,
-                          overflow: TextOverflow.ellipsis,
-                          fontFamily:
-                              GoogleFonts.staatliches().copyWith().fontFamily)),
-                ),
-              ),
-            ],
+            ),
           ),
         );
       }),
@@ -328,22 +533,18 @@ class CategoriesWidget extends StatelessWidget {
           scrollDirection: Axis.horizontal,
           child: GroupButton(
               buttonIndexedBuilder: (selected, index, context) {
-                return Container(
+                return Padding(
                   padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
-                  decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(12.r),
-                      border: selected
-                          ? Border.all(
-                              color: Colors.amber,
-                            )
-                          : null),
-                  child: Text(
-                    _categories[index],
-                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                        fontSize: selected ? 15.sp : 14.sp,
-                        fontWeight:
-                            selected ? FontWeight.w600 : FontWeight.w400,
-                        fontFamily: GoogleFonts.nunito().fontFamily),
+                  child: Opacity(
+                    opacity: selected ? 1 : 0.5,
+                    child: Text(
+                      _categories[index],
+                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                          fontSize: selected ? 15.sp : 14.sp,
+                          fontWeight:
+                              selected ? FontWeight.w600 : FontWeight.w400,
+                          fontFamily: GoogleFonts.nunito().fontFamily),
+                    ),
                   ),
                 );
               },

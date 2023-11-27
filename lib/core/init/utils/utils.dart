@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/route_manager.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:movie_database/core/service/theme_service.dart';
 import '../../constants/app/styles.dart';
 import '../../constants/enums/device_type.dart';
 import '../../constants/enums/snackbar_status.dart';
@@ -11,11 +12,12 @@ class Utils {
   final context = Get.context!;
   showSnackBar(String title, String message, SnackBarStatus status) async {
     ScaffoldMessenger.of(context).hideCurrentSnackBar();
+    final isDarkMode = ThemeService().isDarkMode();
     final snackBar = SnackBar(
         duration: const Duration(seconds: 5),
         dismissDirection: DismissDirection.horizontal,
         backgroundColor:
-            Get.isDarkMode ? Theme.of(context).cardTheme.color : Colors.white,
+            isDarkMode ? Styles.colors.backgroundGrey : Colors.white,
         shape:
             RoundedRectangleBorder(borderRadius: BorderRadius.circular(15.r)),
         behavior: SnackBarBehavior.floating,
@@ -39,17 +41,14 @@ class Utils {
               children: [
                 Text(
                   title,
-                  style: Styles.textStyles.f14Bold?.copyWith(
-                      fontSize: 16.sp,
-                      color: Theme.of(context).textTheme.titleLarge?.color),
+                  style: Styles.textStyles.f16Regular(
+                      color: isDarkMode ? Colors.white : Colors.black),
                 ),
                 4.verticalSpace,
                 Expanded(
-                  child: Text(message,
-                      style: Styles.textStyles.f14Bold?.copyWith(
-                          fontSize: 14.sp,
-                          color: Theme.of(context).textTheme.titleLarge?.color)),
-                ),
+                    child: Text(message,
+                        style: Styles.textStyles.f14Regular(
+                            color: isDarkMode ? Colors.white : Colors.black)))
               ],
             ),
             const Spacer(),
@@ -58,7 +57,7 @@ class Utils {
                     ScaffoldMessenger.of(context).hideCurrentSnackBar(),
                 icon: Icon(
                   Icons.close,
-                  color: Get.isDarkMode ? Colors.white : Colors.black,
+                  color: isDarkMode ? Colors.white : Colors.black,
                 ))
           ]),
         ));
@@ -85,13 +84,8 @@ class Utils {
                         children: [
                           Text(
                             'Loading... 🍿',
-                            style: Theme.of(context)
-                                .textTheme
-                                .titleLarge
-                                ?.copyWith(
-                                    fontSize: 20.0,
-                                    fontFamily:
-                                        GoogleFonts.poppins().fontFamily),
+                            style: Styles.textStyles.f20Regular(
+                                fontFamily: GoogleFonts.poppins().fontFamily),
                           ),
                           12.verticalSpace,
                           const CupertinoActivityIndicator(),
@@ -108,8 +102,8 @@ class Utils {
     Navigator.pop(context);
   }
 
-  static DeviceType getDeviceType() {
-    final data = MediaQueryData.fromWindow(WidgetsBinding.instance.window);
+  static DeviceType getDeviceType(BuildContext context) {
+    final data = MediaQueryData.fromView(View.of(context));
     return data.size.shortestSide < 550 ? DeviceType.phone : DeviceType.tablet;
   }
 }

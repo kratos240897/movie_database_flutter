@@ -57,7 +57,7 @@ class PageRouter {
             binding: RegisterBiding());
       case HOME:
         return GetPageRoute(
-            routeName: HOME, page: () => Home(), binding: HomeBinding());
+            routeName: HOME, page: () => HomeV2(), binding: HomeBinding());
       case SEARCH:
         return GetPageRoute(
             routeName: SEARCH,
